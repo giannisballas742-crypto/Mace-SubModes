@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mace Tiers • Rankings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background: #0a0a0a; color: #e5e5e5; font-family: system-ui, -apple-system, sans-serif; }
+    .tab-active { background-color: #f97316; color: #111827; font-weight: 700; box-shadow: 0 0 20px rgba(249,115,22,0.6); }
+    .tier-1 { background: linear-gradient(90deg, #f97316, #eab308); color: black; }
+    .tier-2 { background: linear-gradient(90deg, #fb923c, #f59e0b); color: black; }
+    .tier-header { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.04em; }
+    .player-card { transition: all 0.25s ease; }
+    .player-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(249,115,22,0.15); }
+  </style>
+</head>
+<body class="min-h-screen pb-20">
+  <div class="max-w-7xl mx-auto px-6 pt-8">
+
+    <!-- Header like mctiers -->
+    <div class="flex items-center justify-between mb-12 border-b border-gray-800 pb-8">
+      <div class="flex items-center gap-5">
+        <div class="w-16 h-16 bg-orange-500 rounded-3xl flex items-center justify-center text-5xl font-black text-black shadow-lg">M</div>
+        <div>
+          <h1 class="text-6xl font-black tracking-tighter">MACE TIERS</h1>
+          <p class="text-orange-400 text-lg -mt-2">PvP Rankings</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-gray-400 text-sm">Server IP</div>
+        <div class="font-mono text-orange-400 text-xl">play.yourserver.net</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-3 mb-12" id="tabs"></div>
+
+    <h2 id="pageTitle" class="text-4xl font-bold mb-10 text-white">Overall Rankings</h2>
+    <div id="rankings" class="space-y-14"></div>
+  </div>
+
+  <script>
+    // ←←← PASTE YOUR GOOGLE CSV LINK HERE
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/17_uaAm_cPz3YcEARrH0hqKw8R3FAV-5U2Y3k_zFom5s/edit?gid=1098171572#gid=1098171572";
+
+    const modes = ["overall", "LT Mace", "HT Mace", "Rocket Mace", "OG Mace", "Rod Mace", "Spear Mace"];
+
+    // Create tabs
+    const tabsContainer = document.getElementById("tabs");
+    modes.forEach((mode, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = mode;
+      btn.className = `tab px-8 py-4 rounded-3xl text-xl transition-all ${index === 0 ? 'tab-active' : 'bg-gray-900 hover:bg-gray-800'}`;
+      btn.onclick = () => loadMode(mode, btn);
+      tabsContainer.appendChild(btn);
+    });
+
+    async function loadMode(mode, activeBtn) {
+      // Highlight tab
+      document.querySelectorAll('#tabs button').forEach(b => b.classList.remove('tab-active'));
+      activeBtn.classList.add('tab-active');
+      document.getElementById("pageTitle").textContent = mode === "overall" ? "Overall Best Players" : `${mode} Rankings`;
+
+      try {
+        const res = await fetch(CSV_URL);
+        const text = await res.text();
+        const rows = text.split('\n').slice(1)
+          .filter(row => row.trim())
+          .map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+
+        let html = '';
+
+        if (mode === "overall") {
+          // Calculate overall score from all modes (Tier 1 = best)
+          const playerTotal = {};
+          rows.forEach(row => {
+            if (!row[0]) return;
+            const username = row[0];
+            let score = 0;
+            // Columns: 1=LT, 2=HT, 3=Rocket, 4=OG, 5=Rod, 6=Spear
+            for (let i = 1; i <= 6; i++) {
+              const tier = parseInt(row[i]) || 5;
+              score += Math.max(60 - (tier * 10), 10);   // Tier 1=50, Tier 2=40, Tier 3=30, Tier 4=20, Tier 5=10
+            }
+            playerTotal[username] = score;
+          });
+
+          const sorted = Object.entries(playerTotal).sort((a, b) => b[1] - a[1]);
+
+          html += `<div class="bg-gray-900 rounded-3xl p-8">`;
+          sorted.forEach(([username, score], i) => {
+            html += `
+              <div class="player-card bg-gray-800 rounded-2xl p-7 mb-5 flex items-center gap-8 border border-gray-700">
+                <div class="font-mono text-4xl font-bold text-orange-400 w-14">#${i+1}</div>
+                <div class="flex-1 text-2xl font-semibold">${username}</div>
+                <div class="text-right">
+                  <div class="text-xs uppercase tracking-widest text-gray-400">Total Score</div>
+                  <div class="font-mono text-3xl text-orange-300">${score}</div>
+                </div>
+              </div>`;
+          });
+          html += `</div>`;
+
+        } else {
+          // Single gamemode - group by Tier
+          const tierGroups = {};
+          const modeCol = modes.indexOf(mode); // 1=LT Mace, etc.
+
+          rows.forEach(row => {
+            if (!row[0]) return;
+            const username = row[0];
+            const tier = row[modeCol] || "5";
+            if (!tierGroups[tier]) tierGroups[tier] = [];
+            tierGroups[tier].push(username);
+          });
+
+          Object.keys(tierGroups).sort((a,b) => parseInt(a) - parseInt(b)).forEach(tier => {
+            const color = parseInt(tier) === 1 ? 'tier-1' : parseInt(tier) === 2 ? 'tier-2' : 'bg-gray-700 text-white';
+            html += `
+              <div class="bg-gray-950 rounded-3xl overflow-hidden border border-gray-800">
+                <div class="${color} px-10 py-7 tier-header">Tier ${tier}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-10">
+                  ${tierGroups[tier].map(name => `
+                    <div class="player-card bg-gray-900 rounded-2xl p-6 text-lg font-medium border border-gray-700">${name}</div>
+                  `).join('')}
+                </div>
+              </div>`;
+          });
+        }
+
+        document.getElementById("rankings").innerHTML = html || `<p class="text-center py-24 text-gray-500 text-xl">No data loaded yet...</p>`;
+
+      } catch (err) {
+        document.getElementById("rankings").innerHTML = `<p class="text-red-400 text-center py-24 text-xl">Could not load data.<br>Please check your Google CSV link is public.</p>`;
+      }
+    }
+
+    // Start with Overall
+    window.onload = () => {
+      const firstBtn = document.querySelector('#tabs button');
+      if (firstBtn) loadMode("overall", firstBtn);
+    };
+
+    // Auto update every 30 seconds when you edit Google Sheet
+    setInterval(() => {
+      const activeBtn = document.querySelector('.tab-active');
+      if (activeBtn) loadMode(activeBtn.textContent, activeBtn);
+    }, 30000);
+  </script>
+</body>
+</html> 
