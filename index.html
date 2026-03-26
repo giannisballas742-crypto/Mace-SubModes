@@ -19,6 +19,32 @@
     font-size: 28px;
     font-weight: bold;
   }
+  .server-info {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .server-info .server-name {
+    font-family: monospace;
+    color: #db3e3e;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .server-info button {
+    background: #7289da;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .server-info button:hover {
+    background: #5b6eae;
+  }
   nav {
     display: flex;
     justify-content: center;
@@ -88,6 +114,12 @@
 </head>
 <body>
 <header>Mace SubModes Tiers</header>
+
+<!-- Server info + Discord button above -->
+<div class="server-info">
+  <div class="server-name">mcpvp.club</div>
+  <button onclick="window.open('https://discord.gg/qHXgUhVj', '_blank')">Join Discord</button>
+</div>
 
 <!-- Top Tabs -->
 <nav>
