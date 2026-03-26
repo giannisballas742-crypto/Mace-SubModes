@@ -4,178 +4,189 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mace SubModes Tiers • Rankings</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { background: #0a0a0a; color: #e5e5e5; font-family: system-ui, sans-serif; }
-  .tab { transition: all 0.2s; cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.5rem; }
-  .tab-active { background-color: #db3e3e; color: black; font-weight: 700; box-shadow: 0 0 20px rgba(219,62,62,0.6); }
-  .tier-header { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; padding: 0.5rem 1.5rem; border-radius: 9999px; margin-top:1.5rem; margin-bottom:0.75rem; display:inline-block; }
-  .player-card { transition: all 0.25s ease; background-color: #1f2937; padding: 0.75rem 1rem; border-radius: 1rem; display:flex; align-items:center; gap:1rem; margin-bottom:0.5rem; }
-  .player-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(219,62,62,0.4); }
-  .player-img { width: 48px; height:48px; border-radius:9999px; border:2px solid #db3e3e; }
-  .rank { font-family: monospace; font-weight: bold; color:#db3e3e; margin-right:0.5rem; width:2rem; }
-  .gamemode-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
-  .discord-link a { background: #7289da; color: #fff; text-decoration: none; padding: 15px 30px; font-size: 24px; border-radius: 8px; transition: 0.2s; }
-  .discord-link a:hover { background: #5b6eae; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: #db3e3e;
+    padding: 15px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    background: #222;
+  }
+  nav button {
+    background: #333;
+    border: none;
+    color: #fff;
+    padding: 10px 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+    margin: 5px;
+    border-radius: 8px;
+  }
+  nav button.active {
+    background: #db3e3e;
+    color: #fff;
+  }
+  nav button:hover {
+    background: #db3e3e;
+  }
+  section {
+    display: none;
+    padding: 20px;
+  }
+  section.active {
+    display: block;
+  }
+  .tiers-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .tiers-table th, .tiers-table td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: center;
+  }
+  .tiers-table th {
+    background: #db3e3e;
+    font-size: 18px;
+  }
+  .skin-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+  }
+  .discord-link {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+  }
+  .discord-link a {
+    background: #7289da;
+    color: #fff;
+    text-decoration: none;
+    padding: 15px 30px;
+    font-size: 24px;
+    border-radius: 8px;
+    transition: 0.2s;
+  }
+  .discord-link a:hover {
+    background: #5b6eae;
+  }
 </style>
 </head>
-<body class="min-h-screen pb-12">
-<div class="max-w-7xl mx-auto px-6 py-8">
+<body>
+<header>Mace SubModes Tiers</header>
 
-  <!-- Header -->
-  <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
-    <div class="flex items-center gap-4">
-      <div class="w-14 h-14 bg-[#db3e3e] rounded-2xl flex items-center justify-center text-4xl font-black text-black">M</div>
-      <div>
-        <h1 class="text-5xl font-black tracking-tighter">Mace SubModes Tiers</h1>
-        <p class="text-[#db3e3e] text-sm -mt-1">Mace PvP Rankings</p>
-      </div>
-    </div>
-    <div class="text-right text-sm">
-      <div class="text-gray-400">Your Server</div>
-      <div class="font-mono text-[#db3e3e]">mcpvp.club</div>
-    </div>
+<!-- Top Tabs -->
+<nav>
+  <button id="tab-rankings" class="active">Rankings</button>
+  <button id="tab-discord">Discord</button>
+</nav>
+
+<section id="rankings" class="active">
+  <table class="tiers-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>Skin</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody id="tiers-body">
+      <!-- Players will appear here -->
+    </tbody>
+  </table>
+</section>
+
+<section id="discord">
+  <div class="discord-link">
+    <a href="https://discord.gg/qHXgUhVj" target="_blank">Join our Discord</a>
   </div>
-
-  <!-- Top Tabs -->
-  <div class="flex gap-2 mb-6">
-    <div id="tab-rankings" class="tab tab-active">Rankings</div>
-    <div id="tab-discord" class="tab">Discord</div>
-  </div>
-
-  <!-- Rankings Section -->
-  <div id="rankings-section">
-
-    <!-- Gamemode Tabs -->
-    <div id="gamemode-tabs" class="gamemode-tabs"></div>
-
-    <!-- Tiers container -->
-    <div id="tiers-container"></div>
-
-  </div>
-
-  <!-- Discord Section -->
-  <div id="discord-section" class="hidden text-center mt-10">
-    <div class="discord-link">
-      <a href="https://discord.gg/qHXgUhVj" target="_blank">Join our Discord</a>
-    </div>
-  </div>
-
-</div>
+</section>
 
 <script>
+  // Tabs functionality
   const tabRankings = document.getElementById('tab-rankings');
   const tabDiscord = document.getElementById('tab-discord');
-  const rankingsSection = document.getElementById('rankings-section');
-  const discordSection = document.getElementById('discord-section');
+  const sectionRankings = document.getElementById('rankings');
+  const sectionDiscord = document.getElementById('discord');
 
   tabRankings.addEventListener('click', () => {
-    tabRankings.classList.add('tab-active');
-    tabDiscord.classList.remove('tab-active');
-    rankingsSection.classList.remove('hidden');
-    discordSection.classList.add('hidden');
+    tabRankings.classList.add('active');
+    tabDiscord.classList.remove('active');
+    sectionRankings.classList.add('active');
+    sectionDiscord.classList.remove('active');
   });
 
   tabDiscord.addEventListener('click', () => {
-    tabDiscord.classList.add('tab-active');
-    tabRankings.classList.remove('tab-active');
-    discordSection.classList.remove('hidden');
-    rankingsSection.classList.add('hidden');
+    tabDiscord.classList.add('active');
+    tabRankings.classList.remove('active');
+    sectionDiscord.classList.add('active');
+    sectionRankings.classList.remove('active');
   });
 
   // Google Sheet CSV link
   const GOOGLE_CSV_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?output=csv";
 
-  const TIERS = ['S', 'A', 'B', 'C', 'D', 'E'];
-
-  let gamemodes = ['Overall','SkyWars','BedWars','Duels']; // replace with your actual gamemodes
-
   async function fetchPlayers() {
     try {
       const res = await fetch(GOOGLE_CSV_URL);
       const text = await res.text();
-      const rows = text.split('\n').slice(1);
+      const rows = text.split('\n').slice(1); // skip header
       const players = rows.map(row => {
         const cols = row.split(',');
         return {
           name: cols[0],
           points: parseInt(cols[1]) || 0,
-          skin: cols[2],
-          gamemode: cols[3] || 'Overall'
+          skin: cols[2] || cols[0]
         };
       });
-      return players;
-    } catch(e) {
-      console.error("Error fetching players", e);
+      players.sort((a,b) => b.points - a.points);
+      return players.slice(0, 100);
+    } catch (e) {
+      console.error("Failed to fetch players:", e);
       return [];
     }
   }
 
-  function buildGamemodeTabs() {
-    const container = document.getElementById('gamemode-tabs');
-    container.innerHTML = '';
-    gamemodes.forEach((mode,i) => {
-      const div = document.createElement('div');
-      div.className = 'tab '+(i===0?'tab-active':'');
-      div.textContent = mode;
-      div.addEventListener('click', () => {
-        document.querySelectorAll('#gamemode-tabs .tab').forEach(t => t.classList.remove('tab-active'));
-        div.classList.add('tab-active');
-        displayTiers(mode);
-      });
-      container.appendChild(div);
+  function displayPlayers(players) {
+    const tbody = document.getElementById('tiers-body');
+    tbody.innerHTML = '';
+    players.forEach((p, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${p.name}</td>
+        <td><img src="https://mc-heads.net/avatar/${p.skin}" class="skin-img" alt="${p.name}"></td>
+        <td>${p.points}</td>
+      `;
+      tbody.appendChild(tr);
     });
   }
 
-  function displayTiers(selectedMode) {
-    const container = document.getElementById('tiers-container');
-    container.innerHTML = '';
-
-    // Filter by gamemode
-    let filtered = playersData.filter(p => p.gamemode === selectedMode);
-    if(filtered.length===0) return;
-
-    // Sort by points descending
-    filtered.sort((a,b)=>b.points - a.points);
-
-    // Assign tiers by rank (simple example:  top 10 S, next 15 A, etc.)
-    const tierRanges = [10,15,20,25,30,100]; // adjust as needed
-    let start=0;
-    TIERS.forEach((tier,i)=>{
-      const count = tierRanges[i];
-      const tierPlayers = filtered.slice(start,start+count);
-      if(tierPlayers.length===0) return;
-      start+=count;
-
-      const tierHeader = document.createElement('div');
-      tierHeader.className = 'tier-header bg-[#db3e3e] text-black';
-      tierHeader.textContent = tier;
-      container.appendChild(tierHeader);
-
-      tierPlayers.forEach((p,index)=>{
-        const card = document.createElement('div');
-        card.className = 'player-card';
-        card.innerHTML = `
-          <div class="rank">${index+1}</div>
-          <img src="https://mc-heads.net/avatar/${p.skin}" class="player-img">
-          <div>${p.name}</div>
-          <div class="ml-auto font-mono">${p.points}</div>
-        `;
-        container.appendChild(card);
-      });
-    });
+  async function updateLeaderboard() {
+    const players = await fetchPlayers();
+    displayPlayers(players);
   }
 
-  let playersData = [];
+  // Initial load
+  updateLeaderboard();
 
-  async function init() {
-    playersData = await fetchPlayers();
-    buildGamemodeTabs();
-    displayTiers('Overall');
-  }
-
-  init();
-  setInterval(init,30000); // refresh every 30s
+  // Auto-refresh every 30 seconds
+  setInterval(updateLeaderboard, 30000);
 </script>
 </body>
 </html>
