@@ -1,109 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mace Tiers</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { background:#0b0b0b; color:#e5e5e5; font-family:system-ui; }
+
+.tab { padding:12px 20px; border-radius:12px; background:#111; cursor:pointer; }
+.tab-active { background:#f97316; color:black; font-weight:bold; }
+
+.tier-box { background:#111; border:1px solid #222; border-radius:16px; margin-bottom:20px; }
+.tier-header { padding:14px; font-weight:bold; background:linear-gradient(90deg,#f97316,#eab308); color:black; }
+
+.player { padding:10px; background:#0f0f0f; border-radius:10px; margin:5px; }
+</style>
+</head>
+
+<body>
+
+<div class="max-w-6xl mx-auto p-6">
+
+<h1 class="text-4xl font-bold mb-6">MACE TIERS</h1>
+
+<div id="tabs" class="flex gap-2 mb-6"></div>
+
+<div id="content"></div>
+
+</div>
+
 <script>
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/17_uaAm_cPz3YcEARrH0hqKw8R3FAV-5U2Y3k_zFom5s/edit?gid=109";
+// 🔴 PUT YOUR ORIGINAL GOOGLE LINK HERE (NOT CSV)
+const GOOGLE_LINK = "https://docs.google.com/spreadsheets/d/17_uaAm_cPz3YcEARrH0hqKw8R3FAV-5U2Y3k_zFom5s/edit?gid=1098171572#gid=1098171572";
+
+// Proxy
+const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(GOOGLE_LINK.replace("/edit","/export?format=csv"));
 
 const modes = ["overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
-async function getData() {
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
+const tabs = document.getElementById("tabs");
 
-  const rows = text.trim().split("\n").map(r =>
-    r.split(",").map(c => c.replace(/"/g,"").trim())
-  );
+modes.forEach((m,i)=>{
+  const b=document.createElement("div");
+  b.textContent=m;
+  b.className="tab "+(i===0?"tab-active":"");
+  b.onclick=()=>load(m,b);
+  tabs.appendChild(b);
+});
 
-  console.log("DATA:", rows);
+async function getData(){
+  try{
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
 
-  return rows;
+    console.log(text);
+
+    return text.trim().split("\n").map(r=>r.split(","));
+  }catch(e){
+    console.error(e);
+    return [];
+  }
 }
 
-function findColumn(headers, keyword) {
-  return headers.findIndex(h => h.toLowerCase().includes(keyword.toLowerCase()));
-}
+async function load(mode,btn){
 
-async function loadMode(mode) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("tab-active"));
+  btn.classList.add("tab-active");
 
   const rows = await getData();
+
+  if(!rows.length){
+    document.getElementById("content").innerHTML="❌ Cannot load data";
+    return;
+  }
+
   const headers = rows[0];
   const data = rows.slice(1);
 
-  // Try to detect columns automatically
-  const usernameCol = findColumn(headers, "user") !== -1 ? findColumn(headers, "user") : 0;
+  let html="";
 
-  const modeCol = findColumn(headers, mode);
+  if(mode==="overall"){
 
-  let html = "";
+    const scores={};
 
-  // OVERALL
-  if (mode === "overall") {
+    data.forEach(r=>{
+      const name=r[0];
+      let score=0;
 
-    const scores = {};
-
-    data.forEach(row => {
-      const name = row[usernameCol];
-      let score = 0;
-
-      headers.forEach((h, i) => {
-        if (h.toLowerCase().includes("mace")) {
-          const tier = parseInt(row[i]) || 5;
-
-          if (tier === 1) score += 100;
-          else if (tier === 2) score += 60;
-          else if (tier === 3) score += 30;
-          else if (tier === 4) score += 15;
-          else score += 5;
+      r.forEach(v=>{
+        const t=parseInt(v);
+        if(!isNaN(t)){
+          if(t===1) score+=100;
+          else if(t===2) score+=60;
+          else if(t===3) score+=30;
         }
       });
 
-      scores[name] = score;
+      scores[name]=score;
     });
 
-    const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-
-    html += `<div class="space-y-4">`;
-
-    sorted.forEach(([name,score],i)=>{
-      html += `
-      <div class="player-card flex justify-between">
-        <div>#${i+1} ${name}</div>
-        <div>${score}</div>
-      </div>`;
+    Object.entries(scores).sort((a,b)=>b[1]-a[1]).forEach(([n,s],i)=>{
+      html+=`<div class="player">#${i+1} ${n} - ${s}</div>`;
     });
 
-    html += `</div>`;
-  }
+  }else{
 
-  // GAMEMODE
-  else {
+    const col = headers.findIndex(h=>h.toLowerCase().includes(mode.toLowerCase()));
 
-    if (modeCol === -1) {
-      document.getElementById("content").innerHTML =
-        `<p class="text-red-400">Column not found for ${mode}</p>`;
-      return;
+    if(col===-1){
+      html="❌ Mode not found in sheet";
+    }else{
+
+      const tiers={};
+
+      data.forEach(r=>{
+        const name=r[0];
+        const tier=r[col]||"5";
+
+        if(!tiers[tier]) tiers[tier]=[];
+        tiers[tier].push(name);
+      });
+
+      Object.keys(tiers).sort((a,b)=>a-b).forEach(t=>{
+        html+=`
+        <div class="tier-box">
+          <div class="tier-header">Tier ${t}</div>
+          <div class="p-3">
+            ${tiers[t].map(n=>`<div class="player">${n}</div>`).join("")}
+          </div>
+        </div>`;
+      });
     }
-
-    const tiers = {};
-
-    data.forEach(row=>{
-      const name = row[usernameCol];
-      const tier = row[modeCol] || "5";
-
-      if (!tiers[tier]) tiers[tier] = [];
-      tiers[tier].push(name);
-    });
-
-    Object.keys(tiers).sort((a,b)=>a-b).forEach(tier=>{
-      html += `
-      <div class="tier-box mb-8">
-        <div class="tier-header">Tier ${tier}</div>
-        <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-          ${tiers[tier].map(name=>`<div class="player-card">${name}</div>`).join("")}
-        </div>
-      </div>`;
-    });
   }
 
-  document.getElementById("content").innerHTML = html;
+  document.getElementById("content").innerHTML=html;
 }
 
+window.onload=()=>load("overall",document.querySelector(".tab"));
+
 </script>
+
+</body>
+</html>
