@@ -4,140 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mace SubModes Tiers • Rankings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0a0a0a;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-  }
-  header {
-    background: #db3e3e;
-    padding: 15px;
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  nav {
-    display: flex;
-    justify-content: center;
-    background: #222;
-  }
-  nav button {
-    background: #333;
-    border: none;
-    color: #fff;
-    padding: 10px 25px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: 0.2s;
-    margin: 5px;
-    border-radius: 8px;
-  }
-  nav button.active {
-    background: #db3e3e;
-    color: #fff;
-  }
-  nav button:hover {
-    background: #db3e3e;
-  }
-  section {
-    display: none;
-    padding: 20px;
-  }
-  section.active {
-    display: block;
-  }
-  .tiers-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .tiers-table th, .tiers-table td {
-    border: 1px solid #444;
-    padding: 10px;
-    text-align: center;
-  }
-  .tiers-table th {
-    background: #db3e3e;
-    font-size: 18px;
-  }
-  .skin-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-  }
-  .discord-link {
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
-  }
-  .discord-link a {
-    background: #7289da;
-    color: #fff;
-    text-decoration: none;
-    padding: 15px 30px;
-    font-size: 24px;
-    border-radius: 8px;
-    transition: 0.2s;
-  }
-  .discord-link a:hover {
-    background: #5b6eae;
-  }
+  body { background: #0a0a0a; color: #e5e5e5; font-family: system-ui, sans-serif; }
+  .tab { transition: all 0.2s; cursor:pointer; padding:10px 20px; border-radius:8px; margin:0 5px; }
+  .tab-active { background-color: #db3e3e; color: black; font-weight: 700; box-shadow: 0 0 20px rgba(219,62,62,0.6); }
+  .tier-header { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; padding: 0.5rem 1.5rem; border-radius: 9999px; }
+  .player-card { transition: all 0.25s ease; background-color: #1f2937; padding: 0.75rem 1rem; border-radius: 1rem; display:flex; align-items:center; gap:1rem; }
+  .player-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(219,62,62,0.4); }
+  .player-img { width: 48px; height:48px; border-radius:9999px; border:2px solid #db3e3e; }
+  .rank { font-family: monospace; font-weight: bold; color:#db3e3e; margin-right:0.5rem; }
+  .tabs-container { display:flex; justify-content:center; margin-bottom:20px; }
+  .discord-link { display:flex; justify-content:center; margin-top:50px; }
+  .discord-link a { background:#7289da; color:#fff; text-decoration:none; padding:15px 30px; font-size:24px; border-radius:8px; transition:0.2s; }
+  .discord-link a:hover { background:#5b6eae; }
 </style>
 </head>
-<body>
-<header>Mace SubModes Tiers</header>
+<body class="min-h-screen pb-12">
 
-<nav>
-  <button id="tab-rankings" class="active">Rankings</button>
-  <button id="tab-discord">Discord</button>
-</nav>
+<div class="max-w-7xl mx-auto px-6 py-8">
 
-<section id="rankings" class="active">
-  <table class="tiers-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Player</th>
-        <th>Skin</th>
-        <th>Points</th>
-      </tr>
-    </thead>
-    <tbody id="tiers-body">
-      <!-- Players will appear here -->
-    </tbody>
-  </table>
-</section>
-
-<section id="discord">
-  <div class="discord-link">
-    <a href="https://discord.gg/qHXgUhVj" target="_blank">Join our Discord</a>
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 bg-[#db3e3e] rounded-2xl flex items-center justify-center text-4xl font-black text-black">M</div>
+      <div>
+        <h1 class="text-5xl font-black tracking-tighter">Mace SubModes Tiers</h1>
+        <p class="text-[#db3e3e] text-sm -mt-1">Mace PvP Rankings</p>
+      </div>
+    </div>
+    <div class="text-right text-sm">
+      <div class="text-gray-400">Your Server</div>
+      <div class="font-mono text-[#db3e3e]">mcpvp.club</div>
+    </div>
   </div>
-</section>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <div id="tab-rankings" class="tab tab-active">Rankings</div>
+    <div id="tab-discord" class="tab">Discord</div>
+  </div>
+
+  <!-- Rankings Section -->
+  <section id="rankings-section">
+    <div id="players-list" class="flex flex-col gap-4">
+      <!-- Player cards will be injected here -->
+    </div>
+  </section>
+
+  <!-- Discord Section -->
+  <section id="discord-section" style="display:none;">
+    <div class="discord-link">
+      <a href="https://discord.gg/qHXgUhVj" target="_blank">Join our Discord</a>
+    </div>
+  </section>
+
+</div>
 
 <script>
-  // Tabs functionality
+  // Tab functionality
   const tabRankings = document.getElementById('tab-rankings');
   const tabDiscord = document.getElementById('tab-discord');
-  const sectionRankings = document.getElementById('rankings');
-  const sectionDiscord = document.getElementById('discord');
+  const rankingsSection = document.getElementById('rankings-section');
+  const discordSection = document.getElementById('discord-section');
 
   tabRankings.addEventListener('click', () => {
-    tabRankings.classList.add('active');
-    tabDiscord.classList.remove('active');
-    sectionRankings.classList.add('active');
-    sectionDiscord.classList.remove('active');
+    tabRankings.classList.add('tab-active');
+    tabDiscord.classList.remove('tab-active');
+    rankingsSection.style.display = 'block';
+    discordSection.style.display = 'none';
   });
 
   tabDiscord.addEventListener('click', () => {
-    tabDiscord.classList.add('active');
-    tabRankings.classList.remove('active');
-    sectionDiscord.classList.add('active');
-    sectionRankings.classList.remove('active');
+    tabDiscord.classList.add('tab-active');
+    tabRankings.classList.remove('tab-active');
+    discordSection.style.display = 'block';
+    rankingsSection.style.display = 'none';
   });
 
-  // Google Sheet CSV link
+  // Google Sheet CSV
   const GOOGLE_CSV_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/pub?output=csv";
 
   async function fetchPlayers() {
@@ -154,25 +100,26 @@
         };
       });
       players.sort((a,b) => b.points - a.points);
-      return players.slice(0, 100);
-    } catch (e) {
+      return players.slice(0,100);
+    } catch(e) {
       console.error("Failed to fetch players:", e);
       return [];
     }
   }
 
   function displayPlayers(players) {
-    const tbody = document.getElementById('tiers-body');
-    tbody.innerHTML = '';
-    players.forEach((p, i) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${i+1}</td>
-        <td>${p.name}</td>
-        <td><img src="https://mc-heads.net/avatar/${p.skin}" class="skin-img" alt="${p.name}"></td>
-        <td>${p.points}</td>
+    const list = document.getElementById('players-list');
+    list.innerHTML = '';
+    players.forEach((p,i) => {
+      const div = document.createElement('div');
+      div.className = 'player-card';
+      div.innerHTML = `
+        <div class="rank">#${i+1}</div>
+        <img class="player-img" src="https://mc-heads.net/avatar/${p.skin}" alt="${p.name}">
+        <div class="font-bold">${p.name}</div>
+        <div class="ml-auto font-mono text-[#db3e3e]">${p.points}</div>
       `;
-      tbody.appendChild(tr);
+      list.appendChild(div);
     });
   }
 
@@ -181,11 +128,10 @@
     displayPlayers(players);
   }
 
-  // Initial load
+  // Initial load & auto-refresh
   updateLeaderboard();
-
-  // Auto-refresh every 30 seconds
   setInterval(updateLeaderboard, 30000);
 </script>
+
 </body>
 </html>
