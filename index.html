@@ -1,163 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mace Tiers</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-body {
-  background: #0b0b0b;
-  color: #e5e5e5;
-  font-family: system-ui;
-}
-
-.tab {
-  padding: 14px 26px;
-  border-radius: 16px;
-  background: #111;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.tab:hover {
-  background: #1a1a1a;
-}
-
-.tab-active {
-  background: #f97316;
-  color: black;
-  font-weight: 700;
-  box-shadow: 0 0 20px rgba(249,115,22,0.5);
-}
-
-.tier-box {
-  background: #111;
-  border: 1px solid #1f1f1f;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.tier-header {
-  font-size: 1.8rem;
-  font-weight: 800;
-  padding: 18px;
-  background: linear-gradient(90deg, #f97316, #eab308);
-  color: black;
-}
-
-.player-card {
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  padding: 14px;
-  border-radius: 14px;
-  transition: 0.2s;
-}
-
-.player-card:hover {
-  transform: translateY(-4px);
-  border-color: #f97316;
-}
-</style>
-</head>
-
-<body>
-
-<div class="max-w-7xl mx-auto p-6">
-
-<!-- HEADER -->
-<div class="flex justify-between items-center mb-10">
-  <h1 class="text-5xl font-black">MACE TIERS</h1>
-  <div class="text-orange-400 font-mono">play.yourserver.net</div>
-</div>
-
-<!-- TABS -->
-<div id="tabs" class="flex gap-3 mb-10 flex-wrap"></div>
-
-<h2 id="title" class="text-3xl font-bold mb-6">Overall</h2>
-
-<div id="content"></div>
-
-</div>
-
 <script>
 
-// 🔴 PUT YOUR GOOGLE CSV LINK HERE
-const CSV_URL = "https://docs.google.com/spreadsheets/d/17_uaAm_cPz3YcEARrH0hqKw8R3FAV-5U2Y3k_zFom5s/edit?gid=1098171572#gid=1098171572";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/17_uaAm_cPz3YcEARrH0hqKw8R3FAV-5U2Y3k_zFom5s/edit?gid=109";
 
 const modes = ["overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
-const tabsDiv = document.getElementById("tabs");
-
-// Create tabs
-modes.forEach((mode, i) => {
-  const btn = document.createElement("div");
-  btn.textContent = mode;
-  btn.className = "tab " + (i===0 ? "tab-active":"");
-  btn.onclick = () => loadMode(mode, btn);
-  tabsDiv.appendChild(btn);
-});
-
-// Load data
 async function getData() {
-  try {
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
 
-    console.log("RAW CSV:", text);
+  const rows = text.trim().split("\n").map(r =>
+    r.split(",").map(c => c.replace(/"/g,"").trim())
+  );
 
-    const rows = text.trim().split("\n").map(r =>
-      r.split(",").map(c => c.replace(/"/g,"").trim())
-    );
+  console.log("DATA:", rows);
 
-    console.log("PARSED:", rows);
-
-    return rows.slice(1);
-  } catch (e) {
-    console.error("ERROR:", e);
-    return [];
-  }
+  return rows;
 }
 
-// Load mode
-async function loadMode(mode, btn) {
+function findColumn(headers, keyword) {
+  return headers.findIndex(h => h.toLowerCase().includes(keyword.toLowerCase()));
+}
 
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("tab-active"));
-  btn.classList.add("tab-active");
-
-  document.getElementById("title").textContent = mode;
+async function loadMode(mode) {
 
   const rows = await getData();
+  const headers = rows[0];
+  const data = rows.slice(1);
 
-  if (!rows.length) {
-    document.getElementById("content").innerHTML =
-      "<p class='text-red-400'>No data loaded. Check CSV link.</p>";
-    return;
-  }
+  // Try to detect columns automatically
+  const usernameCol = findColumn(headers, "user") !== -1 ? findColumn(headers, "user") : 0;
+
+  const modeCol = findColumn(headers, mode);
 
   let html = "";
 
-  // 🔥 OVERALL
+  // OVERALL
   if (mode === "overall") {
 
     const scores = {};
 
-    rows.forEach(row => {
-      const name = row[0];
+    data.forEach(row => {
+      const name = row[usernameCol];
       let score = 0;
 
-      for (let i = 1; i <= 6; i++) {
-        const tier = parseInt(row[i]) || 5;
+      headers.forEach((h, i) => {
+        if (h.toLowerCase().includes("mace")) {
+          const tier = parseInt(row[i]) || 5;
 
-        // STRONG weighting (better than before)
-        if (tier === 1) score += 100;
-        else if (tier === 2) score += 60;
-        else if (tier === 3) score += 30;
-        else if (tier === 4) score += 15;
-        else score += 5;
-      }
+          if (tier === 1) score += 100;
+          else if (tier === 2) score += 60;
+          else if (tier === 3) score += 30;
+          else if (tier === 4) score += 15;
+          else score += 5;
+        }
+      });
 
       scores[name] = score;
     });
@@ -168,28 +64,29 @@ async function loadMode(mode, btn) {
 
     sorted.forEach(([name,score],i)=>{
       html += `
-      <div class="player-card flex justify-between items-center">
-        <div class="flex gap-4 items-center">
-          <div class="text-orange-400 font-bold w-8">#${i+1}</div>
-          <div>${name}</div>
-        </div>
-        <div class="text-orange-300">${score}</div>
+      <div class="player-card flex justify-between">
+        <div>#${i+1} ${name}</div>
+        <div>${score}</div>
       </div>`;
     });
 
     html += `</div>`;
   }
 
-  // 🔥 GAMEMODES
+  // GAMEMODE
   else {
 
-    const col = modes.indexOf(mode);
+    if (modeCol === -1) {
+      document.getElementById("content").innerHTML =
+        `<p class="text-red-400">Column not found for ${mode}</p>`;
+      return;
+    }
 
     const tiers = {};
 
-    rows.forEach(row=>{
-      const name = row[0];
-      const tier = row[col] || "5";
+    data.forEach(row=>{
+      const name = row[usernameCol];
+      const tier = row[modeCol] || "5";
 
       if (!tiers[tier]) tiers[tier] = [];
       tiers[tier].push(name);
@@ -197,12 +94,10 @@ async function loadMode(mode, btn) {
 
     Object.keys(tiers).sort((a,b)=>a-b).forEach(tier=>{
       html += `
-      <div class="tier-box mb-10">
+      <div class="tier-box mb-8">
         <div class="tier-header">Tier ${tier}</div>
-        <div class="p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          ${tiers[tier].map(name=>`
-            <div class="player-card">${name}</div>
-          `).join("")}
+        <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+          ${tiers[tier].map(name=>`<div class="player-card">${name}</div>`).join("")}
         </div>
       </div>`;
     });
@@ -211,18 +106,4 @@ async function loadMode(mode, btn) {
   document.getElementById("content").innerHTML = html;
 }
 
-// Load first
-window.onload = ()=>{
-  loadMode("overall", document.querySelector(".tab"));
-};
-
-// Auto refresh
-setInterval(()=>{
-  const active = document.querySelector(".tab-active");
-  if (active) loadMode(active.textContent, active);
-},30000);
-
 </script>
-
-</body>
-</html>
