@@ -65,19 +65,27 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
-// CSV URL from Google Sheets
-const SHEET_ID = "1xq36n4BEkxd142pCQ0g8rMHMr0dj_u46XiSCMKvCL8I";
-const SHEET_NAME = "Mace SubModes Tierlist"; // exact sheet tab name
-const CSV_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv`;
+// =======================
+// === CONFIGURE CSV ====
+// =======================
+// Just put your published Google Sheets CSV link here:
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace this with your CSV link
 
 // Tier order and colors
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = { HT1:"#ff4d4d", LT1:"#ff9999", HT2:"#ffaa00", LT2:"#ffd27f", HT3:"#55ff55", LT3:"#aaffaa", HT4:"#55ffff", LT4:"#aaffff", HT5:"#5555ff", LT5:"#aaaaff" };
 
+// =======================
+// === VARIABLES ========
+// =======================
+let allRows = [], allModes = [], nameCol = "Player", pointsCol = "Points", regionCol = "Region";
+
 // Tabs container
 const tabsDiv = document.getElementById("tabs");
 
-// Parse CSV
+// =======================
+// === CSV PARSER =======
+// =======================
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
@@ -90,10 +98,9 @@ function parseCSV(text){
   return { headers, data };
 }
 
-// Variables
-let allRows = [], allModes = [], nameCol = "Player", pointsCol = "Points", regionCol = "Region";
-
-// Load CSV
+// =======================
+// === LOAD CSV =========
+// =======================
 async function loadCSV(){
   try{
     const res = await fetch(CSV_URL);
@@ -101,8 +108,13 @@ async function loadCSV(){
     const { headers, data } = parseCSV(text);
     allRows = data;
 
-    // Define tabs
-    allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
+    // Auto detect columns
+    nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
+    pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
+    regionCol = headers.find(h=>/region/i.test(h));
+
+    // Modes
+    allModes = ["Overall", ...headers.filter(h=>![nameCol,pointsCol,regionCol].includes(h))];
 
     // Build tabs
     tabsDiv.innerHTML = "";
@@ -122,7 +134,9 @@ async function loadCSV(){
   }
 }
 
-// Load Mode
+// =======================
+// === LOAD MODE =========
+// =======================
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
@@ -174,7 +188,7 @@ function loadMode(mode,btn){
 
   document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
 
-  // Modal
+  // Player Modal
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
@@ -207,10 +221,8 @@ document.getElementById("search-input").addEventListener("input", e=>{
 // MODAL CLOSE
 document.getElementById("modal-close").onclick = ()=>{ document.getElementById("player-modal").classList.add("hidden"); };
 
-// Init
+// INIT
 loadCSV();
-
-// Auto-refresh
 setInterval(()=>{
   const active = document.querySelector(".tab-active");
   if(active) loadMode(active.textContent,active);
