@@ -28,7 +28,9 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <!-- HEADER -->
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
-    <div class="w-14 h-14 bg-red-500 rounded-xl flex items-center justify-center text-black text-3xl font-bold">M</div>
+    <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
+      <img src="YOUR_LOGO_IMAGE_URL" alt="Logo" class="w-full h-full object-cover">
+    </div>
     <div>
       <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
       <p class="text-red-400 text-sm">Mace PvP Rankings</p>
@@ -64,7 +66,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 
 <script>
 // Google Sheet CSV link
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // Replace with your CSV CSV link
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // Replace with your CSV link
 
 // Tier order and colors
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
@@ -95,9 +97,9 @@ function parseCSV(text){
 // Load CSV
 let allRows = [];
 let allModes = [];
-let nameCol = "";
-let pointsCol = "";
-let regionCol = "";
+let nameCol = "Player";
+let pointsCol = "Points";
+let regionCol = "Region";
 async function loadCSV(){
   try{
     const res = await fetch(CSV_URL);
@@ -105,12 +107,7 @@ async function loadCSV(){
     const { headers, data } = parseCSV(text);
     allRows = data;
 
-    // Auto-detect name, points, region columns
-    nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
-    pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
-    regionCol = headers.find(h=>/region/i.test(h));
-
-    // Define tabs (keep only your actual modes)
+    // Define tabs (only real modes)
     allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
     // Build tabs
@@ -146,7 +143,7 @@ function loadMode(mode,btn){
       if(!name) return;
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
-      const regionColor = r[regionCol+" Color"] || "#999"; // optional color column
+      const regionColor = r[regionCol+" Color"] || "#999";
       htmlOut += `<div class="player-card" data-player='${JSON.stringify(r)}'>
         <img src="${avatar}" class="player-img">
         <div class="flex-1">${i+1}. ${name}</div>
@@ -185,7 +182,7 @@ function loadMode(mode,btn){
 
   document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
 
-  // Add modal click
+  // Player modal
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
