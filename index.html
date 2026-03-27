@@ -16,12 +16,11 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-.region-badge { padding:2px 6px; border-radius:6px; font-size:0.8rem; color:#000; font-weight:600; margin-left:6px; }
+.region-badge { padding:2px 6px; border-radius:6px; font-size:0.8rem; color:#000; font-weight:600; margin-left:6px; background:#22c55e; }
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
 
-/* Medals */
 .gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
 .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
@@ -31,11 +30,10 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <body>
 <div class="max-w-6xl mx-auto p-6">
 
-<!-- HEADER -->
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
-      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Logo" class="w-full h-full object-cover">
+      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
     </div>
     <div>
       <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
@@ -51,16 +49,11 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
   </div>
 </div>
 
-<!-- SEARCH -->
 <input type="text" id="search-input" placeholder="Search players...">
-
-<!-- TABS -->
 <div id="tabs" class="flex gap-3 mb-6 flex-wrap"></div>
-
 <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
 
-<!-- PLAYER MODAL -->
 <div id="player-modal" class="hidden modal-bg">
   <div class="modal">
     <span class="modal-close" id="modal-close">&times;</span>
@@ -71,9 +64,10 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
-// CONFIG
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
-const REGION_COLUMN_INDEX = 3;
+
+// ✅ FORCE COLUMN C (index 2)
+const REGION_COLUMN_INDEX = 2;
 
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
@@ -84,10 +78,8 @@ const tierColors = {
   HT5:"#5555ff", LT5:"#AAAAFF"
 };
 
-let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="";
-const tabsDiv = document.getElementById("tabs");
+let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 
-// CSV parser
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
@@ -95,139 +87,113 @@ function parseCSV(text){
     const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
     const obj = {};
     headers.forEach((h,i)=>obj[h]=cells[i]||"");
+
+    // ✅ always take column C
     obj["__region"] = cells[REGION_COLUMN_INDEX] || "";
     return obj;
   });
   return { headers, data };
 }
 
-// Load CSV
 async function loadCSV(){
-  try{
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
-    const { headers, data } = parseCSV(text);
-    allRows = data;
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
+  const { headers, data } = parseCSV(text);
 
-    nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
-    pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
-    regionCol = "__region";
+  allRows = data;
+  nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
+  pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
 
-    allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
+  allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
-    tabsDiv.innerHTML = "";
-    allModes.forEach((mode,i)=>{
-      const btn = document.createElement("button");
-      btn.textContent = mode;
-      btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
-      if(i===0) btn.classList.add("tab-active");
-      btn.onclick = ()=>loadMode(mode,btn);
-      tabsDiv.appendChild(btn);
-    });
+  const tabsDiv = document.getElementById("tabs");
+  tabsDiv.innerHTML = "";
 
-    loadMode("Overall", document.querySelector("#tabs button"));
-  }catch(e){
-    document.getElementById("rankings").innerHTML="<p class='text-red-400 py-20'>Failed to load data</p>";
-    console.error(e);
-  }
+  allModes.forEach((mode,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = mode;
+    btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
+    if(i===0) btn.classList.add("tab-active");
+    btn.onclick = ()=>loadMode(mode,btn);
+    tabsDiv.appendChild(btn);
+  });
+
+  loadMode("Overall", document.querySelector("#tabs button"));
 }
 
-// Load mode
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
+
   document.getElementById("mode-title").textContent = mode+" Rankings";
 
   let htmlOut = "";
 
   if(mode==="Overall"){
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
+
     sorted.forEach((r,i)=>{
-      const name = r[nameCol].trim();
+      const name = r[nameCol];
       if(!name) return;
+
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
 
-      // Medals for top 3
       let medalClass = "", medalIcon = "";
       if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      htmlOut += `<div class="player-card ${medalClass}" data-player='${JSON.stringify(r)}'>
+      htmlOut += `
+      <div class="player-card ${medalClass}" data-player='${JSON.stringify(r)}'>
         <img src="${avatar}" class="player-img">
-        <div class="flex-1">${medalIcon}${i+1}. ${name}</div>
-        ${region ? `<span class="region-badge">${region}</span>` : ""}
+        <div class="flex-1 flex items-center gap-2">
+          ${medalIcon}${i+1}. ${name}
+          ${region ? `<span class="region-badge">${region}</span>` : ""}
+        </div>
         <div>${r[pointsCol]}</div>
       </div>`;
     });
-  } else {
-    const groups = {};
-    allRows.forEach(r=>{
-      const name = r[nameCol].trim();
-      if(!name) return;
-      const tier = (r[mode]||"").toUpperCase();
-      if(!tier) return;
-      if(!groups[tier]) groups[tier]=[];
-      groups[tier].push(r);
-    });
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-      htmlOut += `<div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-      groups[tier].forEach(r=>{
-        const name = r[nameCol];
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        const region = r[regionCol];
-        htmlOut += `<div class="player-card" data-player='${JSON.stringify(r)}'>
-          <img src="${avatar}" class="player-img">
-          <div>${name}</div>
-          ${region ? `<span class="region-badge">${region}</span>` : ""}
-        </div>`;
-      });
-      htmlOut += `</div>`;
-    });
   }
 
-  document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
+  document.getElementById("rankings").innerHTML = htmlOut;
 
+  // modal
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(data[nameCol])}/128`;
       const region = data[regionCol];
-      let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" class="player-img" style="width:128px;height:128px;border:3px solid #db3e3e;"></div>`;
-      modalHTML += `<h2 class="text-xl font-bold mb-2">${data[nameCol]}</h2>`;
-      if(region) modalHTML += `<div class="region-badge mb-2">${region}</div>`;
-      modalHTML += `<ul class="list-disc pl-6 mt-2">`;
-      allModes.slice(1).forEach(m=>{ if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`; });
-      modalHTML += `<li>Overall Points: ${data[pointsCol]}</li></ul>`;
+
+      let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" class="player-img" style="width:128px;height:128px;"></div>`;
+      modalHTML += `<h2 class="text-xl font-bold">${data[nameCol]}</h2>`;
+      if(region) modalHTML += `<div class="region-badge mt-2">${region}</div>`;
+      modalHTML += `<p class="mt-2">Points: ${data[pointsCol]}</p>`;
+
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
     };
   });
 }
 
-// SEARCH
+// search FIX
 document.getElementById("search-input").addEventListener("input", e=>{
   const term = e.target.value.toLowerCase();
+
   document.querySelectorAll(".player-card").forEach(card=>{
-    const name = card.querySelector("div").textContent.toLowerCase();
-    card.style.display = name.includes(term) ? "flex" : "none";
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(term) ? "flex" : "none";
   });
 });
 
-// MODAL CLOSE
-document.getElementById("modal-close").onclick = ()=>{ document.getElementById("player-modal").classList.add("hidden"); };
+document.getElementById("modal-close").onclick = ()=>{
+  document.getElementById("player-modal").classList.add("hidden");
+};
 
-// Init
 loadCSV();
 
-// Auto-refresh every 30s
-setInterval(()=>{
-  const active = document.querySelector(".tab-active");
-  if(active) loadMode(active.textContent,active);
-},30000);
+// ✅ stays synced automatically
+setInterval(loadCSV,30000);
 </script>
 </body>
 </html>
