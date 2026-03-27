@@ -6,17 +6,55 @@
 <title>Mace SubModes Tiers • Rankings</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
+
 .tab { transition:0.2s; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
-.player-img { width:40px; height:40px; border-radius:50%; border:2px solid #db3e3e; }
-.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; }
-.discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
+
+.player-card {
+  background:#1f2937;
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.player-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 10px 20px rgba(219,62,62,0.4);
+}
+
+.player-img {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:2px solid #db3e3e;
+}
+
+.ht1-glow {
+  box-shadow:0 0 15px #ff4d4d, 0 0 30px #ff4d4d;
+}
+
+.tier-header {
+  font-weight:800;
+  padding:8px 16px;
+  border-radius:999px;
+  margin-bottom:10px;
+}
+
+.gold { color:#FFD700; font-weight:bold; }
+.silver { color:#C0C0C0; font-weight:bold; }
+.bronze { color:#CD7F32; font-weight:bold; }
+
+input, select {
+  background:#111;
+  padding:6px 10px;
+  border-radius:8px;
+}
 </style>
 </head>
 
@@ -24,183 +62,132 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <div class="max-w-6xl mx-auto p-6">
 
 <!-- HEADER -->
-<div class="flex justify-between items-center mb-10">
-  <div class="flex items-center gap-4">
-    <div class="w-14 h-14 bg-red-500 rounded-xl flex items-center justify-center text-black text-3xl font-bold">M</div>
-    <div>
-      <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
-      <p class="text-red-400 text-sm">Mace PvP Rankings</p>
-    </div>
-  </div>
-
-  <div class="text-right flex flex-col items-end gap-2">
-    <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
-      <i class="fab fa-discord"></i> Join Discord
-    </a>
-    <div class="text-gray-400 text-sm">Your Server</div>
-    <div class="text-red-400 font-mono">mcpvp.club</div>
-  </div>
+<div class="flex justify-between items-center mb-8">
+  <h1 class="text-3xl font-black">Mace SubModes Tiers</h1>
+  <a href="https://discord.gg/qHXgUhVj" target="_blank" class="bg-indigo-500 px-3 py-1 rounded">Join Discord</a>
 </div>
 
-<!-- TABS -->
-<div id="tabs" class="flex gap-3 mb-8"></div>
+<!-- CONTROLS -->
+<div class="flex gap-4 mb-6">
+  <input id="search" placeholder="Search player...">
+  
+  <select id="sortMode">
+    <option value="Overall">Sort: Overall</option>
+    <option value="Rod Mace">Rod Mace</option>
+    <option value="OG Mace">OG Mace</option>
+    <option value="LT Mace">LT Mace</option>
+    <option value="Rocket Mace">Rocket Mace</option>
+    <option value="HT Mace">HT Mace</option>
+    <option value="Spear Mace">Spear Mace</option>
+  </select>
+</div>
 
-<h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
 
 </div>
 
 <script>
 
-// 🔗 YOUR LINK (KEEP THIS)
 const GOOGLE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pubhtml";
 
-// MODES
-const modes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
-
-// TIER ORDER
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 
-// COLORS
-const tierColors = {
-HT1:"#ff4d4d", LT1:"#ff9999",
-HT2:"#ffaa00", LT2:"#ffd27f",
-HT3:"#55ff55", LT3:"#aaffaa",
-HT4:"#55ffff", LT4:"#aaffff",
-HT5:"#5555ff", LT5:"#aaaaff"
+const columnMap = {
+  "Rod Mace": 4,
+  "OG Mace": 5,
+  "LT Mace": 6,
+  "Rocket Mace": 7,
+  "HT Mace": 8,
+  "Spear Mace": 9
 };
 
-// CREATE TABS
-const tabsDiv = document.getElementById("tabs");
+let allPlayers = [];
 
-modes.forEach((mode,i)=>{
-  const btn = document.createElement("button");
-  btn.textContent = mode;
-  btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
-  if(i===0) btn.classList.add("tab-active");
-  btn.onclick = ()=>loadMode(mode,btn);
-  tabsDiv.appendChild(btn);
-});
-
-// MAIN FUNCTION
-async function loadMode(mode,btn){
-
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
-  btn.classList.add("tab-active");
-
-  document.getElementById("mode-title").textContent = mode+" Rankings";
+async function loadData(){
 
   const res = await fetch(GOOGLE_URL);
   const html = await res.text();
 
   const doc = new DOMParser().parseFromString(html,"text/html");
-
-  // 🔥 GET CORRECT TABLE
   const table = doc.querySelector("table.waffle");
 
-  if(!table){
-    document.getElementById("rankings").innerHTML = "❌ Table not found";
-    return;
-  }
-
-  const rawRows = [...table.querySelectorAll("tr")];
-
-  // CLEAN DATA
-  let rows = rawRows.map(tr =>
+  const rows = [...table.querySelectorAll("tr")].slice(1).map(tr =>
     [...tr.querySelectorAll("td")].map(td => td.innerText.trim())
   );
 
-  // REMOVE EMPTY ROWS
-  rows = rows.filter(r => r.length > 0 && r[0]);
+  allPlayers = rows.map(r=>{
+    const name = r[2];
 
-  // REMOVE HEADER
-  rows.shift();
-
-  let htmlOut = "";
-
-  // ===== OVERALL =====
-  if(mode==="Overall"){
-
-    const scores = {};
-
-    rows.forEach(r=>{
-      const name = r[0];
-      if(!name) return;
-
-      let score = 0;
-
-      for(let i=1;i<=6;i++){
-        const tier = (r[i] || "LT5").toUpperCase();
-        const index = tierOrder.indexOf(tier);
-        if(index !== -1) score += (10 - index);
-      }
-
-      scores[name] = score;
+    const tiers = {};
+    Object.keys(columnMap).forEach(mode=>{
+      let tier = (r[columnMap[mode]] || "LT5").toUpperCase();
+      tier = tier.split(" ")[0];
+      tiers[mode] = tier;
     });
 
-    const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+    return { name, tiers };
+  });
 
-    sorted.forEach(([name,score],i)=>{
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-
-      htmlOut += `
-      <div class="player-card">
-        <img src="${avatar}" class="player-img">
-        <div class="flex-1">${i+1}. ${name}</div>
-        <div>${score}</div>
-      </div>`;
-    });
-
-  }
-
-  // ===== SINGLE MODE =====
-  else{
-
-    const index = modes.indexOf(mode);
-    const groups = {};
-
-    rows.forEach(r=>{
-      const name = r[0];
-      if(!name) return;
-
-      const tier = (r[index] || "LT5").toUpperCase();
-
-      if(!groups[tier]) groups[tier] = [];
-      groups[tier].push(name);
-    });
-
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-
-      htmlOut += `
-      <div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-
-      groups[tier].forEach(name=>{
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-
-        htmlOut += `
-        <div class="player-card">
-          <img src="${avatar}" class="player-img">
-          <div>${name}</div>
-        </div>`;
-      });
-
-      htmlOut += `</div>`;
-    });
-  }
-
-  document.getElementById("rankings").innerHTML = htmlOut;
+  render();
 }
 
-// LOAD
-window.onload = ()=>loadMode("Overall",document.querySelector("#tabs button"));
+function getScore(player){
+  let score = 0;
 
-// AUTO REFRESH
-setInterval(()=>{
-  const active = document.querySelector(".tab-active");
-  if(active) loadMode(active.textContent,active);
-},30000);
+  Object.values(player.tiers).forEach(tier=>{
+    const index = tierOrder.indexOf(tier);
+    if(index !== -1) score += (10 - index);
+  });
+
+  return score;
+}
+
+function render(){
+
+  const search = document.getElementById("search").value.toLowerCase();
+  const sortMode = document.getElementById("sortMode").value;
+
+  let players = allPlayers.filter(p => p.name.toLowerCase().includes(search));
+
+  // sorting
+  players.sort((a,b)=>{
+    if(sortMode==="Overall"){
+      return getScore(b) - getScore(a);
+    } else {
+      return tierOrder.indexOf(a.tiers[sortMode]) - tierOrder.indexOf(b.tiers[sortMode]);
+    }
+  });
+
+  let html = "";
+
+  players.forEach((p,i)=>{
+    const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(p.name)}/64`;
+
+    let medal = "";
+    if(i===0) medal = `<span class="gold">🥇</span>`;
+    else if(i===1) medal = `<span class="silver">🥈</span>`;
+    else if(i===2) medal = `<span class="bronze">🥉</span>`;
+
+    const isHT1 = Object.values(p.tiers).includes("HT1");
+
+    html += `
+    <div class="player-card ${isHT1 ? 'ht1-glow' : ''}">
+      <img src="${avatar}" class="player-img">
+      <div class="flex-1">${medal} ${i+1}. ${p.name}</div>
+      <div>${sortMode==="Overall" ? getScore(p) : p.tiers[sortMode]}</div>
+    </div>`;
+  });
+
+  document.getElementById("rankings").innerHTML = html;
+}
+
+// events
+document.getElementById("search").oninput = render;
+document.getElementById("sortMode").onchange = render;
+
+loadData();
+
+setInterval(loadData,30000);
 
 </script>
 </body>
