@@ -98,10 +98,11 @@ async function loadCSV(){
 
     // Auto-detect modes (columns that are not name or points)
     allModes = headers.filter(h=>h!==nameCol && h!==pointsCol);
-    allModes.unshift("Overall"); // Overall first
 
-    // Remove Points tab if it exists
-    allModes = allModes.filter(m => !/points/i.test(m));
+    // Remove unwanted tabs
+    allModes = allModes.filter(m => m && !/points|leaderboard/i.test(m));
+
+    allModes.unshift("Overall"); // Overall first
 
     // Build tabs
     tabsDiv.innerHTML = "";
@@ -172,7 +173,7 @@ function loadMode(mode,btn){
       });
       htmlOut += `</div>`;
     });
-    // If no players in mode, leave htmlOut empty (nothing will be shown)
+    // If no players in mode, leave htmlOut empty
   }
 
   document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No players in this mode.</p>";
