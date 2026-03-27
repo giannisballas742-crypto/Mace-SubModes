@@ -10,12 +10,18 @@
 body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .tab { transition:0.2s; cursor:pointer; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; }
+.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
 .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
 .player-img { width:40px; height:40px; border-radius:50%; border:2px solid #db3e3e; }
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
+.region-badge { padding:2px 6px; border-radius:6px; font-size:0.75rem; font-weight:600; margin-left:6px; }
+.modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:50; }
+.modal-content { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; position:relative; }
+.modal-close { position:absolute; top:10px; right:10px; cursor:pointer; color:#e5e5e5; }
+.modal-content h2 { font-size:1.5rem; font-weight:700; margin-bottom:10px; }
+.modal-content .mode-row { display:flex; justify-content:space-between; margin-bottom:6px; }
 </style>
 </head>
 <body>
@@ -50,9 +56,21 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 
 </div>
 
+<!-- MODAL -->
+<div id="player-modal" class="hidden modal-bg">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <img id="modal-avatar" class="w-20 h-20 rounded-full border-2 border-red-500 mx-auto mb-4">
+    <h2 id="modal-name" class="text-center"></h2>
+    <div id="modal-region" class="text-center mb-4 font-semibold"></div>
+    <div id="modal-overall" class="text-center mb-4"></div>
+    <div id="modal-modes"></div>
+  </div>
+</div>
+
 <script>
 // Google Sheet CSV link
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your published CSV link
 
 // Tier order and colors
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
@@ -64,7 +82,6 @@ const tierColors = {
   HT5:"#5555ff", LT5:"#aaaaff"
 };
 
-// Tabs container
 const tabsDiv = document.getElementById("tabs");
 
 // CSV parser
@@ -84,6 +101,7 @@ function parseCSV(text){
 let allRows = [];
 let allModes = [];
 let nameCol = "";
+let regionCol = "";
 let pointsCol = "";
 async function loadCSV(){
   try{
@@ -92,17 +110,15 @@ async function loadCSV(){
     const { headers, data } = parseCSV(text);
     allRows = data;
 
-    // Auto-detect name and points column
+    // Auto-detect columns
     nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
-    pointsCol = headers.find(h=>/points/i.test(h)) || null;
+    regionCol = headers.find(h=>/region/i.test(h)) || null;
+    pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
 
-    // Auto-detect modes (columns that are not name or points)
-    allModes = headers.filter(h=>h!==nameCol && h!==pointsCol);
-
-    // Remove unwanted tabs
-    allModes = allModes.filter(m => m && !/points|leaderboard/i.test(m));
-
-    allModes.unshift("Overall"); // Overall first
+    allModes = headers.filter(h=>h!==nameCol && h!==regionCol && h!==pointsCol);
+    // Remove empty modes (like Spear Mace with no players)
+    allModes = allModes.filter(mode => allRows.some(r=>r[mode].trim()));
+    allModes.unshift("Overall");
 
     // Build tabs
     tabsDiv.innerHTML = "";
@@ -122,7 +138,7 @@ async function loadCSV(){
   }
 }
 
-// Load a specific mode
+// Load mode
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
@@ -131,52 +147,41 @@ function loadMode(mode,btn){
   let htmlOut = "";
 
   if(mode==="Overall"){
-    if(!pointsCol){
-      htmlOut = "<p class='text-gray-500 py-20'>No Points column found in CSV.</p>";
-    } else {
-      const scores = {};
-      allRows.forEach(r=>{
-        const name = r[nameCol].trim();
-        if(!name) return;
-        const score = parseFloat(r[pointsCol]) || 0;
-        scores[name] = score;
-      });
-      Object.entries(scores).sort((a,b)=>b[1]-a[1]).forEach(([name,score],i)=>{
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        htmlOut += `<div class="player-card">
-          <img src="${avatar}" class="player-img">
-          <div class="flex-1">${i+1}. ${name}</div>
-          <div>${score}</div>
-        </div>`;
-      });
-    }
-  } else {
-    const groups = {};
+    const scores = {};
     allRows.forEach(r=>{
       const name = r[nameCol].trim();
       if(!name) return;
-      const tier = (r[mode]||"").toUpperCase();
-      if(!tier) return; // Skip empty tiers
-      if(!groups[tier]) groups[tier]=[];
-      groups[tier].push(name);
+      const score = parseInt(r[pointsCol]) || 0;
+      scores[name] = score;
     });
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-      htmlOut += `<div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-      groups[tier].forEach(name=>{
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        htmlOut += `<div class="player-card">
-          <img src="${avatar}" class="player-img">
-          <div>${name}</div>
-        </div>`;
-      });
-      htmlOut += `</div>`;
+    Object.entries(scores).sort((a,b)=>b[1]-a[1]).forEach(([name,score],i)=>{
+      const row = allRows.find(r=>r[nameCol]===name);
+      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      const region = regionCol ? row[regionCol] : "";
+      const color = region ? row[regionCol+" Color"] || "#888" : "#888";
+      htmlOut += `<div class="player-card" onclick="openModal('${name}')">
+        <img src="${avatar}" class="player-img">
+        <div class="flex-1">${i+1}. ${name}${region ? `<span class="region-badge" style="background:${color}">${region}</span>` : ''}</div>
+        <div>${score}</div>
+      </div>`;
     });
-    // If no players in mode, leave htmlOut empty
+  }else{
+    allRows.forEach(r=>{
+      const name = r[nameCol].trim();
+      if(!name) return;
+      const tier = (r[mode]||"LT5").toUpperCase();
+      const region = regionCol ? r[regionCol] : "";
+      const color = region ? r[regionCol+" Color"] || "#888" : "#888";
+      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      htmlOut += `<div class="player-card" onclick="openModal('${name}')">
+        <img src="${avatar}" class="player-img">
+        <div class="flex-1">${name}${region ? `<span class="region-badge" style="background:${color}">${region}</span>` : ''}</div>
+        <div>${tier}</div>
+      </div>`;
+    });
   }
 
-  document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No players in this mode.</p>";
+  document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
 }
 
 // SEARCH
@@ -187,6 +192,35 @@ document.getElementById("search-input").addEventListener("input", e=>{
     card.style.display = name.includes(term) ? "flex" : "none";
   });
 });
+
+// MODAL
+const modal = document.getElementById("player-modal");
+const modalName = document.getElementById("modal-name");
+const modalAvatar = document.getElementById("modal-avatar");
+const modalRegion = document.getElementById("modal-region");
+const modalOverall = document.getElementById("modal-overall");
+const modalModes = document.getElementById("modal-modes");
+
+function openModal(name){
+  const row = allRows.find(r=>r[nameCol]===name);
+  if(!row) return;
+  modalName.textContent = name;
+  modalAvatar.src = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`;
+  const region = regionCol ? row[regionCol] : "";
+  const color = region ? row[regionCol+" Color"] || "#888" : "#888";
+  modalRegion.innerHTML = region ? `<span class="region-badge" style="background:${color}">${region}</span>` : '';
+  modalOverall.textContent = `Overall Points: ${row[pointsCol] || 0}`;
+  modalModes.innerHTML = "";
+  allModes.slice(1).forEach(mode=>{
+    if(!row[mode]) return;
+    const tier = row[mode];
+    modalModes.innerHTML += `<div class="mode-row"><span>${mode}</span><span>${tier}</span></div>`;
+  });
+  modal.classList.remove("hidden");
+}
+
+document.querySelector(".modal-close").onclick = ()=>{ modal.classList.add("hidden"); };
+modal.onclick = e=>{ if(e.target===modal) modal.classList.add("hidden"); };
 
 // Init
 loadCSV();
