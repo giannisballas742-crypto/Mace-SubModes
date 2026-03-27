@@ -29,7 +29,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
-      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Logo" class="w-full h-full object-cover">
+      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Logo">
     </div>
     <div>
       <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
@@ -65,22 +65,28 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
-// CSV link
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your published CSV link
+// Google Sheet CSV link
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 
 // Tier order and colors
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
-const tierColors = { HT1:"#ff4d4d", LT1:"#ff9999", HT2:"#ffaa00", LT2:"#ffd27f", HT3:"#55ff55", LT3:"#aaffaa", HT4:"#55ffff", LT4:"#aaffff", HT5:"#5555ff", LT5:"#aaaaff" };
+const tierColors = {
+  HT1:"#ff4d4d", LT1:"#ff9999",
+  HT2:"#ffaa00", LT2:"#ffd27f",
+  HT3:"#55ff55", LT3:"#aaffaa",
+  HT4:"#55ffff", LT4:"#aaffff",
+  HT5:"#5555ff", LT5:"#aaaaff"
+};
 
-let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="";
+// Tabs container
 const tabsDiv = document.getElementById("tabs");
 
-// CSV parser that handles commas and quotes
+// CSV parser
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
-  const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
+  const headers = lines[0].split(/[,;]/).map(h=>h.replace(/"/g,'').trim());
   const data = lines.slice(1).map(l=>{
-    const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
+    const cells = l.split(/[,;]/).map(c=>c.replace(/"/g,'').trim());
     const obj = {};
     headers.forEach((h,i)=>obj[h]=cells[i]||"");
     return obj;
@@ -89,6 +95,9 @@ function parseCSV(text){
 }
 
 // Load CSV
+let allRows = [];
+let allModes = [];
+let nameCol = "", pointsCol = "", regionCol = "";
 async function loadCSV(){
   try{
     const res = await fetch(CSV_URL);
@@ -96,12 +105,14 @@ async function loadCSV(){
     const { headers, data } = parseCSV(text);
     allRows = data;
 
-    nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
+    nameCol = headers.find(h=>/name|username/i.test(h)) || headers[0];
     pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
-    regionCol = headers.find(h=>/region/i.test(h));
+    regionCol = headers.find(h=>/region/i.test(h)) || headers[2];
 
+    // Tabs (keep only your modes)
     allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
+    // Build tabs
     tabsDiv.innerHTML = "";
     allModes.forEach((mode,i)=>{
       const btn = document.createElement("button");
@@ -173,6 +184,7 @@ function loadMode(mode,btn){
 
   document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
 
+  // Modal click
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
@@ -183,7 +195,9 @@ function loadMode(mode,btn){
       modalHTML += `<h2 class="text-xl font-bold mb-2">${data[nameCol]}</h2>`;
       if(region) modalHTML += `<div class="region-badge mb-2" style="background:${regionColor}">${region}</div>`;
       modalHTML += `<ul class="list-disc pl-6 mt-2">`;
-      allModes.slice(1).forEach(m=>{ if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`; });
+      allModes.slice(1).forEach(m=>{
+        if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`;
+      });
       modalHTML += `<li>Overall Points: ${data[pointsCol]}</li></ul>`;
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
@@ -201,7 +215,9 @@ document.getElementById("search-input").addEventListener("input", e=>{
 });
 
 // MODAL CLOSE
-document.getElementById("modal-close").onclick = ()=>{ document.getElementById("player-modal").classList.add("hidden"); };
+document.getElementById("modal-close").onclick = ()=>{
+  document.getElementById("player-modal").classList.add("hidden");
+};
 
 // Init
 loadCSV();
