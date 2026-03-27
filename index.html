@@ -17,6 +17,12 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
 .region-badge { padding:2px 6px; border-radius:6px; font-size:0.8rem; color:#000; font-weight:600; margin-left:6px; background:#22c55e; }
+
+.rank-title { font-size:0.75rem; padding:2px 6px; border-radius:6px; font-weight:700; margin-left:6px; display:flex; align-items:center; gap:4px; }
+.master { background:gold; color:#000; }
+.ace { background:silver; color:#000; }
+.specialist { background:#cd7f32; color:#000; }
+
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
@@ -30,6 +36,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <body>
 <div class="max-w-6xl mx-auto p-6">
 
+<!-- HEADER -->
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
@@ -65,18 +72,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
-
-// ✅ Column C = index 2
 const REGION_COLUMN_INDEX = 2;
-
-const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
-const tierColors = {
-  HT1:"#f1c40f", LT1:"#ffa600",
-  HT2:"#bdc3c7", LT2:"#95a5a6",
-  HT3:"#ff8531", LT3:"#f37324",
-  HT4:"#55ffff", LT4:"#aaffff",
-  HT5:"#5555ff", LT5:"#AAAAFF"
-};
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 
@@ -86,13 +82,9 @@ function parseCSV(text){
 
   const data = lines.slice(1).map(l=>{
     const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
-
     const obj = {};
     headers.forEach((h,i)=>obj[h]=cells[i]||"");
-
-    // ✅ ADD region without removing anything else
     obj["__region"] = cells[REGION_COLUMN_INDEX] || "";
-
     return obj;
   });
 
@@ -105,7 +97,6 @@ async function loadCSV(){
   const { headers, data } = parseCSV(text);
 
   allRows = data;
-
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
 
@@ -149,12 +140,23 @@ function loadMode(mode,btn){
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
+      // ✅ NEW TITLES
+      let rankHTML = "";
+      if(i < 3){
+        rankHTML = `<span class="rank-title master"><i class="fas fa-crown"></i> Combat Master</span>`;
+      } else if(i < 53){
+        rankHTML = `<span class="rank-title ace"><i class="fas fa-shield-alt"></i> Combat Ace</span>`;
+      } else if(i < 103){
+        rankHTML = `<span class="rank-title specialist"><i class="fas fa-star"></i> Combat Specialist</span>`;
+      }
+
       htmlOut += `
       <div class="player-card ${medalClass}" data-player='${JSON.stringify(r)}'>
         <img src="${avatar}" class="player-img">
         <div class="flex-1 flex items-center gap-2">
           ${medalIcon}${i+1}. ${name}
           ${region ? `<span class="region-badge">${region}</span>` : ""}
+          ${rankHTML}
         </div>
         <div>${r[pointsCol]}</div>
       </div>`;
@@ -162,14 +164,11 @@ function loadMode(mode,btn){
 
   } else {
     const groups = {};
-
     allRows.forEach(r=>{
       const name = r[nameCol];
       if(!name) return;
-
       const tier = (r[mode]||"").toUpperCase();
       if(!tier) return;
-
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
@@ -225,7 +224,6 @@ function loadMode(mode,btn){
 
 document.getElementById("search-input").addEventListener("input", e=>{
   const term = e.target.value.toLowerCase();
-
   document.querySelectorAll(".player-card").forEach(card=>{
     const text = card.textContent.toLowerCase();
     card.style.display = text.includes(term) ? "flex" : "none";
@@ -237,8 +235,6 @@ document.getElementById("modal-close").onclick = ()=>{
 };
 
 loadCSV();
-
-// sync
 setInterval(loadCSV,30000);
 </script>
 </body>
