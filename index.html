@@ -74,6 +74,15 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
 
+const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
+const tierColors = {
+  HT1:"#f1c40f", LT1:"#ffa600",
+  HT2:"#bdc3c7", LT2:"#95a5a6",
+  HT3:"#ff8531", LT3:"#f37324",
+  HT4:"#55ffff", LT4:"#aaffff",
+  HT5:"#5555ff", LT5:"#AAAAFF"
+};
+
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 
 function parseCSV(text){
@@ -140,7 +149,6 @@ function loadMode(mode,btn){
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      // ✅ NEW TITLES
       let rankHTML = "";
       if(i < 3){
         rankHTML = `<span class="rank-title master"><i class="fas fa-crown"></i> Combat Master</span>`;
@@ -164,11 +172,14 @@ function loadMode(mode,btn){
 
   } else {
     const groups = {};
+
     allRows.forEach(r=>{
       const name = r[nameCol];
       if(!name) return;
+
       const tier = (r[mode]||"").toUpperCase();
       if(!tier) return;
+
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
