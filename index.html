@@ -7,7 +7,42 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
+body { 
+  background: #0a0a0a; 
+  color:#e5e5e5; 
+  font-family:system-ui; 
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Particle Background */
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(219, 62, 62, 0.08) 0%, transparent 70%);
+}
+
+.particle {
+  position: absolute;
+  background: #db3e3e;
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: floatParticle linear infinite;
+  box-shadow: 0 0 8px #db3e3e;
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+  10% { opacity: 0.25; }
+  90% { opacity: 0.25; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
 .tab { transition:0.2s; cursor:pointer; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
 .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
@@ -20,12 +55,10 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
-
 .gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
 .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
-
 .rank {
   margin-left:10px;
   font-weight:700;
@@ -39,8 +72,11 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </style>
 </head>
 <body>
-<div class="max-w-6xl mx-auto p-6">
 
+<!-- Particle Container -->
+<div id="particles"></div>
+
+<div class="max-w-6xl mx-auto p-6 relative z-10">
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
@@ -59,25 +95,42 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
     <div class="text-red-400 font-mono">mcpvp.club</div>
   </div>
 </div>
-
 <input type="text" id="search-input" placeholder="Search players...">
 <div id="tabs" class="flex gap-3 mb-6 flex-wrap"></div>
 <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
-
 <div id="player-modal" class="hidden modal-bg">
   <div class="modal">
     <span class="modal-close" id="modal-close">&times;</span>
     <div id="modal-content"></div>
   </div>
 </div>
-
 </div>
 
 <script>
+// === PARTICLE SYSTEM ===
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 80; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    const size = Math.random() * 4 + 2;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    
+    particle.style.left = `${Math.random() * 100}vw`;
+    particle.style.animationDuration = `${Math.random() * 15 + 15}s`;
+    particle.style.animationDelay = `-${Math.random() * 20}s`;
+    particle.style.opacity = Math.random() * 0.3 + 0.15;
+    
+    container.appendChild(particle);
+  }
+}
+
+// === REST OF YOUR ORIGINAL SCRIPT (UNCHANGED) ===
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
-
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
   HT1:"#f1c40f", LT1:"#ffa600",
@@ -86,13 +139,11 @@ const tierColors = {
   HT4:"#55ffff", LT4:"#aaffff",
   HT5:"#5555ff", LT5:"#AAAAFF"
 };
-
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
-
   const data = lines.slice(1).map(l=>{
     const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
     const obj = {};
@@ -100,7 +151,6 @@ function parseCSV(text){
     obj["__region"] = cells[REGION_COLUMN_INDEX] || "";
     return obj;
   });
-
   return { headers, data };
 }
 
@@ -108,16 +158,12 @@ async function loadCSV(){
   const res = await fetch(CSV_URL);
   const text = await res.text();
   const { headers, data } = parseCSV(text);
-
   allRows = data;
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
-
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
-
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
-
   allModes.forEach((mode,i)=>{
     const btn = document.createElement("button");
     btn.textContent = mode;
@@ -126,33 +172,25 @@ async function loadCSV(){
     btn.onclick = ()=>loadMode(mode,btn);
     tabsDiv.appendChild(btn);
   });
-
   loadMode("Overall", document.querySelector("#tabs button"));
 }
 
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
-
   document.getElementById("mode-title").textContent = mode+" Rankings";
-
   let htmlOut = "";
-
   if(mode==="Overall"){
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-
     sorted.forEach((r,i)=>{
       const name = r[nameCol];
       if(!name) return;
-
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
-
       let medalClass = "", medalIcon = "";
       if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
-
       let rankHTML = "";
       if(i < 3){
         rankHTML = `<span class="rank master"><i class="fas fa-crown"></i> Combat Master</span>`;
@@ -161,10 +199,8 @@ function loadMode(mode,btn){
       } else if(i < 103){
         rankHTML = `<span class="rank spec"><i class="fas fa-star"></i> Combat Specialist</span>`;
       }
-
       htmlOut += `
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}'>
-
         ${i < 3 ? `
         <div class="absolute inset-0 pointer-events-none"
              style="
@@ -177,44 +213,33 @@ function loadMode(mode,btn){
              ">
         </div>
         ` : ""}
-
         <img src="${avatar}" class="player-img relative z-10">
-
         <div class="flex-1 flex items-center flex-wrap relative z-10">
           ${medalIcon}${i+1}. ${name}
           ${region ? `<span class="region-badge">${region}</span>` : ""}
           ${rankHTML}
         </div>
-
         <div class="relative z-10">${r[pointsCol]}</div>
       </div>`;
     });
-
   } else {
     const groups = {};
-
     allRows.forEach(r=>{
       const name = r[nameCol];
       if(!name) return;
-
       const tier = (r[mode]||"").toUpperCase();
       if(!tier) return;
-
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
-
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
-
       htmlOut += `<div class="mb-6">
         <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-
       groups[tier].forEach(r=>{
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
-
         htmlOut += `
         <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
@@ -224,29 +249,23 @@ function loadMode(mode,btn){
           </div>
         </div>`;
       });
-
       htmlOut += `</div>`;
     });
   }
-
   document.getElementById("rankings").innerHTML = htmlOut;
-
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(data[nameCol])}/128`;
       const region = data[regionCol];
-
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" class="player-img" style="width:128px;height:128px;"></div>`;
       modalHTML += `<h2 class="text-xl font-bold">${data[nameCol]}</h2>`;
       if(region) modalHTML += `<div class="region-badge mt-2">${region}</div>`;
-
       modalHTML += `<ul class="list-disc pl-6 mt-2">`;
       allModes.slice(1).forEach(m=>{
         if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`;
       });
       modalHTML += `<li>Overall Points: ${data[pointsCol]}</li></ul>`;
-
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
     };
@@ -265,8 +284,12 @@ document.getElementById("modal-close").onclick = ()=>{
   document.getElementById("player-modal").classList.add("hidden");
 };
 
-loadCSV();
-setInterval(loadCSV,30000);
+// Initialize
+window.onload = () => {
+  createParticles();
+  loadCSV();
+  setInterval(loadCSV, 30000);
+};
 </script>
 </body>
 </html>
