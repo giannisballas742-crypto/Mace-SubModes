@@ -29,7 +29,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 <div class="flex justify-between items-center mb-6">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
-      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Logo">
+      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Logo" class="w-full h-full object-cover">
     </div>
     <div>
       <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
@@ -65,33 +65,37 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
-// CSV URL (you will provide your main CSV)
-let CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Put your main CSV link here
-
-// Region CSV URL (only used for column C)
-const REGION_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6vF6txAMPLE/pub?output=csv"; // <-- only for regions
+// CONFIG
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your CSV link
+const REGION_COLUMN_INDEX = 3; // <-- Replace with the column index of regions (0 = A, 1 = B, 2 = C, etc.)
 
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
-const tierColors = {HT1:"#ffd700", LT1:"#debb00",HT2:"#b5bdc4", LT2:"#939ca3",HT3"#ff7700", LT3:"#bf5b04",HT4:"#bfdff1", LT4:"#bfdff1",HT5:"#abd7f1", LT5:"#96cff1"};
+const tierColors = {
+  HT1:"#f1c40f", LT1:"#ffa600",
+  HT2:"#bdc3c7", LT2:"#95a5a6",
+  HT3:"#ff8531", LT3:"#f37324",
+  HT4:"#55ffff", LT4:"#aaffff",
+  HT5:"#5555ff", LT5:"##AAAAFF"
+};
 
+let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="";
 const tabsDiv = document.getElementById("tabs");
 
+// CSV parser
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
-  const headers = lines[0].split(/[,;]/).map(h=>h.replace(/"/g,'').trim());
+  const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
   const data = lines.slice(1).map(l=>{
-    const cells = l.split(/[,;]/).map(c=>c.replace(/"/g,'').trim());
+    const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
     const obj = {};
     headers.forEach((h,i)=>obj[h]=cells[i]||"");
+    obj["__region"] = cells[REGION_COLUMN_INDEX] || "";
     return obj;
   });
   return { headers, data };
 }
 
-let allRows = [];
-let allModes = [];
-let nameCol="", pointsCol="", regionCol="C"; // Use column C for regions
-
+// Load CSV
 async function loadCSV(){
   try{
     const res = await fetch(CSV_URL);
@@ -99,22 +103,12 @@ async function loadCSV(){
     const { headers, data } = parseCSV(text);
     allRows = data;
 
-    // Main CSV column detection
-    nameCol = headers.find(h=>/name|username/i.test(h)) || headers[0];
+    nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
     pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
+    regionCol = "__region";
 
-    // Modes
     allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
-    // Load regions separately
-    const regionRes = await fetch(REGION_CSV);
-    const regionText = await regionRes.text();
-    const regionData = parseCSV(regionText).data;
-    allRows.forEach((r,i)=>{
-      r.region = regionData[i] ? regionData[i][Object.keys(regionData[i])[0]] : "";
-    });
-
-    // Build tabs
     tabsDiv.innerHTML = "";
     allModes.forEach((mode,i)=>{
       const btn = document.createElement("button");
@@ -132,6 +126,7 @@ async function loadCSV(){
   }
 }
 
+// Load mode
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
@@ -145,10 +140,11 @@ function loadMode(mode,btn){
       const name = r[nameCol].trim();
       if(!name) return;
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      const region = r[regionCol];
       htmlOut += `<div class="player-card" data-player='${JSON.stringify(r)}'>
         <img src="${avatar}" class="player-img">
         <div class="flex-1">${i+1}. ${name}</div>
-        ${r.region ? `<span class="region-badge" style="background:#999">${r.region}</span>` : ""}
+        ${region ? `<span class="region-badge">${region}</span>` : ""}
         <div>${r[pointsCol]}</div>
       </div>`;
     });
@@ -169,10 +165,11 @@ function loadMode(mode,btn){
       groups[tier].forEach(r=>{
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+        const region = r[regionCol];
         htmlOut += `<div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
           <div>${name}</div>
-          ${r.region ? `<span class="region-badge" style="background:#999">${r.region}</span>` : ""}
+          ${region ? `<span class="region-badge">${region}</span>` : ""}
         </div>`;
       });
       htmlOut += `</div>`;
@@ -185,13 +182,12 @@ function loadMode(mode,btn){
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(data[nameCol])}/128`;
+      const region = data[regionCol];
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" class="player-img" style="width:128px;height:128px;border:3px solid #db3e3e;"></div>`;
       modalHTML += `<h2 class="text-xl font-bold mb-2">${data[nameCol]}</h2>`;
-      if(data.region) modalHTML += `<div class="region-badge mb-2" style="background:#999">${data.region}</div>`;
+      if(region) modalHTML += `<div class="region-badge mb-2">${region}</div>`;
       modalHTML += `<ul class="list-disc pl-6 mt-2">`;
-      allModes.slice(1).forEach(m=>{
-        if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`;
-      });
+      allModes.slice(1).forEach(m=>{ if(data[m]) modalHTML += `<li>${m}: ${data[m]}</li>`; });
       modalHTML += `<li>Overall Points: ${data[pointsCol]}</li></ul>`;
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
@@ -199,6 +195,7 @@ function loadMode(mode,btn){
   });
 }
 
+// SEARCH
 document.getElementById("search-input").addEventListener("input", e=>{
   const term = e.target.value.toLowerCase();
   document.querySelectorAll(".player-card").forEach(card=>{
@@ -207,17 +204,17 @@ document.getElementById("search-input").addEventListener("input", e=>{
   });
 });
 
-document.getElementById("modal-close").onclick = ()=>{
-  document.getElementById("player-modal").classList.add("hidden");
-};
+// MODAL CLOSE
+document.getElementById("modal-close").onclick = ()=>{ document.getElementById("player-modal").classList.add("hidden"); };
 
+// Init
 loadCSV();
 
+// Auto-refresh every 30s
 setInterval(()=>{
   const active = document.querySelector(".tab-active");
   if(active) loadMode(active.textContent,active);
 },30000);
-
 </script>
 </body>
 </html>
