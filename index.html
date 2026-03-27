@@ -20,6 +20,12 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
+
+/* Medals */
+.gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
+.silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
+.bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
+.medal-icon { margin-right:8px; }
 </style>
 </head>
 <body>
@@ -66,8 +72,8 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 
 <script>
 // CONFIG
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your CSV link
-const REGION_COLUMN_INDEX = 3; // <-- Replace with the column index of regions (0 = A, 1 = B, 2 = C, etc.)
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
+const REGION_COLUMN_INDEX = 3;
 
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
@@ -75,7 +81,7 @@ const tierColors = {
   HT2:"#bdc3c7", LT2:"#95a5a6",
   HT3:"#ff8531", LT3:"#f37324",
   HT4:"#55ffff", LT4:"#aaffff",
-  HT5:"#5555ff", LT5:"##AAAAFF"
+  HT5:"#5555ff", LT5:"#AAAAFF"
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="";
@@ -141,9 +147,16 @@ function loadMode(mode,btn){
       if(!name) return;
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
-      htmlOut += `<div class="player-card" data-player='${JSON.stringify(r)}'>
+
+      // Medals for top 3
+      let medalClass = "", medalIcon = "";
+      if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+      else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+      else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+
+      htmlOut += `<div class="player-card ${medalClass}" data-player='${JSON.stringify(r)}'>
         <img src="${avatar}" class="player-img">
-        <div class="flex-1">${i+1}. ${name}</div>
+        <div class="flex-1">${medalIcon}${i+1}. ${name}</div>
         ${region ? `<span class="region-badge">${region}</span>` : ""}
         <div>${r[pointsCol]}</div>
       </div>`;
