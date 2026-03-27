@@ -29,7 +29,6 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
       <p class="text-red-400 text-sm">Mace PvP Rankings</p>
     </div>
   </div>
-
   <div class="text-right flex flex-col items-end gap-2">
     <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
       <i class="fab fa-discord"></i> Join Discord
@@ -41,28 +40,24 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 
 <!-- TABS -->
 <div id="tabs" class="flex gap-3 mb-8"></div>
-
 <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
-
 </div>
 
 <script>
-// Your published Google Sheet CSV link
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your published CSV link
+// ===================== CONFIG =====================
+// Replace with your published CSV link
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";  
 
-// Modes and Tiers
 const modes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
-  HT1:"#ff4d4d", LT1:"#ff9999",
-  HT2:"#ffaa00", LT2:"#ffd27f",
-  HT3:"#55ff55", LT3:"#aaffaa",
-  HT4:"#55ffff", LT4:"#aaffff",
+  HT1:"#ff4d4d", LT1:"#ff9999", HT2:"#ffaa00", LT2:"#ffd27f",
+  HT3:"#55ff55", LT3:"#aaffaa", HT4:"#55ffff", LT4:"#aaffff",
   HT5:"#5555ff", LT5:"#aaaaff"
 };
 
-// Tabs
+// ===================== TABS =====================
 const tabsDiv = document.getElementById("tabs");
 modes.forEach((mode,i)=>{
   const btn = document.createElement("button");
@@ -73,38 +68,41 @@ modes.forEach((mode,i)=>{
   tabsDiv.appendChild(btn);
 });
 
-// Helper: get CSV data safely
-function parseCSV(text){
-  const rows = text.split("\n").map(r => r.split(",").map(c=>c.trim()));
-  return rows.filter(r => r.length>0 && r[0]);
+// ===================== CSV PARSING =====================
+async function fetchCSV(){
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
+  const lines = text.split("\n").filter(l=>l.trim());
+  const headers = lines[0].split(",").map(h=>h.trim());
+  const data = lines.slice(1).map(l=>{
+    const cells = l.split(",");
+    let obj = {};
+    headers.forEach((h,i)=> obj[h] = cells[i]?.trim() || "");
+    return obj;
+  });
+  return data;
 }
 
-// Load Mode
+// ===================== LOAD MODE =====================
 async function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
-  
+
   try{
-    const res = await fetch(CSV_URL);
-    const csv = await res.text();
-    const rows = parseCSV(csv);
-    const header = rows.shift(); // remove header
-    
+    const rows = await fetchCSV();
     let htmlOut = "";
 
     if(mode==="Overall"){
       const scores = {};
       rows.forEach(r=>{
-        const name = r[0];
-        if(!name) return;
         let score = 0;
-        for(let i=1;i<r.length;i++){
-          const tier = (r[i]||"LT5").toUpperCase();
+        modes.slice(1).forEach(m=>{
+          const tier = (r[m] || "LT5").toUpperCase();
           const index = tierOrder.indexOf(tier);
           if(index!==-1) score += (10 - index);
-        }
-        scores[name] = score;
+        });
+        scores[r.Player] = score;
       });
       const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
       sorted.forEach(([name,score],i)=>{
@@ -116,14 +114,12 @@ async function loadMode(mode,btn){
         </div>`;
       });
     } else {
-      const colIndex = modes.indexOf(mode);
+      // Group players by tier
       const groups = {};
       rows.forEach(r=>{
-        const name = r[0];
-        if(!name) return;
-        const tier = (r[colIndex]||"LT5").toUpperCase();
+        const tier = (r[mode] || "LT5").toUpperCase();
         if(!groups[tier]) groups[tier] = [];
-        groups[tier].push(name);
+        groups[tier].push(r.Player);
       });
       tierOrder.forEach(tier=>{
         if(!groups[tier]) return;
@@ -141,13 +137,14 @@ async function loadMode(mode,btn){
     }
 
     document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
+
   }catch(e){
-    document.getElementById("rankings").innerHTML = "<p class='text-red-400 py-20'>Failed to load data</p>";
     console.error(e);
+    document.getElementById("rankings").innerHTML = "<p class='text-red-400 py-20'>Failed to load data</p>";
   }
 }
 
-// Init
+// ===================== INIT =====================
 window.onload = ()=>loadMode("Overall",document.querySelector("#tabs button"));
 
 // Auto-refresh every 30s
