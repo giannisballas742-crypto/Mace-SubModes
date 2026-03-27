@@ -9,37 +9,82 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-body { 
-  background:#050505; 
-  color:#e5e5e5; 
-  font-family:system-ui; 
-}
+body { background:#050505; color:#e5e5e5; font-family:system-ui; }
 
 .tab { transition:0.2s; cursor:pointer; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
 
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
-.player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
+.player-card {
+  background:#1f2937;
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  transition:0.2s;
+  cursor:pointer;
+}
+.player-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 10px 20px rgba(219,62,62,0.4);
+}
 
 .player-img { width:40px; height:40px; border-radius:50%; border:2px solid #db3e3e; }
 
-.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
+#search-input {
+  padding:8px;
+  border-radius:8px;
+  width:100%;
+  max-width:400px;
+  margin-bottom:16px;
+  background:#1f2937;
+  color:#e5e5e5;
+  border:none;
+}
 
-.discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
+.region-badge {
+  padding:2px 6px;
+  border-radius:6px;
+  font-size:0.8rem;
+  color:#000;
+  font-weight:600;
+  margin-left:6px;
+  background:#22c55e;
+}
 
-#search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
+.discord-btn {
+  background:#7289da;
+  padding:6px 12px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
 
-.region-badge { padding:2px 6px; border-radius:6px; font-size:0.8rem; color:#000; font-weight:600; margin-left:6px; background:#22c55e; }
+.modal-bg {
+  background: rgba(0,0,0,0.7);
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:50;
+}
 
-.modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
-
-.modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
+.modal {
+  background:#1f2937;
+  padding:20px;
+  border-radius:12px;
+  max-width:400px;
+  width:90%;
+}
 
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
 
-.gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
-.silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
-.bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
+.gold { background: linear-gradient(135deg,#ffd700,#ffec70); color:#000 !important; }
+.silver { background: linear-gradient(135deg,#c0c0c0,#e0e0e0); color:#000 !important; }
+.bronze { background: linear-gradient(135deg,#cd7f32,#e6a374); color:#000 !important; }
 
 .medal-icon { margin-right:8px; }
 
@@ -54,59 +99,38 @@ body {
 .rank.ace { color:#c0c0c0; }
 .rank.spec { color:#cd7f32; }
 
-/* Background */
 body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
+  content:"";
+  position:fixed;
+  inset:0;
   background: radial-gradient(circle at 20% 20%, rgba(219,62,62,0.10), transparent 45%),
               radial-gradient(circle at 80% 30%, rgba(219,62,62,0.08), transparent 50%),
               radial-gradient(circle at 50% 80%, rgba(219,62,62,0.06), transparent 55%);
-  animation: bgMove 14s ease-in-out infinite alternate;
-  z-index: -2;
-}
-
-@keyframes bgMove {
-  0% { transform: translate(0px, 0px) scale(1); }
-  100% { transform: translate(-15px, 15px) scale(1.04); }
-}
-
-.particles {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.particles span {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: rgba(219,62,62,0.5);
-  border-radius: 50%;
-  animation: floatParticles linear infinite;
-}
-
-@keyframes floatParticles {
-  from { transform: translateY(0px); opacity:0.7; }
-  to { transform: translateY(-100vh); opacity:0; }
+  z-index:-2;
 }
 </style>
 </head>
 
 <body>
 
-<div class="particles">
-  <span style="left:10%; animation-duration:14s;"></span>
-  <span style="left:20%; animation-duration:18s;"></span>
-  <span style="left:35%; animation-duration:16s;"></span>
-  <span style="left:50%; animation-duration:20s;"></span>
-  <span style="left:65%; animation-duration:17s;"></span>
-  <span style="left:80%; animation-duration:22s;"></span>
-  <span style="left:90%; animation-duration:19s;"></span>
-</div>
-
 <div class="max-w-6xl mx-auto p-6">
+
+<!-- HEADER -->
+<div class="flex justify-between items-center mb-6">
+  <div class="flex items-center gap-4">
+    <div class="w-14 h-14 rounded-xl overflow-hidden">
+      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
+    </div>
+    <div>
+      <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
+      <p class="text-red-400 text-sm">Mace PvP Rankings</p>
+    </div>
+  </div>
+
+  <a href="https://discord.gg/YOUR_SERVER" target="_blank" class="discord-btn">
+    <i class="fab fa-discord"></i> My Server
+  </a>
+</div>
 
 <input type="text" id="search-input" placeholder="Search players...">
 <div id="tabs" class="flex gap-3 mb-6 flex-wrap"></div>
@@ -123,27 +147,17 @@ body::before {
 </div>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
-const REGION_COLUMN_INDEX = 2;
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
+const REGION_COLUMN_INDEX=2;
 
-const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
-
-const tierColors = {
-  HT1:"#f1c40f", LT1:"#ffa600",
-  HT2:"#bdc3c7", LT2:"#95a5a6",
-  HT3:"#ff8531", LT3:"#f37324",
-  HT4:"#55ffff", LT4:"#aaffff",
-  HT5:"#5555ff", LT5:"#AAAAFF"
-};
-
-let allRows=[], allModes=[], nameCol="", pointsCol="", regionCol="__region";
+let allRows=[],allModes=[],nameCol="",pointsCol="",regionCol="__region";
 
 function parseCSV(text){
-  const lines = text.split(/\r?\n/).filter(l=>l.trim());
-  const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  const headers=lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
 
-  const data = lines.slice(1).map(l=>{
-    const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
+  const data=lines.slice(1).map(l=>{
+    const cells=l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
     const obj={};
     headers.forEach((h,i)=>obj[h]=cells[i]||"");
     obj["__region"]=cells[REGION_COLUMN_INDEX]||"";
@@ -197,7 +211,7 @@ function loadMode(mode,btn){
       const avatar=`https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region=r[regionCol];
 
-      let medalClass="", medalIcon="";
+      let medalClass="",medalIcon="";
       if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
@@ -233,11 +247,8 @@ function loadMode(mode,btn){
       groups[tier].push(r);
     });
 
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-
-      htmlOut+=`<div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
+    Object.keys(groups).forEach(tier=>{
+      htmlOut+=`<div class="mb-6"><div class="px-3 py-1 bg-gray-700 rounded-lg inline-block mb-2">${tier}</div>`;
 
       groups[tier].forEach(r=>{
         const name=r[nameCol];
@@ -247,10 +258,7 @@ function loadMode(mode,btn){
         htmlOut+=`
         <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
-          <div class="flex items-center gap-2">
-            ${name}
-            ${region?`<span class="region-badge">${region}</span>`:""}
-          </div>
+          <div>${name} ${region?`<span class="region-badge">${region}</span>`:""}</div>
         </div>`;
       });
 
@@ -260,7 +268,6 @@ function loadMode(mode,btn){
 
   document.getElementById("rankings").innerHTML=htmlOut;
 
-  // ✅ CLICK HANDLER (ALL MODES WORK)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick=()=>{
       const data=JSON.parse(card.dataset.player);
@@ -268,18 +275,16 @@ function loadMode(mode,btn){
       const region=data[regionCol];
 
       let modalHTML=`<div class="flex justify-center mb-4">
-        <img src="${avatar}" class="player-img" style="width:128px;height:128px;">
+        <img src="${avatar}" style="width:128px;height:128px;border-radius:50%;">
       </div>`;
 
       modalHTML+=`<h2 class="text-xl font-bold">${data[nameCol]}</h2>`;
       if(region) modalHTML+=`<div class="region-badge mt-2">${region}</div>`;
 
       modalHTML+=`<ul class="list-disc pl-6 mt-2">`;
-
       allModes.slice(1).forEach(m=>{
         if(data[m]) modalHTML+=`<li>${m}: ${data[m]}</li>`;
       });
-
       modalHTML+=`<li>Overall Points: ${data[pointsCol]}</li></ul>`;
 
       document.getElementById("modal-content").innerHTML=modalHTML;
@@ -291,8 +296,7 @@ function loadMode(mode,btn){
 document.getElementById("search-input").addEventListener("input",e=>{
   const term=e.target.value.toLowerCase();
   document.querySelectorAll(".player-card").forEach(card=>{
-    const text=card.textContent.toLowerCase();
-    card.style.display=text.includes(term)?"flex":"none";
+    card.style.display=card.textContent.toLowerCase().includes(term)?"flex":"none";
   });
 });
 
