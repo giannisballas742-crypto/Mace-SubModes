@@ -13,13 +13,10 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
 .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
 .player-img { width:40px; height:40px; border-radius:50%; border:2px solid #db3e3e; }
-.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; }
+.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
-#search { width:100%; max-width:300px; padding:6px 12px; border-radius:8px; margin-bottom:16px; background:#1f2937; color:white; border:none; }
-#search::placeholder { color:#aaa; }
 </style>
 </head>
-
 <body>
 <div class="max-w-6xl mx-auto p-6">
 
@@ -43,10 +40,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <!-- TABS -->
-<div id="tabs" class="flex gap-3 mb-4"></div>
-
-<!-- SEARCH -->
-<input type="text" id="search" placeholder="Search player..." oninput="filterPlayers()">
+<div id="tabs" class="flex gap-3 mb-8"></div>
 
 <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
@@ -54,20 +48,21 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
-// --- CONFIG ---
-const SHEET_ID = "1xq36n4BEkxd142pCQ0g8rMHMr0dj_u46XiSCMKvCL8I";
-const SHEET_NAME = "Mace SubModes Tierlist";
+// Your published Google Sheet CSV link
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv"; // <-- Replace with your published CSV link
+
+// Modes and Tiers
 const modes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
-HT1:"#ff4d4d", LT1:"#ff9999",
-HT2:"#ffaa00", LT2:"#ffd27f",
-HT3:"#55ff55", LT3:"#aaffaa",
-HT4:"#55ffff", LT4:"#aaffff",
-HT5:"#5555ff", LT5:"#aaaaff"
+  HT1:"#ff4d4d", LT1:"#ff9999",
+  HT2:"#ffaa00", LT2:"#ffd27f",
+  HT3:"#55ff55", LT3:"#aaffaa",
+  HT4:"#55ffff", LT4:"#aaffff",
+  HT5:"#5555ff", LT5:"#aaaaff"
 };
 
-// --- CREATE TABS ---
+// Tabs
 const tabsDiv = document.getElementById("tabs");
 modes.forEach((mode,i)=>{
   const btn = document.createElement("button");
@@ -78,104 +73,85 @@ modes.forEach((mode,i)=>{
   tabsDiv.appendChild(btn);
 });
 
-// --- FETCH SHEET DATA ---
-let sheetData = [];
-async function fetchSheet(){
-  try{
-    const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`);
-    const text = await res.text();
-    const jsonText = text.match(/.*?({.*});/s)[1];
-    const json = JSON.parse(jsonText);
-    const rows = json.table.rows.map(r=>r.c.map(c=>c?c.v:""));
-    rows.shift(); // remove header
-    sheetData = rows;
-  }catch(e){
-    console.error("Failed to fetch sheet:",e);
-    document.getElementById("rankings").innerHTML = "<p class='text-red-400 py-20'>Failed to load data</p>";
-  }
+// Helper: get CSV data safely
+function parseCSV(text){
+  const rows = text.split("\n").map(r => r.split(",").map(c=>c.trim()));
+  return rows.filter(r => r.length>0 && r[0]);
 }
 
-// --- LOAD MODE ---
-function loadMode(mode,btn){
+// Load Mode
+async function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
+  
+  try{
+    const res = await fetch(CSV_URL);
+    const csv = await res.text();
+    const rows = parseCSV(csv);
+    const header = rows.shift(); // remove header
+    
+    let htmlOut = "";
 
-  if(!sheetData.length){
-    document.getElementById("rankings").innerHTML = "<p class='text-gray-500 py-20'>Loading...</p>";
-    return;
-  }
-
-  let htmlOut = "";
-
-  if(mode==="Overall"){
-    const scores = {};
-    sheetData.forEach(r=>{
-      const name = r[0].trim();
-      if(!name) return;
-      let score = 0;
-      for(let i=1;i<modes.length;i++){
-        const tier = (r[i] || "LT5").toUpperCase();
-        const index = tierOrder.indexOf(tier);
-        if(index!==-1) score += (10 - index);
-      }
-      scores[name] = score;
-    });
-    const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-    sorted.forEach(([name,score],i)=>{
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-      htmlOut += `<div class="player-card" data-name="${name.toLowerCase()}">
-        <img src="${avatar}" class="player-img">
-        <div class="flex-1">${i+1}. ${name}</div>
-        <div>${score}</div>
-      </div>`;
-    });
-  } else {
-    const modeIndex = modes.indexOf(mode);
-    const groups = {};
-    sheetData.forEach(r=>{
-      const name = r[0].trim();
-      if(!name) return;
-      const tier = (r[modeIndex] || "LT5").toUpperCase();
-      if(!groups[tier]) groups[tier] = [];
-      groups[tier].push(name);
-    });
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-      htmlOut += `<div class="mb-6 tier-group" data-tier="${tier}"><div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-      groups[tier].forEach(name=>{
+    if(mode==="Overall"){
+      const scores = {};
+      rows.forEach(r=>{
+        const name = r[0];
+        if(!name) return;
+        let score = 0;
+        for(let i=1;i<r.length;i++){
+          const tier = (r[i]||"LT5").toUpperCase();
+          const index = tierOrder.indexOf(tier);
+          if(index!==-1) score += (10 - index);
+        }
+        scores[name] = score;
+      });
+      const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+      sorted.forEach(([name,score],i)=>{
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        htmlOut += `<div class="player-card" data-name="${name.toLowerCase()}">
+        htmlOut += `<div class="player-card">
           <img src="${avatar}" class="player-img">
-          <div>${name}</div>
+          <div class="flex-1">${i+1}. ${name}</div>
+          <div>${score}</div>
         </div>`;
       });
-      htmlOut += `</div>`;
-    });
+    } else {
+      const colIndex = modes.indexOf(mode);
+      const groups = {};
+      rows.forEach(r=>{
+        const name = r[0];
+        if(!name) return;
+        const tier = (r[colIndex]||"LT5").toUpperCase();
+        if(!groups[tier]) groups[tier] = [];
+        groups[tier].push(name);
+      });
+      tierOrder.forEach(tier=>{
+        if(!groups[tier]) return;
+        htmlOut += `<div class="mb-6">
+          <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
+        groups[tier].forEach(name=>{
+          const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+          htmlOut += `<div class="player-card">
+            <img src="${avatar}" class="player-img">
+            <div>${name}</div>
+          </div>`;
+        });
+        htmlOut += `</div>`;
+      });
+    }
+
+    document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
+  }catch(e){
+    document.getElementById("rankings").innerHTML = "<p class='text-red-400 py-20'>Failed to load data</p>";
+    console.error(e);
   }
-
-  document.getElementById("rankings").innerHTML = htmlOut || "<p class='text-gray-500 py-20'>No data yet...</p>";
-  filterPlayers(); // apply search immediately
 }
 
-// --- SEARCH FILTER ---
-function filterPlayers(){
-  const query = document.getElementById("search").value.toLowerCase();
-  document.querySelectorAll(".player-card").forEach(card=>{
-    const name = card.dataset.name;
-    card.style.display = name.includes(query) ? "flex" : "none";
-  });
-}
+// Init
+window.onload = ()=>loadMode("Overall",document.querySelector("#tabs button"));
 
-// --- INIT ---
-window.onload = async ()=>{
-  await fetchSheet();
-  loadMode("Overall",document.querySelector("#tabs button"));
-};
-
-// --- AUTO REFRESH ---
-setInterval(async ()=>{
-  await fetchSheet();
+// Auto-refresh every 30s
+setInterval(()=>{
   const active = document.querySelector(".tab-active");
   if(active) loadMode(active.textContent,active);
 },30000);
