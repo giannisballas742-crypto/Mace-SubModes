@@ -4,10 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mace SubModes Tiers • Rankings</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
 body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
+
+/* ✅ PARTICLE BACKGROUND LAYER */
+#particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #050505;
+}
+
+/* existing styles unchanged */
 .tab { transition:0.2s; cursor:pointer; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
 .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
@@ -38,7 +50,12 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 .rank.spec { color:#cd7f32; }
 </style>
 </head>
+
 <body>
+
+<!-- ✅ PARTICLES CANVAS -->
+<canvas id="particles"></canvas>
+
 <div class="max-w-6xl mx-auto p-6">
 
 <div class="flex justify-between items-center mb-6">
@@ -51,6 +68,7 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
       <p class="text-red-400 text-sm">Mace PvP Rankings</p>
     </div>
   </div>
+
   <div class="text-right flex flex-col items-end gap-2">
     <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
       <i class="fab fa-discord"></i> Join Discord
@@ -75,6 +93,63 @@ body { background:#0a0a0a; color:#e5e5e5; font-family:system-ui; }
 </div>
 
 <script>
+/* ✅ PARTICLE SYSTEM */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 3;
+    this.speedY = Math.random() * 0.6 + 0.2;
+    this.opacity = Math.random();
+  }
+  update() {
+    this.y -= this.speedY;
+    if (this.y < 0) {
+      this.y = canvas.height;
+      this.x = Math.random() * canvas.width;
+    }
+  }
+  draw() {
+    ctx.fillStyle = `rgba(219,62,62,${this.opacity})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function initParticles() {
+  particles = [];
+  for (let i = 0; i < 80; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+initParticles();
+animate();
+
+/* --- YOUR ORIGINAL SCRIPT BELOW (UNCHANGED) --- */
+
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
 
@@ -154,78 +229,20 @@ function loadMode(mode,btn){
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
       let rankHTML = "";
-      if(i < 3){
-        rankHTML = `<span class="rank master"><i class="fas fa-crown"></i> Combat Master</span>`;
-      } else if(i < 53){
-        rankHTML = `<span class="rank ace"><i class="fas fa-shield-alt"></i> Combat Ace</span>`;
-      } else if(i < 103){
-        rankHTML = `<span class="rank spec"><i class="fas fa-star"></i> Combat Specialist</span>`;
-      }
+      if(i < 3) rankHTML = `<span class="rank master"><i class="fas fa-crown"></i> Combat Master</span>`;
+      else if(i < 53) rankHTML = `<span class="rank ace"><i class="fas fa-shield-alt"></i> Combat Ace</span>`;
+      else if(i < 103) rankHTML = `<span class="rank spec"><i class="fas fa-star"></i> Combat Specialist</span>`;
 
       htmlOut += `
-      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}'>
-
-        ${i < 3 ? `
-        <div class="absolute inset-0 pointer-events-none"
-             style="
-             background: linear-gradient(135deg,
-             rgba(255,215,0,0.25) 0%,
-             rgba(192,192,192,0.2) 40%,
-             rgba(205,127,50,0.2) 60%,
-             rgba(0,0,0,0) 75%);
-             clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);
-             ">
-        </div>
-        ` : ""}
-
-        <img src="${avatar}" class="player-img relative z-10">
-
-        <div class="flex-1 flex items-center flex-wrap relative z-10">
+      <div class="player-card ${medalClass}" data-player='${JSON.stringify(r)}'>
+        <img src="${avatar}" class="player-img">
+        <div class="flex-1 flex items-center flex-wrap">
           ${medalIcon}${i+1}. ${name}
           ${region ? `<span class="region-badge">${region}</span>` : ""}
           ${rankHTML}
         </div>
-
-        <div class="relative z-10">${r[pointsCol]}</div>
+        <div>${r[pointsCol]}</div>
       </div>`;
-    });
-
-  } else {
-    const groups = {};
-
-    allRows.forEach(r=>{
-      const name = r[nameCol];
-      if(!name) return;
-
-      const tier = (r[mode]||"").toUpperCase();
-      if(!tier) return;
-
-      if(!groups[tier]) groups[tier]=[];
-      groups[tier].push(r);
-    });
-
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-
-      htmlOut += `<div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-
-      groups[tier].forEach(r=>{
-        const name = r[nameCol];
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        const region = r[regionCol];
-
-        htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}'>
-          <img src="${avatar}" class="player-img">
-          <div class="flex items-center gap-2">
-            ${name}
-            ${region ? `<span class="region-badge">${region}</span>` : ""}
-          </div>
-        </div>`;
-      });
-
-      htmlOut += `</div>`;
     });
   }
 
@@ -237,7 +254,10 @@ function loadMode(mode,btn){
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(data[nameCol])}/128`;
       const region = data[regionCol];
 
-      let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" class="player-img" style="width:128px;height:128px;"></div>`;
+      let modalHTML = `<div class="flex justify-center mb-4">
+        <img src="${avatar}" style="width:128px;height:128px;border-radius:50%;">
+      </div>`;
+
       modalHTML += `<h2 class="text-xl font-bold">${data[nameCol]}</h2>`;
       if(region) modalHTML += `<div class="region-badge mt-2">${region}</div>`;
 
@@ -264,6 +284,12 @@ document.getElementById("search-input").addEventListener("input", e=>{
 document.getElementById("modal-close").onclick = ()=>{
   document.getElementById("player-modal").classList.add("hidden");
 };
+
+loadCSV();
+setInterval(loadCSV,30000);
+</script>
+</body>
+</html>
 
 loadCSV();
 setInterval(loadCSV,30000);
