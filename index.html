@@ -10,161 +10,158 @@
   body { background: #0a0a0a; color: #e5e5e5; font-family: system-ui, sans-serif; }
   .tab { transition: all 0.2s; }
   .tab-active { background-color: #db3e3e; color: black; font-weight: 700; box-shadow: 0 0 20px rgba(219,62,62,0.6); }
-  .tier-header { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; padding: 0.5rem 1.5rem; border-radius: 9999px; }
+  .tier-header { font-size: 1.8rem; font-weight: 800; padding: 0.5rem 1.5rem; border-radius: 9999px; }
   .player-card { transition: all 0.25s ease; background-color: #1f2937; padding: 0.75rem 1rem; border-radius: 1rem; display:flex; align-items:center; gap:1rem; }
   .player-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(219,62,62,0.4); }
   .player-img { width: 48px; height:48px; border-radius:9999px; border:2px solid #db3e3e; }
-  .rank { font-family: monospace; font-weight: bold; color:#db3e3e; margin-right:0.5rem; }
-  .discord-btn { 
-    display: inline-block; 
-    background-color: #7289da; 
-    color: white; 
-    font-weight: 600; 
-    padding: 0.25rem 0.75rem; 
-    border-radius: 0.5rem; 
-    text-decoration: none; 
-    transition: all 0.2s;
-  }
-  .discord-btn:hover { background-color: #5b6eae; }
+  .discord-btn { background:#7289da; padding:4px 10px; border-radius:8px; }
 </style>
 </head>
 <body class="min-h-screen pb-12">
 <div class="max-w-7xl mx-auto px-6 py-8">
 
-  <!-- Header -->
-  <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
-    <div class="flex items-center gap-4">
-      <div class="w-14 h-14 bg-[#db3e3e] rounded-2xl flex items-center justify-center text-4xl font-black text-black">M</div>
-      <div>
-        <h1 class="text-5xl font-black tracking-tighter">Mace SubModes Tiers</h1>
-        <p class="text-[#db3e3e] text-sm -mt-1">Mace PvP Rankings</p>
-      </div>
-    </div>
-    <div class="text-right text-sm flex flex-col items-end gap-2">
-      <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn"><i class="fab fa-discord mr-1"></i>Join Discord</a>
-      <div class="text-gray-400">Your Server</div>
-      <div class="font-mono text-[#db3e3e]">mcpvp.club</div>
+<!-- HEADER -->
+<div class="flex flex-col md:flex-row justify-between mb-10">
+  <div class="flex items-center gap-4">
+    <div class="w-14 h-14 bg-[#db3e3e] rounded-2xl flex items-center justify-center text-4xl font-black text-black">M</div>
+    <div>
+      <h1 class="text-5xl font-black">Mace SubModes Tiers</h1>
+      <p class="text-[#db3e3e] text-sm">Mace PvP Rankings</p>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="flex flex-wrap gap-3 mb-12 border-b border-gray-800 pb-6" id="tabs"></div>
+  <div class="text-right flex flex-col items-end gap-2">
+    <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">Join Discord</a>
+    <div class="text-gray-400">Your Server</div>
+    <div class="text-[#db3e3e] font-mono">mcpvp.club</div>
+  </div>
+</div>
 
-  <h2 id="mode-title" class="text-4xl font-bold mb-8">Overall Rankings</h2>
-  <div id="rankings" class="space-y-6"></div>
+<!-- TABS -->
+<div id="tabs" class="flex gap-3 mb-10"></div>
+
+<h2 id="mode-title" class="text-3xl mb-6">Overall Rankings</h2>
+<div id="rankings"></div>
+
 </div>
 
 <script>
-const GOOGLE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
+const GOOGLE_URL = "https://docs.google.com/spreadsheets/d/1xq36n4BEkxd142pCQ0g8rMHMr0dj_u46XiSCMKvCL8I/edit?gid=1098171572#gid=1098171572";
 
-// Define modes
-const modes = ["Overall", "LT Mace", "HT Mace", "Rocket Mace", "OG Mace", "Rod Mace", "Spear Mace"];
+// modes
+const modes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
 
-// Define custom tier order
+// tier order
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 
-// Define colors per tier
+// colors
 const tierColors = {
-  "HT1": "#ff5555",
-  "LT1": "#ff9999",
-  "HT2": "#ffaa00",
-  "LT2": "#ffcc66",
-  "HT3": "#55ff55",
-  "LT3": "#99ff99",
-  "HT4": "#55ffff",
-  "LT4": "#99ffff",
-  "HT5": "#5555ff",
-  "LT5": "#9999ff"
+  HT1:"#ff4d4d", LT1:"#ff9999",
+  HT2:"#ffaa00", LT2:"#ffd27f",
+  HT3:"#55ff55", LT3:"#aaffaa",
+  HT4:"#55ffff", LT4:"#aaffff",
+  HT5:"#5555ff", LT5:"#aaaaff"
 };
 
-// Create tabs
+// tabs
 const tabsDiv = document.getElementById("tabs");
 modes.forEach((mode,i)=>{
-  const btn = document.createElement("button");
-  btn.textContent = mode;
-  btn.className = `tab px-6 py-3 rounded-2xl text-lg ${i===0?'tab-active':'bg-gray-900 hover:bg-gray-800'}`;
-  btn.onclick = ()=>loadMode(mode, btn);
+  const btn=document.createElement("button");
+  btn.textContent=mode;
+  btn.className="tab px-4 py-2 bg-gray-800 rounded-xl";
+  if(i===0) btn.classList.add("tab-active");
+  btn.onclick=()=>loadMode(mode,btn);
   tabsDiv.appendChild(btn);
 });
 
-async function loadMode(mode, activeBtn){
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('tab-active'));
-  activeBtn.classList.add('tab-active');
-  document.getElementById("mode-title").textContent = mode+" Rankings";
+// MAIN LOAD
+async function loadMode(mode,btn){
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
+  btn.classList.add("tab-active");
+  document.getElementById("mode-title").textContent=mode+" Rankings";
 
-  try{
-    const res = await fetch(GOOGLE_CSV_URL);
-    const text = await res.text();
-    const rows = text.split("\n").slice(1).map(r=>r.split(",").map(c=>c.trim().replace(/^"|"$/g,'')));
-    let html = "";
+  const res=await fetch(GOOGLE_URL);
+  const html=await res.text();
 
-    if(mode==="Overall"){
-      // Compute total points
-      const scores = {};
-      rows.forEach(row=>{
-        if(!row[0]) return;
-        const name=row[0];
-        let total=0;
-        for(let i=1;i<=6;i++){
-          const tier=parseInt(row[i])||5;
-          total+=Math.max(60-tier*10,10);
-        }
-        scores[name]={total, tiers: row.slice(1,7)};
+  const doc=new DOMParser().parseFromString(html,"text/html");
+  const rows=[...doc.querySelectorAll("table tr")].slice(1).map(tr=>
+    [...tr.querySelectorAll("td")].map(td=>td.textContent.trim())
+  );
+
+  let htmlOut="";
+
+  if(mode==="Overall"){
+    const scores={};
+
+    rows.forEach(r=>{
+      const name=r[0]?.trim();
+      if(!name) return;
+
+      let score=0;
+      for(let i=1;i<=6;i++){
+        const tier=r[i]||"LT5";
+        const index=tierOrder.indexOf(tier);
+        score += (10 - index); // better tier = higher score
+      }
+
+      scores[name]=score;
+    });
+
+    const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+
+    sorted.forEach(([name,score],i)=>{
+      const avatar=`https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      htmlOut+=`
+      <div class="player-card">
+        <img src="${avatar}" class="player-img">
+        <div class="flex-1">${i+1}. ${name}</div>
+        <div>${score}</div>
+      </div>`;
+    });
+
+  } else {
+    const index=modes.indexOf(mode);
+
+    const groups={};
+
+    rows.forEach(r=>{
+      const name=r[0]?.trim();
+      if(!name) return;
+
+      const tier=r[index]||"LT5";
+      if(!groups[tier]) groups[tier]=[];
+      groups[tier].push(name);
+    });
+
+    tierOrder.forEach(tier=>{
+      if(!groups[tier]) return;
+
+      htmlOut+=`<div class="mb-6">
+      <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
+
+      groups[tier].forEach(name=>{
+        const avatar=`https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+        htmlOut+=`
+        <div class="player-card">
+          <img src="${avatar}" class="player-img">
+          <div>${name}</div>
+        </div>`;
       });
-      const sorted = Object.entries(scores).sort((a,b)=>b[1].total - a[1].total).slice(0,100);
-      html += `<div class="space-y-4">`;
-      sorted.forEach(([name,data])=>{
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        html += `<div class="player-card">
-                  <img src="${avatar}" alt="${name}" class="player-img">
-                  <div class="flex-1 font-semibold">${name}</div>
-                  <div class="text-right font-mono text-[#db3e3e]">${data.total} pts</div>
-                 </div>`;
-      });
-      html += `</div>`;
-    } else {
-      // Single gamemode
-      const index = modes.indexOf(mode)-1;
-      const tierGroups = {};
-      rows.forEach(row=>{
-        if(!row[0]) return;
-        const name = row[0];
-        const tier = row[index+1] || "LT5";
-        if(!tierGroups[tier]) tierGroups[tier]=[];
-        tierGroups[tier].push(name);
-      });
 
-      tierOrder.forEach(tier=>{
-        if(!tierGroups[tier]) return;
-        const color = tierColors[tier] || "#888888";
-        html += `<div class="space-y-2">
-                  <div class="tier-header mb-3 p-3" style="background-color:${color}">${tier}</div>`;
-        tierGroups[tier].forEach(name=>{
-          const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-          html += `<div class="player-card">
-                     <img src="${avatar}" alt="${name}" class="player-img">
-                     <div class="flex-1 font-semibold">${name}</div>
-                     <div></div>
-                   </div>`;
-        });
-        html += `</div>`;
-      });
-    }
-
-    document.getElementById("rankings").innerHTML = html || "<p class='text-center text-gray-500 py-20'>No data yet...</p>";
-
-  } catch(e){
-    document.getElementById("rankings").innerHTML = "<p class='text-red-400 text-center py-20'>Failed to load data.<br>Check your CSV URL.</p>";
+      htmlOut+=`</div>`;
+    });
   }
+
+  document.getElementById("rankings").innerHTML=htmlOut;
 }
 
-// Load default
-window.onload=()=>loadMode("Overall",document.querySelector('#tabs button'));
+// init
+window.onload=()=>loadMode("Overall",document.querySelector("#tabs button"));
 
-// Auto refresh every 30s
+// refresh
 setInterval(()=>{
-  const active = document.querySelector('.tab-active');
-  if(active) loadMode(active.textContent,active);
+  const active=document.querySelector(".tab-active");
+  loadMode(active.textContent,active);
 },30000);
 </script>
 </body>
