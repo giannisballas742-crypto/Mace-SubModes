@@ -14,7 +14,6 @@ body {
   overflow-x: hidden;
   position: relative;
 }
-/* ===== ENHANCED RED BACKGROUND & PARTICLES ===== */
 #particles {
   position: fixed;
   top: 0;
@@ -25,7 +24,6 @@ body {
   pointer-events: none;
   background: radial-gradient(circle at center, rgba(219, 62, 62, 0.22) 0%, rgba(219, 62, 62, 0.05) 40%, transparent 80%);
 }
-/* additional side red glow layers */
 body::before {
   content: '';
   position: fixed;
@@ -60,8 +58,6 @@ body::before {
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-
-/* Region Colors */
 .region-badge {
   padding:2px 8px;
   border-radius:6px;
@@ -75,7 +71,6 @@ body::before {
 .region-badge.NA { background:#ef4444; }
 .region-badge.SA { background:#db2777; }
 .region-badge.AU { background:#fbbf24; }
-
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
@@ -83,8 +78,6 @@ body::before {
 .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
-
-/* Rank Styles - Based on Points System */
 .rank {
   font-weight:700;
   display:inline-flex;
@@ -95,102 +88,25 @@ body::before {
   font-size: 0.75rem;
   background: rgba(0,0,0,0.5);
 }
-.rank.master { 
-  background: linear-gradient(135deg, #ffd966, #ffaa33);
-  color: #2c1a00;
-  box-shadow: 0 0 8px #ffaa33;
-}
-.rank.ace { 
-  background: linear-gradient(135deg, #a0a0ff, #6c6cff);
-  color: white;
-  box-shadow: 0 0 6px #6c6cff;
-}
-.rank.specialist { 
-  background: linear-gradient(135deg, #6ab04c, #2ecc71);
-  color: #1a3a1a;
-}
-.rank.cadet { 
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
-}
-.rank.novice { 
-  background: linear-gradient(135deg, #9b59b6, #8e44ad);
-  color: white;
-}
-.rank.rookie { 
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-  color: white;
-}
-.rank.grandmaster { 
-  background: linear-gradient(135deg, #eab308, #facc15);
-  color: #1e1a00;
-  text-shadow: 0 0 4px gold;
-  box-shadow: 0 0 12px #facc15;
-}
-
-/* Larger rank badge styling for overall tab */
-.rank-large {
-  font-size: 1rem !important;
-  padding: 0.35rem 1rem !important;
-  gap: 8px;
-  border-radius: 32px;
-}
-
-/* Mode icons styles */
-.mode-icons {
-  display: flex;
-  gap: 12px;
-  margin-top: 6px;
-  flex-wrap: wrap;
-}
-.mode-icon-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  width: 48px;
-}
-.mode-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid #333;
-  object-fit: contain;
-  background: #111;
-}
-.mode-tier {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 9999px;
-  text-align: center;
-  min-width: 36px;
-}
-
-/* Tab image wrapper style */
-.tab-icon {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  display: block;
-  margin-bottom: 6px;
-  filter: drop-shadow(0 0 2px rgba(219,62,62,0.5));
-  transition: transform 0.2s;
-}
-.tab-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.tab-item:hover .tab-icon {
-  transform: scale(1.05);
-}
+.rank.master { background: linear-gradient(135deg, #ffd966, #ffaa33); color: #2c1a00; box-shadow: 0 0 8px #ffaa33; }
+.rank.ace { background: linear-gradient(135deg, #a0a0ff, #6c6cff); color: white; box-shadow: 0 0 6px #6c6cff; }
+.rank.specialist { background: linear-gradient(135deg, #6ab04c, #2ecc71); color: #1a3a1a; }
+.rank.cadet { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+.rank.novice { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+.rank.rookie { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
+.rank.grandmaster { background: linear-gradient(135deg, #eab308, #facc15); color: #1e1a00; text-shadow: 0 0 4px gold; box-shadow: 0 0 12px #facc15; }
+.rank-large { font-size: 1rem !important; padding: 0.35rem 1rem !important; gap: 8px; border-radius: 32px; }
+.rank img { width: 1.2rem; height: 1.2rem; object-fit: contain; vertical-align: middle; margin: 0 2px; }
+.mode-icons { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+.mode-icon-container { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 48px; }
+.mode-icon { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #333; object-fit: contain; background: #111; }
+.mode-tier { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 9999px; text-align: center; min-width: 36px; }
+.tab-icon { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
+.tab-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+.tab-item:hover .tab-icon { transform: scale(1.05); }
 </style>
 </head>
 <body>
-<!-- Particle Container (enhanced particles count) -->
 <div id="particles"></div>
 <div class="max-w-6xl mx-auto p-6 relative z-10">
 <div class="flex justify-between items-center mb-6">
@@ -224,7 +140,6 @@ body::before {
 </div>
 
 <script>
-// === ENHANCED PARTICLE SYSTEM (MORE RED PARTICLES) ===
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 150; i++) {
@@ -242,7 +157,6 @@ function createParticles() {
   }
 }
 
-// Game mode icons mapping (for player mode icons & tab images)
 const modeIcons = {
   "LT Mace": "https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96",
   "HT Mace": "https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96",
@@ -252,7 +166,6 @@ const modeIcons = {
   "Spear Mace": "https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96"
 };
 
-// Special icon for Overall tab
 const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp?size=96";
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
@@ -269,22 +182,52 @@ const tierColors = {
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = [];
 
-// ========= POINTS-BASED ROLE FUNCTION (original emoji symbols) =========
+// Valorant rank images (working direct URLs)
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
   if (pts >= 100) {
-    return { name: "Mace Master", icon: "<i class='fas fa-crown'></i>", className: "master", symbol: "🏆" };
+    return {
+      name: "Mace Master",
+      icon: "<i class='fas fa-crown'></i>",
+      className: "master",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/56/Radiant_Rank.png" alt="Radiant">`
+    };
   } else if (pts >= 50 && pts <= 99) {
-    return { name: "Mace Ace", icon: "<i class='fas fa-shield-alt'></i>", className: "ace", symbol: "⚡" };
+    return {
+      name: "Mace Ace",
+      icon: "<i class='fas fa-shield-alt'></i>",
+      className: "ace",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/1/13/Immortal_Rank.png" alt="Immortal">`
+    };
   } else if (pts >= 25 && pts <= 49) {
-    return { name: "Mace Specialist", icon: "<i class='fas fa-star'></i>", className: "specialist", symbol: "✨" };
+    return {
+      name: "Mace Specialist",
+      icon: "<i class='fas fa-star'></i>",
+      className: "specialist",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/7/7b/Ascendant_Rank.png" alt="Ascendant">`
+    };
   } else if (pts >= 10 && pts <= 24) {
-    return { name: "Mace Cadet", icon: "<i class='fas fa-user-graduate'></i>", className: "cadet", symbol: "🎓" };
+    return {
+      name: "Mace Cadet",
+      icon: "<i class='fas fa-user-graduate'></i>",
+      className: "cadet",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/5c/Diamond_Rank.png" alt="Diamond">`
+    };
   } else if (pts >= 5 && pts <= 9) {
-    return { name: "Mace Novice", icon: "<i class='fas fa-feather-alt'></i>", className: "novice", symbol: "🌱" };
+    return {
+      name: "Mace Novice",
+      icon: "<i class='fas fa-feather-alt'></i>",
+      className: "novice",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/6/6b/Gold_Rank.png" alt="Gold">`
+    };
   } else if (pts >= 1 && pts <= 4) {
-    return { name: "Mace Rookie", icon: "<i class='fas fa-baby-carriage'></i>", className: "rookie", symbol: "🍼" };
+    return {
+      name: "Mace Rookie",
+      icon: "<i class='fas fa-baby-carriage'></i>",
+      className: "rookie",
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/d/d9/Silver_Rank.png" alt="Silver">`
+    };
   }
   return null;
 }
