@@ -79,65 +79,12 @@ body {
   color:#ffd700;
   text-shadow:0 0 8px #ffd700;
 }
-.rank.grandmaster {
+.rank.ace {
   color:#eab308;
-  text-shadow:0 0 12px #ffffff, 0 0 20px #eab308;
+  text-shadow:0 0 8px #eab308;
 }
-.rank.ace { color:#c0c0c0; }
-.rank.spec { color:#cd7f32; }
-/* Mode icons styles */
-.mode-icons {
-  display: flex;
-  gap: 12px;
-  margin-top: 6px;
-  flex-wrap: wrap;
-}
-.mode-icon-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  width: 48px;
-}
-.mode-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid #333;
-  object-fit: contain;
-  background: #111;
-}
-.mode-tier {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 9999px;
-  text-align: center;
-  min-width: 36px;
-}
-
-/* Special Top 3 Style - Only for Overall */
-.top3-card {
-  position: relative;
-  overflow: hidden;
-  padding: 12px;
-}
-.top3-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
-}
-.top3-skin {
-  width: 68px;
-  height: 68px;
-  border-radius: 12px;
-  border: 3px solid #fff;
-  z-index: 2;
-  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+.rank.spec {
+  color:#cd7f32;
 }
 </style>
 </head>
@@ -216,6 +163,19 @@ const tierColors = {
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = [];
 
+// Point-based Role System with cool symbols
+function getPlayerRoleHTML(points) {
+  const p = parseFloat(points) || 0;
+  
+  if (p >= 100) return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
+  else if (p >= 50) return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
+  else if (p >= 25) return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
+  else if (p >= 10) return `<span class="rank" style="color:#22d3ee;"><i class="fas fa-user-shield"></i> Mace Cadet</span>`;
+  else if (p >= 5) return `<span class="rank" style="color:#a78bfa;"><i class="fas fa-seedling"></i> Mace Novice</span>`;
+  else if (p >= 1) return `<span class="rank" style="color:#f472b6;"><i class="fas fa-baby"></i> Mace Rookie</span>`;
+  return "";
+}
+
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
@@ -237,7 +197,7 @@ async function loadCSV(){
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
-  
+ 
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
   allModes.forEach((mode,i)=>{
@@ -270,56 +230,29 @@ function getModeIconsHTML(player) {
   return html;
 }
 
-// Rank logic for LIST (shows Grand Master for #1)
-function getRankHTML(index) {
-  if (index === 0) {
-    return `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
-  } else if (index < 3) {
-    return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
-  } else if (index < 53) {
-    return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
-  } else if (index < 103) {
-    return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
-  }
-  return "";
-}
-
-// Rank logic for MODAL - STRICT: Only #1 gets Grand Master
-function getModalRankHTML(index) {
-  if (index === 0) {
-    return `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
-  } else if (index < 3) {
-    return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
-  } else if (index < 53) {
-    return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
-  } else if (index < 103) {
-    return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
-  }
-  return "";
-}
-
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
+
   let htmlOut = "";
 
   if(mode==="Overall"){
     currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-
     currentSorted.forEach((r,i)=>{
       const name = r[nameCol];
       if(!name) return;
-    
+   
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`;
       const region = r[regionCol];
-    
+      const points = r[pointsCol] || '0';
+
       let medalIcon = "";
       if(i===0) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
       else if(i===1) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
       else if(i===2) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
 
-      const rankHTML = getRankHTML(i);
+      const roleHTML = getPlayerRoleHTML(points);
 
       let regionHTML = "";
       if (region) {
@@ -336,32 +269,32 @@ function loadMode(mode,btn){
       if (i < 3) {
         const bannerColor = i===0 ? '#ffd700' : i===1 ? '#c0c0c0' : '#cd7f32';
         htmlOut += `
-        <div class="top3-card player-card" data-player='${JSON.stringify(r)}' data-index="${i}">
+        <div class="top3-card player-card" data-player='${JSON.stringify(r)}'>
           <div class="top3-banner" style="background: linear-gradient(90deg, ${bannerColor}88, transparent);"></div>
           <img src="${avatar}" class="top3-skin">
           <div class="flex-1 flex flex-col justify-center z-10">
             <div class="flex items-center flex-wrap gap-x-2">
               ${medalIcon}${i+1}. ${name}
               ${regionHTML}
-              ${rankHTML}
+              ${roleHTML}
             </div>
             ${getModeIconsHTML(r)}
           </div>
-          <div class="font-mono text-lg font-bold relative z-10">${r[pointsCol]}</div>
+          <div class="font-mono text-lg font-bold relative z-10">${points}</div>
         </div>`;
       } else {
         htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}' data-index="${i}">
+        <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="https://mc-heads.net/avatar/${encodeURIComponent(name)}/64" class="player-img">
           <div class="flex-1 flex flex-col justify-center">
             <div class="flex items-center flex-wrap gap-x-2">
               ${medalIcon}${i+1}. ${name}
               ${regionHTML}
-              ${rankHTML}
+              ${roleHTML}
             </div>
             ${getModeIconsHTML(r)}
           </div>
-          <div class="font-mono text-lg font-bold">${r[pointsCol]}</div>
+          <div class="font-mono text-lg font-bold">${points}</div>
         </div>`;
       }
     });
@@ -375,17 +308,16 @@ function loadMode(mode,btn){
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
-  
+ 
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
       htmlOut += `<div class="mb-6">
         <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-
       groups[tier].forEach(r=>{
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
-        const overallIndex = currentSorted.findIndex(p => p[nameCol] === name);
+        const points = r[pointsCol] || '0';
 
         let regionHTML = "";
         if (region) {
@@ -399,16 +331,16 @@ function loadMode(mode,btn){
           regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
 
-        const rankHTML = getRankHTML(overallIndex);
+        const roleHTML = getPlayerRoleHTML(points);
 
         htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}' data-index="${overallIndex}">
+        <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
           <div class="flex-1 flex flex-col justify-center">
             <div class="flex items-center flex-wrap gap-x-2">
               ${name}
               ${regionHTML}
-              ${rankHTML}
+              ${roleHTML}
             </div>
           </div>
         </div>`;
@@ -416,20 +348,19 @@ function loadMode(mode,btn){
       htmlOut += `</div>`;
     });
   }
- 
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Modal handler - uses special modal rank function
+  // Modal handler
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
       const region = playerData[regionCol];
-      const rankIndex = parseInt(card.dataset.index) || -1;
-     
+      const points = playerData[pointsCol] || '0';
+
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]}</h2>`;
-    
+   
       if(region) {
         let regionClass = "";
         const reg = region.toUpperCase().trim();
@@ -438,19 +369,17 @@ function loadMode(mode,btn){
         else if (reg === "NA") regionClass = "NA";
         else if (reg === "SA") regionClass = "SA";
         else if (reg === "AU") regionClass = "AU";
-        modalHTML += `<div class="region-badge mx-auto mt-2 ${regionClass}">${region}</div>`;
+        modalHTML += `<div class="flex justify-center mt-2"><span class="region-badge ${regionClass}">${region}</span></div>`;
       }
 
-      if (rankIndex >= 0) {
-        const rankHTML = getModalRankHTML(rankIndex);   // ← Only #1 gets Grand Master here
-        if (rankHTML) modalHTML += `<div class="text-center mt-3">${rankHTML}</div>`;
-      }
-    
+      const roleHTML = getPlayerRoleHTML(points);
+      if (roleHTML) modalHTML += `<div class="text-center mt-4">${roleHTML}</div>`;
+   
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
-    
+   
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
-        <span class="text-xl font-bold text-red-400">${playerData[pointsCol] || 'N/A'}</span>
+        <span class="text-xl font-bold text-red-400">${points}</span>
       </div>`;
 
       document.getElementById("modal-content").innerHTML = modalHTML;
