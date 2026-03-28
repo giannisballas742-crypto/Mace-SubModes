@@ -188,6 +188,22 @@ body::before {
 .tab-item:hover .tab-icon {
   transform: scale(1.05);
 }
+
+/* ===== MOBILE RESPONSIVE FIX (only for small screens, preserves all visuals) ===== */
+@media (max-width: 640px) {
+  .player-card {
+    flex-wrap: wrap;
+  }
+  .player-card > .flex-1 {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .player-card > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+}
 </style>
 </head>
 <body>
