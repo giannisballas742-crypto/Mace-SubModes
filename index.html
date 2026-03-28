@@ -508,6 +508,17 @@ function loadMode(mode, activeBtn){
   
   document.getElementById("rankings").innerHTML = htmlOut;
 
+  // Helper function to compute overall rank for any player
+  function getOverallRank(playerObj) {
+    // Create sorted array by points (descending)
+    const sorted = [...allRows].sort((a,b) => parseFloat(b[pointsCol]||0) - parseFloat(a[pointsCol]||0));
+    const playerName = playerObj[nameCol];
+    const playerPoints = parseFloat(playerObj[pointsCol]||0);
+    // Find first index where name matches and points equal (handle ties by first occurrence)
+    const idx = sorted.findIndex(p => p[nameCol] === playerName && parseFloat(p[pointsCol]||0) === playerPoints);
+    return idx !== -1 ? idx + 1 : null;
+  }
+
   // Attach click handlers for modal (region & role fully displayed)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
@@ -515,6 +526,9 @@ function loadMode(mode, activeBtn){
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
       const region = playerData[regionCol];
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
+      
+      // Compute overall rank
+      const overallRank = getOverallRank(playerData);
       
       const role = getRoleByPoints(pointsVal);
       let roleModalHTML = '';
@@ -551,7 +565,16 @@ function loadMode(mode, activeBtn){
       modalHTML += roleModalHTML;
       modalHTML += extraGrand;
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
-      modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
+      
+      // Add overall position line above overall points
+      if (overallRank !== null) {
+        modalHTML += `<div class="text-center mt-4 pt-2">
+          <span class="text-gray-400">Overall Position:</span>
+          <span class="text-lg font-bold text-yellow-400">#${overallRank}</span>
+        </div>`;
+      }
+      
+      modalHTML += `<div class="text-center mt-2 pt-2 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
         <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
       </div>`;
