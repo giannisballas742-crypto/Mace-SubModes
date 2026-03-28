@@ -137,6 +137,15 @@ body::before {
   border-radius: 32px;
 }
 
+/* Inline image styling for role symbols */
+.rank img {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+  vertical-align: middle;
+  margin: 0 2px;
+}
+
 /* Mode icons styles */
 .mode-icons {
   display: flex;
@@ -271,22 +280,52 @@ const tierColors = {
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = []; // Store sorted list for modal rank access
 
-// ========= POINTS-BASED ROLE FUNCTION =========
+// ========= POINTS-BASED ROLE FUNCTION with UPDATED SYMBOL IMAGES =========
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
   if (pts >= 100) {
-    return { name: "Mace Master", icon: "<i class='fas fa-crown'></i>", className: "master", symbol: "🏆" };
+    return {
+      name: "Mace Master",
+      icon: "<i class='fas fa-crown'></i>",
+      className: "master",
+      symbol: `<img src="https://immortalboost.com/valorant-boost/product/radiant-boost/" alt="★" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   } else if (pts >= 50 && pts <= 99) {
-    return { name: "Mace Ace", icon: "<i class='fas fa-shield-alt'></i>", className: "ace", symbol: "⚡" };
+    return {
+      name: "Mace Ace",
+      icon: "<i class='fas fa-shield-alt'></i>",
+      className: "ace",
+      symbol: `<img src="https://emoji.gg/emoji/5979-valorant-immortal-3" alt="⚡" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   } else if (pts >= 25 && pts <= 49) {
-    return { name: "Mace Specialist", icon: "<i class='fas fa-star'></i>", className: "specialist", symbol: "✨" };
+    return {
+      name: "Mace Specialist",
+      icon: "<i class='fas fa-star'></i>",
+      className: "specialist",
+      symbol: `<img src="https://emoji.gg/emoji/4071-valorant-ascendant-3" alt="✨" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   } else if (pts >= 10 && pts <= 24) {
-    return { name: "Mace Cadet", icon: "<i class='fas fa-user-graduate'></i>", className: "cadet", symbol: "🎓" };
+    return {
+      name: "Mace Cadet",
+      icon: "<i class='fas fa-user-graduate'></i>",
+      className: "cadet",
+      symbol: `<img src="https://valorant.fandom.com/wiki/Competitive" alt="🎓" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   } else if (pts >= 5 && pts <= 9) {
-    return { name: "Mace Novice", icon: "<i class='fas fa-feather-alt'></i>", className: "novice", symbol: "🌱" };
+    return {
+      name: "Mace Novice",
+      icon: "<i class='fas fa-feather-alt'></i>",
+      className: "novice",
+      symbol: `<img src="https://www.redbubble.com/i/sticker/Gold-3-Rank-Active-by-RebecaHolton/148510378.EJUG5" alt="🌱" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   } else if (pts >= 1 && pts <= 4) {
-    return { name: "Mace Rookie", icon: "<i class='fas fa-baby-carriage'></i>", className: "rookie", symbol: "🍼" };
+    return {
+      name: "Mace Rookie",
+      icon: "<i class='fas fa-baby-carriage'></i>",
+      className: "rookie",
+      symbol: `<img src="https://emoji.gg/emoji/3293-valorant-silver-3" alt="🍼" style="width:1.2rem;height:1.2rem;object-fit:contain;">`
+    };
   }
   return null;
 }
@@ -296,14 +335,15 @@ function getRankBadge(points, isModal = false) {
   const role = getRoleByPoints(points);
   if (!role) return '';
   const styleClass = isModal ? 'text-lg px-4 py-1' : 'text-xs px-2 py-0.5';
-  return `<span class="rank ${role.className} ${styleClass}"><i class="${role.icon.split(' ')[1]}"></i> ${role.name} ${role.symbol}</span>`;
+  // For modal we keep same structure but symbol is already an image
+  return `<span class="rank ${role.className} ${styleClass}">${role.icon} ${role.name} ${role.symbol}</span>`;
 }
 
 // Generate LARGE rank badge for overall tab (bigger, placed before points now)
 function getLargeRankBadge(points) {
   const role = getRoleByPoints(points);
   if (!role) return '';
-  return `<span class="rank ${role.className} rank-large"><i class="${role.icon.split(' ')[1]}"></i> ${role.name} ${role.symbol}</span>`;
+  return `<span class="rank ${role.className} rank-large">${role.icon} ${role.name} ${role.symbol}</span>`;
 }
 
 function parseCSV(text){
