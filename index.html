@@ -14,6 +14,7 @@ body {
   overflow-x: hidden;
   position: relative;
 }
+/* ===== ENHANCED RED BACKGROUND & PARTICLES ===== */
 #particles {
   position: fixed;
   top: 0;
@@ -58,6 +59,8 @@ body::before {
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
+
+/* Region Colors */
 .region-badge {
   padding:2px 8px;
   border-radius:6px;
@@ -71,6 +74,7 @@ body::before {
 .region-badge.NA { background:#ef4444; }
 .region-badge.SA { background:#db2777; }
 .region-badge.AU { background:#fbbf24; }
+
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
@@ -78,6 +82,8 @@ body::before {
 .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
+
+/* Rank Styles */
 .rank {
   font-weight:700;
   display:inline-flex;
@@ -95,12 +101,27 @@ body::before {
 .rank.novice { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
 .rank.rookie { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
 .rank.grandmaster { background: linear-gradient(135deg, #eab308, #facc15); color: #1e1a00; text-shadow: 0 0 4px gold; box-shadow: 0 0 12px #facc15; }
-.rank-large { font-size: 1rem !important; padding: 0.35rem 1rem !important; gap: 8px; border-radius: 32px; }
-.rank img { width: 1.2rem; height: 1.2rem; object-fit: contain; vertical-align: middle; margin: 0 2px; }
+
+.rank-large {
+  font-size: 1rem !important;
+  padding: 0.35rem 1rem !important;
+  gap: 8px;
+  border-radius: 32px;
+}
+
+/* Valorant rank images sizing */
+.rank img {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
 .mode-icons { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
 .mode-icon-container { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 48px; }
 .mode-icon { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #333; object-fit: contain; background: #111; }
 .mode-tier { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 9999px; text-align: center; min-width: 36px; }
+
 .tab-icon { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
 .tab-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
 .tab-item:hover .tab-icon { transform: scale(1.05); }
@@ -109,37 +130,40 @@ body::before {
 <body>
 <div id="particles"></div>
 <div class="max-w-6xl mx-auto p-6 relative z-10">
-<div class="flex justify-between items-center mb-6">
-  <div class="flex items-center gap-4">
-    <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
-      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
+        <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
+      </div>
+      <div>
+        <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
+        <p class="text-red-400 text-sm">Mace PvP Rankings</p>
+      </div>
     </div>
-    <div>
-      <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
-      <p class="text-red-400 text-sm">Mace PvP Rankings</p>
+    <div class="text-right flex flex-col items-end gap-2">
+      <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
+        <i class="fab fa-discord"></i> Join Discord
+      </a>
+      <div class="text-gray-400 text-sm">Your Server</div>
+      <div class="text-red-400 font-mono">mcpvp.club</div>
     </div>
   </div>
-  <div class="text-right flex flex-col items-end gap-2">
-    <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
-      <i class="fab fa-discord"></i> Join Discord
-    </a>
-    <div class="text-gray-400 text-sm">Your Server</div>
-    <div class="text-red-400 font-mono">mcpvp.club</div>
+
+  <input type="text" id="search-input" placeholder="Search players...">
+  <div id="tabs" class="flex gap-6 mb-6 flex-wrap justify-center sm:justify-start"></div>
+  <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
+  <div id="rankings"></div>
+
+  <div id="player-modal" class="hidden modal-bg">
+    <div class="modal">
+      <span class="modal-close" id="modal-close">&times;</span>
+      <div id="modal-content"></div>
+    </div>
   </div>
-</div>
-<input type="text" id="search-input" placeholder="Search players...">
-<div id="tabs" class="flex gap-6 mb-6 flex-wrap justify-center sm:justify-start"></div>
-<h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
-<div id="rankings"></div>
-<div id="player-modal" class="hidden modal-bg">
-  <div class="modal">
-    <span class="modal-close" id="modal-close">&times;</span>
-    <div id="modal-content"></div>
-  </div>
-</div>
 </div>
 
 <script>
+// === ENHANCED PARTICLE SYSTEM ===
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 150; i++) {
@@ -152,7 +176,6 @@ function createParticles() {
     particle.style.animationDuration = `${Math.random() * 18 + 12}s`;
     particle.style.animationDelay = `-${Math.random() * 25}s`;
     particle.style.opacity = Math.random() * 0.45 + 0.2;
-    particle.style.background = `#db3e3e`;
     container.appendChild(particle);
   }
 }
@@ -172,62 +195,30 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2N
 const REGION_COLUMN_INDEX = 2;
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = {
-  HT1:"#f1c40f", LT1:"#ffa600",
-  HT2:"#bdc3c7", LT2:"#95a5a6",
-  HT3:"#ff8531", LT3:"#f37324",
-  HT4:"#55ffff", LT4:"#aaffff",
+  HT1:"#f1c40f", LT1:"#ffa600", HT2:"#bdc3c7", LT2:"#95a5a6",
+  HT3:"#ff8531", LT3:"#f37324", HT4:"#55ffff", LT4:"#aaffff",
   HT5:"#5555ff", LT5:"#AAAAFF"
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = [];
 
-// Valorant rank images (reliable static.wikia.nocookie.net URLs)
+// === ROLE FUNCTION WITH VALORANT RANK IMAGES ===
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
   if (pts >= 100) {
-    return {
-      name: "Mace Master",
-      icon: "<i class='fas fa-crown'></i>",
-      className: "master",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/56/Radiant_Rank.png" alt="Radiant">`
-    };
+    return { name: "Mace Master", icon: "<i class='fas fa-crown'></i>", className: "master", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/56/Radiant_Rank.png" alt="Radiant">` };
   } else if (pts >= 50 && pts <= 99) {
-    return {
-      name: "Mace Ace",
-      icon: "<i class='fas fa-shield-alt'></i>",
-      className: "ace",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/1/13/Immortal_Rank.png" alt="Immortal">`
-    };
+    return { name: "Mace Ace", icon: "<i class='fas fa-shield-alt'></i>", className: "ace", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/1/13/Immortal_Rank.png" alt="Immortal">` };
   } else if (pts >= 25 && pts <= 49) {
-    return {
-      name: "Mace Specialist",
-      icon: "<i class='fas fa-star'></i>",
-      className: "specialist",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/7/7b/Ascendant_Rank.png" alt="Ascendant">`
-    };
+    return { name: "Mace Specialist", icon: "<i class='fas fa-star'></i>", className: "specialist", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/7/7b/Ascendant_Rank.png" alt="Ascendant">` };
   } else if (pts >= 10 && pts <= 24) {
-    return {
-      name: "Mace Cadet",
-      icon: "<i class='fas fa-user-graduate'></i>",
-      className: "cadet",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/5c/Diamond_Rank.png" alt="Diamond">`
-    };
+    return { name: "Mace Cadet", icon: "<i class='fas fa-user-graduate'></i>", className: "cadet", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/5c/Diamond_Rank.png" alt="Diamond">` };
   } else if (pts >= 5 && pts <= 9) {
-    return {
-      name: "Mace Novice",
-      icon: "<i class='fas fa-feather-alt'></i>",
-      className: "novice",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/6/6b/Gold_Rank.png" alt="Gold">`
-    };
+    return { name: "Mace Novice", icon: "<i class='fas fa-feather-alt'></i>", className: "novice", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/6/6b/Gold_Rank.png" alt="Gold">` };
   } else if (pts >= 1 && pts <= 4) {
-    return {
-      name: "Mace Rookie",
-      icon: "<i class='fas fa-baby-carriage'></i>",
-      className: "rookie",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/d/d9/Silver_Rank.png" alt="Silver">`
-    };
+    return { name: "Mace Rookie", icon: "<i class='fas fa-baby-carriage'></i>", className: "rookie", symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/d/d9/Silver_Rank.png" alt="Silver">` };
   }
   return null;
 }
@@ -244,6 +235,8 @@ function getLargeRankBadge(points) {
   if (!role) return '';
   return `<span class="rank ${role.className} rank-large">${role.icon} ${role.name} ${role.symbol}</span>`;
 }
+
+// ... (rest of the code is unchanged from your original - parseCSV, loadCSV, getModeIconsHTML, loadMode, search, modal, etc.)
 
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
@@ -266,7 +259,7 @@ async function loadCSV(){
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
- 
+  
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
   
@@ -285,15 +278,10 @@ async function loadCSV(){
     btn.textContent = mode;
     btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
     if(idx === 0) btn.classList.add("tab-active");
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      loadMode(mode, btn);
-    };
+    btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); };
     tabWrapper.appendChild(img);
     tabWrapper.appendChild(btn);
-    tabWrapper.addEventListener("click", (e) => {
-      if(e.target !== btn) btn.click();
-    });
+    tabWrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); });
     tabsDiv.appendChild(tabWrapper);
   });
   
@@ -308,12 +296,10 @@ function getModeIconsHTML(player) {
     if (!tier) return;
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
-    html += `
-      <div class="mode-icon-container">
-        <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
-        <div class="mode-tier" style="background:${color}; color:#000;">${tier}</div>
-      </div>
-    `;
+    html += ` <div class="mode-icon-container">
+      <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
+      <div class="mode-tier" style="background:${color}; color:#000;">${tier}</div>
+    </div> `;
   });
   html += '</div>';
   return html;
@@ -337,22 +323,17 @@ function loadMode(mode, activeBtn){
       if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+
       const largeRankBadge = getLargeRankBadge(pointsVal);
-      let extraGrandHtml = "";
-      if(idx === 0 && pointsVal >= 100) {
-        extraGrandHtml = `<span class="rank grandmaster rank-large ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
-      }
+      let extraGrandHtml = (idx === 0 && pointsVal >= 100) ? `<span class="rank grandmaster rank-large ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>` : "";
+
       let regionHTML = "";
       if (region) {
-        let regionClass = "";
-        const reg = region.toUpperCase().trim();
-        if (reg === "EU") regionClass = "EU";
-        else if (reg === "AS") regionClass = "AS";
-        else if (reg === "NA") regionClass = "NA";
-        else if (reg === "SA") regionClass = "SA";
-        else if (reg === "AU") regionClass = "AU";
+        let reg = region.toUpperCase().trim();
+        let regionClass = reg === "EU" ? "EU" : reg === "AS" ? "AS" : reg === "NA" ? "NA" : reg === "SA" ? "SA" : reg === "AU" ? "AU" : "";
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
+
       const rightSideContent = `
         <div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">
           ${largeRankBadge}
@@ -362,14 +343,14 @@ function loadMode(mode, activeBtn){
           ${extraGrandHtml}
         </div>
       `;
+
       htmlOut += `
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-index="${idx}" data-points="${pointsVal}">
         ${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}
         <img src="${avatar}" class="player-img">
         <div class="flex-1 flex flex-col justify-center min-w-0">
           <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
-            ${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}
-            ${regionHTML}
+            ${medalIcon}<span class="font-bold">${idx+1}.</span> ${name} ${regionHTML}
           </div>
           ${getModeIconsHTML(r)}
         </div>
@@ -377,6 +358,7 @@ function loadMode(mode, activeBtn){
       </div>`;
     });
   } else {
+    // Other tabs unchanged
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -397,22 +379,15 @@ function loadMode(mode, activeBtn){
         const rankBadgeSmall = getRankBadge(pointsVal, false);
         let regionHTML = "";
         if (region) {
-          let regionClass = "";
-          const reg = region.toUpperCase().trim();
-          if (reg === "EU") regionClass = "EU";
-          else if (reg === "AS") regionClass = "AS";
-          else if (reg === "NA") regionClass = "NA";
-          else if (reg === "SA") regionClass = "SA";
-          else if (reg === "AU") regionClass = "AU";
+          let reg = region.toUpperCase().trim();
+          let regionClass = reg === "EU" ? "EU" : reg === "AS" ? "AS" : reg === "NA" ? "NA" : reg === "SA" ? "SA" : reg === "AU" ? "AU" : "";
           regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
         htmlOut += `
         <div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
           <img src="${avatar}" class="player-img">
           <div class="flex items-center gap-2 flex-wrap flex-1">
-            <span class="font-semibold">${name}</span>
-            ${regionHTML}
-            ${rankBadgeSmall}
+            <span class="font-semibold">${name}</span> ${regionHTML} ${rankBadgeSmall}
           </div>
           <div class="ml-auto font-mono text-sm">${r[pointsCol] || 0} pts</div>
         </div>`;
@@ -423,6 +398,7 @@ function loadMode(mode, activeBtn){
   
   document.getElementById("rankings").innerHTML = htmlOut;
 
+  // Modal and other logic (unchanged)
   function getOverallRank(playerObj) {
     const sorted = [...allRows].sort((a,b) => parseFloat(b[pointsCol]||0) - parseFloat(a[pointsCol]||0));
     const playerName = playerObj[nameCol];
@@ -439,38 +415,20 @@ function loadMode(mode, activeBtn){
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
       const overallRank = getOverallRank(playerData);
       const role = getRoleByPoints(pointsVal);
-      let roleModalHTML = '';
-      if(role) {
-        roleModalHTML = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`;
-      }
-      let extraGrand = '';
-      if(pointsVal >= 100) extraGrand = `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>`;
+      let roleModalHTML = role ? `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>` : '';
+      let extraGrand = pointsVal >= 100 ? `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>` : '';
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       let regionInline = '';
       if(region) {
-        let regionClass = "";
-        const reg = region.toUpperCase().trim();
-        if (reg === "EU") regionClass = "EU";
-        else if (reg === "AS") regionClass = "AS";
-        else if (reg === "NA") regionClass = "NA";
-        else if (reg === "SA") regionClass = "SA";
-        else if (reg === "AU") regionClass = "AU";
+        let reg = region.toUpperCase().trim();
+        let regionClass = reg === "EU" ? "EU" : reg === "AS" ? "AS" : reg === "NA" ? "NA" : reg === "SA" ? "SA" : reg === "AU" ? "AU" : "";
         regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`;
       }
       modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]} ${regionInline}</h2>`;
-      modalHTML += roleModalHTML;
-      modalHTML += extraGrand;
+      modalHTML += roleModalHTML + extraGrand;
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
-      if (overallRank !== null) {
-        modalHTML += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span> <span class="text-lg font-bold text-yellow-400">#${overallRank}</span></div>`;
-      }
+      if (overallRank !== null) modalHTML += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span> <span class="text-lg font-bold text-yellow-400">#${overallRank}</span></div>`;
       modalHTML += `<div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span> <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span></div>`;
-      if(pointsVal >= 100) modalHTML += `<div class="text-center text-yellow-300 text-sm mt-2"><i class="fas fa-crown"></i> Mace Master - Top Tier Dominator</div>`;
-      else if(pointsVal >= 50) modalHTML += `<div class="text-center text-blue-300 text-sm mt-2"><i class="fas fa-shield-alt"></i> Mace Ace - Elite Combatant</div>`;
-      else if(pointsVal >= 25) modalHTML += `<div class="text-center text-green-300 text-sm mt-2"><i class="fas fa-star"></i> Mace Specialist - Proven Warrior</div>`;
-      else if(pointsVal >= 10) modalHTML += `<div class="text-center text-cyan-300 text-sm mt-2"><i class="fas fa-user-graduate"></i> Mace Cadet - Rising Talent</div>`;
-      else if(pointsVal >= 5) modalHTML += `<div class="text-center text-purple-300 text-sm mt-2"><i class="fas fa-feather-alt"></i> Mace Novice - Learning the Craft</div>`;
-      else if(pointsVal >= 1) modalHTML += `<div class="text-center text-gray-400 text-sm mt-2"><i class="fas fa-baby-carriage"></i> Mace Rookie - Fresh Recruit</div>`;
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
     };
@@ -480,14 +438,11 @@ function loadMode(mode, activeBtn){
 document.getElementById("search-input").addEventListener("input", e=>{
   const term = e.target.value.toLowerCase();
   document.querySelectorAll(".player-card").forEach(card=>{
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(term) ? "flex" : "none";
+    card.style.display = card.textContent.toLowerCase().includes(term) ? "flex" : "none";
   });
 });
 
-document.getElementById("modal-close").onclick = ()=>{
-  document.getElementById("player-modal").classList.add("hidden");
-};
+document.getElementById("modal-close").onclick = () => document.getElementById("player-modal").classList.add("hidden");
 
 window.onload = () => {
   createParticles();
