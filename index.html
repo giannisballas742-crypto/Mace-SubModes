@@ -47,7 +47,6 @@ body {
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-
 /* Region Colors */
 .region-badge {
   padding:2px 8px;
@@ -62,7 +61,6 @@ body {
 .region-badge.NA { background:#ef4444; }
 .region-badge.SA { background:#db2777; }
 .region-badge.AU { background:#fbbf24; }
-
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
@@ -70,7 +68,6 @@ body {
 .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
-
 /* Rank Styles */
 .rank {
   font-weight:700;
@@ -78,17 +75,16 @@ body {
   align-items:center;
   gap:6px;
 }
-.rank.master { 
-  color:#ffd700; 
-  text-shadow:0 0 8px #ffd700; 
+.rank.master {
+  color:#ffd700;
+  text-shadow:0 0 8px #ffd700;
 }
-.rank.grandmaster { 
-  color:#eab308; 
-  text-shadow:0 0 12px #ffffff, 0 0 20px #eab308; 
+.rank.grandmaster {
+  color:#eab308;
+  text-shadow:0 0 12px #ffffff, 0 0 20px #eab308;
 }
 .rank.ace { color:#c0c0c0; }
 .rank.spec { color:#cd7f32; }
-
 /* Mode icons styles */
 .mode-icons {
   display: flex;
@@ -195,7 +191,7 @@ const tierColors = {
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
-let currentSorted = []; // ← Fixed: Store sorted list globally so modal can access it
+let currentSorted = [];
 
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
@@ -218,7 +214,7 @@ async function loadCSV(){
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
- 
+  
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
   allModes.forEach((mode,i)=>{
@@ -235,14 +231,13 @@ async function loadCSV(){
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
   const orderedModes = ["LT Mace", "HT Mace", "Rocket Mace", "Rod Mace", "OG Mace", "Spear Mace"];
- 
   orderedModes.forEach(mode => {
     const tier = (player[mode] || "").toUpperCase().trim();
     if (!tier) return;
-   
+  
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
-   
+  
     html += `
       <div class="mode-icon-container">
         <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
@@ -250,43 +245,46 @@ function getModeIconsHTML(player) {
       </div>
     `;
   });
- 
   html += '</div>';
   return html;
+}
+
+// FIXED: Proper rank logic
+function getRankHTML(index) {
+  if (index === 0) {
+    return `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
+  } else if (index < 3) {
+    return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
+  } else if (index < 53) {
+    return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
+  } else if (index < 103) {
+    return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
+  }
+  return ""; // No rank for everyone else
 }
 
 function loadMode(mode,btn){
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
   btn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
- 
   let htmlOut = "";
 
   if(mode==="Overall"){
-    currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)); // Store for modal
-    
+    currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
+
     currentSorted.forEach((r,i)=>{
       const name = r[nameCol];
       if(!name) return;
-     
+    
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
-     
+    
       let medalClass = "", medalIcon = "";
       if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      let rankHTML = "";
-      if(i === 0){
-        rankHTML = `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
-      } else if(i < 3){
-        rankHTML = `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
-      } else if(i < 53){
-        rankHTML = `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
-      } else if(i < 103){
-        rankHTML = `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
-      }
+      const rankHTML = getRankHTML(i);
 
       let regionHTML = "";
       if (region) {
@@ -304,12 +302,12 @@ function loadMode(mode,btn){
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}' data-index="${i}">
         ${i < 3 ? `
         <div class="absolute inset-0 pointer-events-none"
-             style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
+             style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
         </div>
         ` : ""}
-       
+      
         <img src="${avatar}" class="player-img">
-       
+      
         <div class="flex-1 flex flex-col justify-center">
           <div class="flex items-center flex-wrap gap-x-2">
             ${medalIcon}${i+1}. ${name}
@@ -318,12 +316,12 @@ function loadMode(mode,btn){
           </div>
           ${getModeIconsHTML(r)}
         </div>
-       
+      
         <div class="font-mono text-lg font-bold relative z-10">${r[pointsCol]}</div>
       </div>`;
     });
   } else {
-    // Other tabs unchanged
+    // Sub-modes (unchanged)
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -333,7 +331,7 @@ function loadMode(mode,btn){
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
-   
+  
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
       htmlOut += `<div class="mb-6">
@@ -342,7 +340,7 @@ function loadMode(mode,btn){
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
-       
+      
         let regionHTML = "";
         if (region) {
           let regionClass = "";
@@ -354,7 +352,7 @@ function loadMode(mode,btn){
           else if (reg === "AU") regionClass = "AU";
           regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
-       
+      
         htmlOut += `
         <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
@@ -367,19 +365,20 @@ function loadMode(mode,btn){
       htmlOut += `</div>`;
     });
   }
-  
+ 
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Fixed Click Handler - Now works properly
+  // Click handler for modal
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
       const region = playerData[regionCol];
-      
+      const rankIndex = parseInt(card.dataset.index) || 0;
+     
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]}</h2>`;
-     
+    
       if(region) {
         let regionClass = "";
         const reg = region.toUpperCase().trim();
@@ -391,22 +390,14 @@ function loadMode(mode,btn){
         modalHTML += `<div class="region-badge mx-auto mt-2 ${regionClass}">${region}</div>`;
       }
 
-      // Show correct rank title in modal
-      const rankIndex = parseInt(card.dataset.index) || 0;
-      let rankTitleHTML = "";
-      if (rankIndex === 0) {
-        rankTitleHTML = `<div class="text-center mt-3"><span class="rank grandmaster text-xl"><i class="fas fa-crown"></i> Mace Grand Master</span></div>`;
-      } else if (rankIndex < 3) {
-        rankTitleHTML = `<div class="text-center mt-3"><span class="rank master text-xl"><i class="fas fa-crown"></i> Mace Master</span></div>`;
-      } else if (rankIndex < 53) {
-        rankTitleHTML = `<div class="text-center mt-3"><span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span></div>`;
-      } else if (rankIndex < 103) {
-        rankTitleHTML = `<div class="text-center mt-3"><span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span></div>`;
+      // Use the same fixed rank logic in modal
+      const rankHTML = getRankHTML(rankIndex);
+      if (rankHTML) {
+        modalHTML += `<div class="text-center mt-3">${rankHTML}</div>`;
       }
-      modalHTML += rankTitleHTML;
-     
+    
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
-     
+    
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
         <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
