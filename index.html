@@ -283,7 +283,7 @@ const tierColors = {
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = [];
 
-// ========= ROCKET LEAGUE RANK IMAGES (instead of symbols/icons) =========
+// ========= ROCKET LEAGUE RANK IMAGES (Stable GitHub CDN) =========
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
@@ -291,49 +291,49 @@ function getRoleByPoints(points) {
     return { 
       name: "Mace Master", 
       className: "master", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/7/7c/Supersonic_Legend_Rank.png/revision/latest?cb=20200821140308",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Supersonic%20Legend.png",
       rankLabel: "Supersonic Legend"
     };
   } else if (pts >= 50 && pts <= 99) {
     return { 
       name: "Mace Ace", 
       className: "ace", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/4/4a/Grand_Champion_Rank.png/revision/latest?cb=20200821140059",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Grand%20Champion.png",
       rankLabel: "Grand Champion"
     };
   } else if (pts >= 25 && pts <= 49) {
     return { 
       name: "Mace Specialist", 
       className: "specialist", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/e/e8/Champion_Rank.png/revision/latest?cb=20200821135643",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Champion.png",
       rankLabel: "Champion"
     };
   } else if (pts >= 10 && pts <= 24) {
     return { 
       name: "Mace Cadet", 
       className: "cadet", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/7/72/Diamond_Rank.png/revision/latest?cb=20200821135810",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Diamond.png",
       rankLabel: "Diamond"
     };
   } else if (pts >= 5 && pts <= 9) {
     return { 
       name: "Mace Novice", 
       className: "novice", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/6/6b/Platinum_Rank.png/revision/latest?cb=20200821135936",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Platinum.png",
       rankLabel: "Platinum"
     };
   } else if (pts >= 1 && pts <= 4) {
     return { 
       name: "Mace Rookie", 
       className: "rookie", 
-      imageUrl: "https://static.wikia.nocookie.net/rocketleague/images/5/5f/Gold_Rank.png/revision/latest?cb=20200821135623",
+      imageUrl: "https://raw.githubusercontent.com/atilafassina/rocket-league-ranks/master/src/assets/ranks/Gold.png",
       rankLabel: "Gold"
     };
   }
   return null;
 }
 
-// SMALL RANK BADGE (Rocket League image instead of symbol)
+// SMALL RANK BADGE (Rocket League image)
 function getRankBadge(points, isModal = false) {
   const role = getRoleByPoints(points);
   if (!role) return '';
@@ -344,7 +344,7 @@ function getRankBadge(points, isModal = false) {
   </span>`;
 }
 
-// LARGE RANK BADGE (for overall tab, bigger RL image)
+// LARGE RANK BADGE (for overall tab)
 function getLargeRankBadge(points) {
   const role = getRoleByPoints(points);
   if (!role) return '';
