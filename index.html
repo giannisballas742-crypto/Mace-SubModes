@@ -14,7 +14,7 @@ body {
   overflow-x: hidden;
   position: relative;
 }
-/* Particle Background */
+/* ===== ENHANCED RED BACKGROUND & PARTICLES ===== */
 #particles {
   position: fixed;
   top: 0;
@@ -23,20 +23,34 @@ body {
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(circle at center, rgba(219, 62, 62, 0.08) 0%, transparent 70%);
+  /* Stronger red radial gradient core + wider spread */
+  background: radial-gradient(circle at center, rgba(219, 62, 62, 0.22) 0%, rgba(219, 62, 62, 0.05) 40%, transparent 80%);
+}
+/* additional side red glow layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(219,62,62,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 90% 40%, rgba(219,62,62,0.12) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 .particle {
   position: absolute;
   background: #db3e3e;
   border-radius: 50%;
-  opacity: 0.25;
+  opacity: 0.35;
   animation: floatParticle linear infinite;
-  box-shadow: 0 0 8px #db3e3e;
+  box-shadow: 0 0 10px #db3e3e;
 }
 @keyframes floatParticle {
-  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-  10% { opacity: 0.25; }
-  90% { opacity: 0.25; }
+  0% { transform: translateY(100vh) scale(0.4); opacity: 0; }
+  12% { opacity: 0.4; }
+  88% { opacity: 0.4; }
   100% { transform: translateY(-100px) scale(1); opacity: 0; }
 }
 .tab { transition:0.2s; cursor:pointer; }
@@ -177,7 +191,7 @@ body {
 </style>
 </head>
 <body>
-<!-- Particle Container -->
+<!-- Particle Container (enhanced particles count) -->
 <div id="particles"></div>
 <div class="max-w-6xl mx-auto p-6 relative z-10">
 <div class="flex justify-between items-center mb-6">
@@ -211,19 +225,21 @@ body {
 </div>
 
 <script>
-// === PARTICLE SYSTEM ===
+// === ENHANCED PARTICLE SYSTEM (MORE RED PARTICLES) ===
 function createParticles() {
   const container = document.getElementById('particles');
-  for (let i = 0; i < 80; i++) {
+  // Increased particle count from 80 to 150 for richer red atmosphere
+  for (let i = 0; i < 150; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
-    const size = Math.random() * 4 + 2;
+    const size = Math.random() * 5 + 2;
     particle.style.width = `${size}px`;
     particle.style.height = `${size}px`;
     particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.animationDuration = `${Math.random() * 15 + 15}s`;
-    particle.style.animationDelay = `-${Math.random() * 20}s`;
-    particle.style.opacity = Math.random() * 0.3 + 0.15;
+    particle.style.animationDuration = `${Math.random() * 18 + 12}s`;
+    particle.style.animationDelay = `-${Math.random() * 25}s`;
+    particle.style.opacity = Math.random() * 0.45 + 0.2; // slightly stronger glow
+    particle.style.background = `#db3e3e`;
     container.appendChild(particle);
   }
 }
@@ -283,7 +299,7 @@ function getRankBadge(points, isModal = false) {
   return `<span class="rank ${role.className} ${styleClass}"><i class="${role.icon.split(' ')[1]}"></i> ${role.name} ${role.symbol}</span>`;
 }
 
-// Generate LARGE rank badge for overall tab (bigger, placed near points)
+// Generate LARGE rank badge for overall tab (bigger, placed before points now)
 function getLargeRankBadge(points) {
   const role = getRoleByPoints(points);
   if (!role) return '';
@@ -403,10 +419,10 @@ function loadMode(mode, activeBtn){
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      // Points-based role: large badge for overall (moved to right side)
+      // Points-based role: large badge (placed BEFORE points)
       const largeRankBadge = getLargeRankBadge(pointsVal);
       
-      // Special grandmaster spark for #1 with points >=100 (extra flair)
+      // Extra grandmaster flair for #1 with high points
       let extraGrandHtml = "";
       if(idx === 0 && pointsVal >= 100) {
         extraGrandHtml = `<span class="rank grandmaster rank-large ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
@@ -424,14 +440,14 @@ function loadMode(mode, activeBtn){
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
 
-      // RIGHT SIDE: points + large rank badge (positioned next to points, a bit further than middle, bigger)
+      // RIGHT SIDE: ROLE BADGE FIRST, then points with "pts" label, then extra grand champion.
       const rightSideContent = `
-        <div class="flex items-center gap-4 relative z-10 flex-shrink-0">
-          <div class="font-mono text-xl font-bold text-red-400">${r[pointsCol]}</div>
-          <div class="flex items-center gap-2">
-            ${largeRankBadge}
-            ${extraGrandHtml}
+        <div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">
+          ${largeRankBadge}
+          <div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">
+            ${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span>
           </div>
+          ${extraGrandHtml}
         </div>
       `;
 
@@ -457,7 +473,7 @@ function loadMode(mode, activeBtn){
       </div>`;
     });
   } else {
-    // Other tabs: LT Mace, HT Mace etc — original tiered layout (no badge repositioning)
+    // Other tabs: LT Mace, HT Mace etc — original tiered layout (no badge repositioning, untouched)
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -510,11 +526,9 @@ function loadMode(mode, activeBtn){
 
   // Helper function to compute overall rank for any player
   function getOverallRank(playerObj) {
-    // Create sorted array by points (descending)
     const sorted = [...allRows].sort((a,b) => parseFloat(b[pointsCol]||0) - parseFloat(a[pointsCol]||0));
     const playerName = playerObj[nameCol];
     const playerPoints = parseFloat(playerObj[pointsCol]||0);
-    // Find first index where name matches and points equal (handle ties by first occurrence)
     const idx = sorted.findIndex(p => p[nameCol] === playerName && parseFloat(p[pointsCol]||0) === playerPoints);
     return idx !== -1 ? idx + 1 : null;
   }
@@ -527,7 +541,6 @@ function loadMode(mode, activeBtn){
       const region = playerData[regionCol];
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
       
-      // Compute overall rank
       const overallRank = getOverallRank(playerData);
       
       const role = getRoleByPoints(pointsVal);
@@ -566,7 +579,6 @@ function loadMode(mode, activeBtn){
       modalHTML += extraGrand;
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
       
-      // Add overall position line above overall points
       if (overallRank !== null) {
         modalHTML += `<div class="text-center mt-4 pt-2">
           <span class="text-gray-400">Overall Position:</span>
@@ -613,7 +625,7 @@ document.getElementById("modal-close").onclick = ()=>{
 
 // Initialize
 window.onload = () => {
-  createParticles();
+  createParticles();  // enhanced particles (150, redder)
   loadCSV();
   setInterval(loadCSV, 30000);
 };
