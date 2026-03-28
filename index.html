@@ -41,9 +41,9 @@ body {
 }
 .tab { transition:0.2s; cursor:pointer; }
 .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
+.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
 .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
-.player-img { width:40px; height:40px; border-radius:50%; border:2px solid #db3e3e; }
+.player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
@@ -56,7 +56,6 @@ body {
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
 .rank {
-  margin-left:10px;
   font-weight:700;
   display:inline-flex;
   align-items:center;
@@ -70,32 +69,31 @@ body {
 .mode-icons {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 6px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 .mode-icon-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 52px;
+  width: 48px;
 }
 .mode-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2.5px solid #333;
+  border: 2px solid #333;
   object-fit: contain;
   background: #111;
 }
 .mode-tier {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 1px 8px;
+  padding: 1px 6px;
   border-radius: 9999px;
   text-align: center;
-  min-width: 40px;
+  min-width: 36px;
 }
 </style>
 </head>
@@ -216,7 +214,7 @@ function getModeIconsHTML(player) {
   
   orderedModes.forEach(mode => {
     const tier = (player[mode] || "").toUpperCase().trim();
-    if (!tier) return; // Skip if not tested
+    if (!tier) return;
     
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
@@ -271,10 +269,11 @@ function loadMode(mode,btn){
         </div>
         ` : ""}
         
-        <img src="${avatar}" class="player-img relative z-10">
+        <img src="${avatar}" class="player-img">
         
-        <div class="flex-1 relative z-10">
-          <div class="flex items-center flex-wrap">
+        <!-- Name and rank centered next to skin -->
+        <div class="flex-1 flex flex-col justify-center">
+          <div class="flex items-center flex-wrap gap-x-2">
             ${medalIcon}${i+1}. ${name}
             ${region ? `<span class="region-badge">${region}</span>` : ""}
             ${rankHTML}
@@ -282,7 +281,7 @@ function loadMode(mode,btn){
           ${getModeIconsHTML(r)}
         </div>
         
-        <div class="relative z-10">${r[pointsCol]}</div>
+        <div class="font-mono text-lg font-bold relative z-10">${r[pointsCol]}</div>
       </div>`;
     });
   } else {
@@ -319,7 +318,6 @@ function loadMode(mode,btn){
 
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Player Modal - Now only shows icons + tiers (no text list)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = ()=>{
       const data = JSON.parse(card.dataset.player);
@@ -330,12 +328,10 @@ function loadMode(mode,btn){
       modalHTML += `<h2 class="text-2xl font-bold text-center">${data[nameCol]}</h2>`;
       if(region) modalHTML += `<div class="region-badge mx-auto mt-2">${region}</div>`;
       
-      // Only show the beautiful icons with tiers
       modalHTML += `<div class="mt-6">`;
       modalHTML += getModeIconsHTML(data);
       modalHTML += `</div>`;
       
-      // Keep only Overall Points
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span> 
         <span class="text-xl font-bold text-red-400">${data[pointsCol]}</span>
