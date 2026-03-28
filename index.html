@@ -182,7 +182,7 @@ const tierColors = {
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
 let currentSorted = [];
 
-// Valorant rank images (working direct URLs)
+// Valorant rank images (reliable emoji.gg CDN)
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
@@ -191,42 +191,42 @@ function getRoleByPoints(points) {
       name: "Mace Master",
       icon: "<i class='fas fa-crown'></i>",
       className: "master",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/56/Radiant_Rank.png" alt="Radiant">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/6823-valorant-radiant.png" alt="Radiant">`
     };
   } else if (pts >= 50 && pts <= 99) {
     return {
       name: "Mace Ace",
       icon: "<i class='fas fa-shield-alt'></i>",
       className: "ace",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/1/13/Immortal_Rank.png" alt="Immortal">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/5979-valorant-immortal-3.png" alt="Immortal">`
     };
   } else if (pts >= 25 && pts <= 49) {
     return {
       name: "Mace Specialist",
       icon: "<i class='fas fa-star'></i>",
       className: "specialist",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/7/7b/Ascendant_Rank.png" alt="Ascendant">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/4071-valorant-ascendant-3.png" alt="Ascendant">`
     };
   } else if (pts >= 10 && pts <= 24) {
     return {
       name: "Mace Cadet",
       icon: "<i class='fas fa-user-graduate'></i>",
       className: "cadet",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/5c/Diamond_Rank.png" alt="Diamond">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/6096-valorant-diamond-3.png" alt="Diamond">`
     };
   } else if (pts >= 5 && pts <= 9) {
     return {
       name: "Mace Novice",
       icon: "<i class='fas fa-feather-alt'></i>",
       className: "novice",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/6/6b/Gold_Rank.png" alt="Gold">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/1531-valorant-gold-3.png" alt="Gold">`
     };
   } else if (pts >= 1 && pts <= 4) {
     return {
       name: "Mace Rookie",
       icon: "<i class='fas fa-baby-carriage'></i>",
       className: "rookie",
-      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/d/d9/Silver_Rank.png" alt="Silver">`
+      symbol: `<img src="https://emoji.gg/assets/emoji/3293-valorant-silver-3.png" alt="Silver">`
     };
   }
   return null;
