@@ -47,7 +47,22 @@ body {
 .tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-.region-badge { padding:2px 6px; border-radius:6px; font-size:0.8rem; color:#000; font-weight:600; margin-left:6px; background:#22c55e; }
+
+/* Updated Region Colors */
+.region-badge { 
+  padding:2px 8px; 
+  border-radius:6px; 
+  font-size:0.8rem; 
+  color:#000; 
+  font-weight:600; 
+  margin-left:6px; 
+}
+.region-badge.EU { background:#22c55e; }
+.region-badge.AS { background:#3b82f6; }
+.region-badge.NA { background:#ef4444; }
+.region-badge.SA { background:#db2777; }
+.region-badge.AU { background:#fbbf24; }
+
 .modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
 .modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
 .modal-close { cursor:pointer; float:right; font-weight:bold; }
@@ -261,6 +276,20 @@ function loadMode(mode,btn){
         rankHTML = `<span class="rank spec"><i class="fas fa-star"></i> Combat Specialist</span>`;
       }
 
+      // Region badge with new colors
+      let regionHTML = "";
+      if (region) {
+        let regionClass = "";
+        const reg = region.toUpperCase().trim();
+        if (reg === "EU") regionClass = "EU";
+        else if (reg === "AS") regionClass = "AS";
+        else if (reg === "NA") regionClass = "NA";
+        else if (reg === "SA") regionClass = "SA";
+        else if (reg === "AU") regionClass = "AU";
+        
+        regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
+      }
+
       htmlOut += `
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}'>
         ${i < 3 ? `
@@ -271,11 +300,10 @@ function loadMode(mode,btn){
         
         <img src="${avatar}" class="player-img">
         
-        <!-- Name and rank centered next to skin -->
         <div class="flex-1 flex flex-col justify-center">
           <div class="flex items-center flex-wrap gap-x-2">
             ${medalIcon}${i+1}. ${name}
-            ${region ? `<span class="region-badge">${region}</span>` : ""}
+            ${regionHTML}
             ${rankHTML}
           </div>
           ${getModeIconsHTML(r)}
@@ -303,12 +331,25 @@ function loadMode(mode,btn){
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
+        
+        let regionHTML = "";
+        if (region) {
+          let regionClass = "";
+          const reg = region.toUpperCase().trim();
+          if (reg === "EU") regionClass = "EU";
+          else if (reg === "AS") regionClass = "AS";
+          else if (reg === "NA") regionClass = "NA";
+          else if (reg === "SA") regionClass = "SA";
+          else if (reg === "AU") regionClass = "AU";
+          regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
+        }
+        
         htmlOut += `
         <div class="player-card" data-player='${JSON.stringify(r)}'>
           <img src="${avatar}" class="player-img">
           <div class="flex items-center gap-2">
             ${name}
-            ${region ? `<span class="region-badge">${region}</span>` : ""}
+            ${regionHTML}
           </div>
         </div>`;
       });
@@ -326,7 +367,17 @@ function loadMode(mode,btn){
       
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       modalHTML += `<h2 class="text-2xl font-bold text-center">${data[nameCol]}</h2>`;
-      if(region) modalHTML += `<div class="region-badge mx-auto mt-2">${region}</div>`;
+      
+      if(region) {
+        let regionClass = "";
+        const reg = region.toUpperCase().trim();
+        if (reg === "EU") regionClass = "EU";
+        else if (reg === "AS") regionClass = "AS";
+        else if (reg === "NA") regionClass = "NA";
+        else if (reg === "SA") regionClass = "SA";
+        else if (reg === "AU") regionClass = "AU";
+        modalHTML += `<div class="region-badge mx-auto mt-2 ${regionClass}">${region}</div>`;
+      }
       
       modalHTML += `<div class="mt-6">`;
       modalHTML += getModeIconsHTML(data);
