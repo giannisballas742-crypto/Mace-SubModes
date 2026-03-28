@@ -169,7 +169,6 @@ function createParticles() {
   }
 }
 
-// Game mode icons mapping
 const modeIcons = {
   "LT Mace": "https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96",
   "HT Mace": "https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96",
@@ -234,10 +233,8 @@ function getModeIconsHTML(player) {
   orderedModes.forEach(mode => {
     const tier = (player[mode] || "").toUpperCase().trim();
     if (!tier) return;
-  
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
-  
     html += `
       <div class="mode-icon-container">
         <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
@@ -249,18 +246,18 @@ function getModeIconsHTML(player) {
   return html;
 }
 
-// FIXED: Proper rank logic
+// Correct Rank Logic - Only #1 is Grand Master
 function getRankHTML(index) {
   if (index === 0) {
     return `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
-  } else if (index < 3) {
+  } else if (index < 3) {           // positions 1 and 2 (0-based: 1,2)
     return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
   } else if (index < 53) {
     return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
   } else if (index < 103) {
     return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
   }
-  return ""; // No rank for everyone else
+  return ""; // No role for others
 }
 
 function loadMode(mode,btn){
@@ -300,12 +297,6 @@ function loadMode(mode,btn){
 
       htmlOut += `
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}' data-index="${i}">
-        ${i < 3 ? `
-        <div class="absolute inset-0 pointer-events-none"
-             style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
-        </div>
-        ` : ""}
-      
         <img src="${avatar}" class="player-img">
       
         <div class="flex-1 flex flex-col justify-center">
@@ -321,7 +312,7 @@ function loadMode(mode,btn){
       </div>`;
     });
   } else {
-    // Sub-modes (unchanged)
+    // Sub-modes unchanged
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -368,7 +359,7 @@ function loadMode(mode,btn){
  
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Click handler for modal
+  // Modal click handler - uses same correct rank logic
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player);
@@ -390,7 +381,6 @@ function loadMode(mode,btn){
         modalHTML += `<div class="region-badge mx-auto mt-2 ${regionClass}">${region}</div>`;
       }
 
-      // Use the same fixed rank logic in modal
       const rankHTML = getRankHTML(rankIndex);
       if (rankHTML) {
         modalHTML += `<div class="text-center mt-3">${rankHTML}</div>`;
