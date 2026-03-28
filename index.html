@@ -48,7 +48,7 @@ body {
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
 
-/* Updated Region Colors */
+/* Region Colors */
 .region-badge {
   padding:2px 8px;
   border-radius:6px;
@@ -71,7 +71,7 @@ body {
 .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
 .medal-icon { margin-right:8px; }
 
-/* Updated Rank Styles */
+/* Rank Styles */
 .rank {
   font-weight:700;
   display:inline-flex;
@@ -195,6 +195,7 @@ const tierColors = {
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
+let currentSorted = []; // ← Fixed: Store sorted list globally so modal can access it
 
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
@@ -233,7 +234,6 @@ async function loadCSV(){
 
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
- 
   const orderedModes = ["LT Mace", "HT Mace", "Rocket Mace", "Rod Mace", "OG Mace", "Spear Mace"];
  
   orderedModes.forEach(mode => {
@@ -261,9 +261,11 @@ function loadMode(mode,btn){
   document.getElementById("mode-title").textContent = mode+" Rankings";
  
   let htmlOut = "";
+
   if(mode==="Overall"){
-    const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-    sorted.forEach((r,i)=>{
+    currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)); // Store for modal
+    
+    currentSorted.forEach((r,i)=>{
       const name = r[nameCol];
       if(!name) return;
      
@@ -299,7 +301,7 @@ function loadMode(mode,btn){
       }
 
       htmlOut += `
-      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}'>
+      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}' data-index="${i}">
         ${i < 3 ? `
         <div class="absolute inset-0 pointer-events-none"
              style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
@@ -321,7 +323,7 @@ function loadMode(mode,btn){
       </div>`;
     });
   } else {
-    // Other modes unchanged
+    // Other tabs unchanged
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -368,14 +370,15 @@ function loadMode(mode,btn){
   
   document.getElementById("rankings").innerHTML = htmlOut;
 
+  // Fixed Click Handler - Now works properly
   document.querySelectorAll(".player-card").forEach(card=>{
-    card.onclick = ()=>{
-      const data = JSON.parse(card.dataset.player);
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(data[nameCol])}/128`;
-      const region = data[regionCol];
-     
+    card.onclick = () => {
+      const playerData = JSON.parse(card.dataset.player);
+      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
+      const region = playerData[regionCol];
+      
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
-      modalHTML += `<h2 class="text-2xl font-bold text-center">${data[nameCol]}</h2>`;
+      modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]}</h2>`;
      
       if(region) {
         let regionClass = "";
@@ -388,27 +391,25 @@ function loadMode(mode,btn){
         modalHTML += `<div class="region-badge mx-auto mt-2 ${regionClass}">${region}</div>`;
       }
 
-      // Show rank title in modal under region
-      let rankTitle = "";
-      const rankIndex = sorted.findIndex(p => p[nameCol] === data[nameCol]); // approximate position
+      // Show correct rank title in modal
+      const rankIndex = parseInt(card.dataset.index) || 0;
+      let rankTitleHTML = "";
       if (rankIndex === 0) {
-        rankTitle = `<div class="text-center mt-3"><span class="rank grandmaster text-xl"><i class="fas fa-crown"></i> Mace Grand Master</span></div>`;
+        rankTitleHTML = `<div class="text-center mt-3"><span class="rank grandmaster text-xl"><i class="fas fa-crown"></i> Mace Grand Master</span></div>`;
       } else if (rankIndex < 3) {
-        rankTitle = `<div class="text-center mt-3"><span class="rank master text-xl"><i class="fas fa-crown"></i> Mace Master</span></div>`;
+        rankTitleHTML = `<div class="text-center mt-3"><span class="rank master text-xl"><i class="fas fa-crown"></i> Mace Master</span></div>`;
       } else if (rankIndex < 53) {
-        rankTitle = `<div class="text-center mt-3"><span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span></div>`;
+        rankTitleHTML = `<div class="text-center mt-3"><span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span></div>`;
       } else if (rankIndex < 103) {
-        rankTitle = `<div class="text-center mt-3"><span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span></div>`;
+        rankTitleHTML = `<div class="text-center mt-3"><span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span></div>`;
       }
-      modalHTML += rankTitle;
+      modalHTML += rankTitleHTML;
      
-      modalHTML += `<div class="mt-6">`;
-      modalHTML += getModeIconsHTML(data);
-      modalHTML += `</div>`;
+      modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
      
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
-        <span class="text-xl font-bold text-red-400">${data[pointsCol]}</span>
+        <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
       </div>`;
 
       document.getElementById("modal-content").innerHTML = modalHTML;
