@@ -4,50 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mace SubModes Tiers • Rankings</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
 body {
-  background: #0a0a0a;
+  background:#0a0a0a;
   color:#e5e5e5;
   font-family:system-ui;
-  overflow-x: hidden;
-  position: relative;
+  overflow-x:hidden;
 }
-/* Particle Background */
+
 #particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(circle at center, rgba(219, 62, 62, 0.08) 0%, transparent 70%);
+  position:fixed;
+  inset:0;
+  z-index:-1;
 }
-.particle {
-  position: absolute;
-  background: #db3e3e;
-  border-radius: 50%;
-  opacity: 0.25;
-  animation: floatParticle linear infinite;
-  box-shadow: 0 0 8px #db3e3e;
+
+.player-card {
+  background:#1f2937;
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:0.2s;
 }
-@keyframes floatParticle {
-  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-  10% { opacity: 0.25; }
-  90% { opacity: 0.25; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+
+.player-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 10px 20px rgba(219,62,62,0.4);
 }
-.tab { transition:0.2s; cursor:pointer; }
-.tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
-.player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
-.player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
-.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; }
-.discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
-#search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-/* Region Colors */
+
+.player-img {
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:2px solid #db3e3e;
+}
+
 .region-badge {
   padding:2px 8px;
   border-radius:6px;
@@ -56,343 +54,170 @@ body {
   font-weight:600;
   margin-left:6px;
 }
+
 .region-badge.EU { background:#22c55e; }
 .region-badge.AS { background:#3b82f6; }
 .region-badge.NA { background:#ef4444; }
 .region-badge.SA { background:#db2777; }
 .region-badge.AU { background:#fbbf24; }
-.modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
-.modal { background:#1f2937; padding:20px; border-radius:12px; max-width:400px; width:90%; }
-.modal-close { cursor:pointer; float:right; font-weight:bold; }
-.medal-icon { margin-right:8px; }
-/* Rank Styles - only for the new roles */
-.rank {
-  font-weight:700;
-  display:inline-flex;
+
+.rank { font-weight:700; margin-left:6px; }
+
+.modal-bg {
+  background:rgba(0,0,0,0.7);
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
   align-items:center;
-  gap:6px;
 }
-.rank.master { color:#ffd700; text-shadow:0 0 8px #ffd700; }
-.rank.ace { color:#eab308; text-shadow:0 0 8px #eab308; }
-.rank.spec { color:#cd7f32; }
+
+.modal {
+  background:#1f2937;
+  padding:20px;
+  border-radius:12px;
+  width:320px;
+}
 </style>
 </head>
+
 <body>
-<!-- Particle Container -->
+
 <div id="particles"></div>
-<div class="max-w-6xl mx-auto p-6 relative z-10">
-<div class="flex justify-between items-center mb-6">
-  <div class="flex items-center gap-4">
-    <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
-      <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
-    </div>
-    <div>
-      <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
-      <p class="text-red-400 text-sm">Mace PvP Rankings</p>
-    </div>
-  </div>
-  <div class="text-right flex flex-col items-end gap-2">
-    <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
-      <i class="fab fa-discord"></i> Join Discord
-    </a>
-    <div class="text-gray-400 text-sm">Your Server</div>
-    <div class="text-red-400 font-mono">mcpvp.club</div>
-  </div>
-</div>
-<input type="text" id="search-input" placeholder="Search players...">
-<div id="tabs" class="flex gap-3 mb-6 flex-wrap"></div>
-<h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
+
+<div class="max-w-5xl mx-auto p-6">
+
+<h1 class="text-3xl mb-6 font-bold">Mace Rankings</h1>
+
 <div id="rankings"></div>
+
 <div id="player-modal" class="hidden modal-bg">
   <div class="modal">
-    <span class="modal-close" id="modal-close">&times;</span>
+    <span id="modal-close" style="cursor:pointer;">✖</span>
     <div id="modal-content"></div>
   </div>
 </div>
+
 </div>
 
 <script>
-// === PARTICLE SYSTEM ===
-function createParticles() {
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 80; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    const size = Math.random() * 4 + 2;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.animationDuration = `${Math.random() * 15 + 15}s`;
-    particle.style.animationDelay = `-${Math.random() * 20}s`;
-    particle.style.opacity = Math.random() * 0.3 + 0.15;
-    container.appendChild(particle);
+
+// PARTICLES
+function createParticles(){
+  const container=document.getElementById("particles");
+  for(let i=0;i<60;i++){
+    const p=document.createElement("div");
+    p.style.position="absolute";
+    p.style.width="3px";
+    p.style.height="3px";
+    p.style.background="#db3e3e";
+    p.style.left=Math.random()*100+"%";
+    p.style.top=Math.random()*100+"%";
+    p.style.opacity=0.3;
+    container.appendChild(p);
   }
 }
 
-const modeIcons = {
-  "LT Mace": "https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96",
-  "HT Mace": "https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96",
-  "Rocket Mace": "https://cdn.discordapp.com/emojis/1305399636030128178.webp?size=96",
-  "Rod Mace": "https://cdn.discordapp.com/emojis/1305399563716268095.webp?size=96",
-  "OG Mace": "https://cdn.discordapp.com/emojis/1305399676630994994.webp?size=96",
-  "Spear Mace": "https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96"
-};
+// CSV
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
-const REGION_COLUMN_INDEX = 2;
-const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
-const tierColors = {
-  HT1:"#f1c40f", LT1:"#ffa600",
-  HT2:"#bdc3c7", LT2:"#95a5a6",
-  HT3:"#ff8531", LT3:"#f37324",
-  HT4:"#55ffff", LT4:"#aaffff",
-  HT5:"#5555ff", LT5:"#AAAAFF"
-};
+let allRows=[], nameCol="", pointsCol="", regionCol="__region";
 
-let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
-let currentSorted = [];
+function parseCSV(text){
+  const lines=text.split("\n").filter(l=>l.trim());
+  const headers=lines[0].split(",");
+  const data=lines.slice(1).map(l=>{
+    const cells=l.split(",");
+    const obj={};
+    headers.forEach((h,i)=>obj[h]=cells[i]||"");
+    obj["__region"]=cells[2]||"";
+    return obj;
+  });
+  return {headers,data};
+}
 
-// New point-based roles with cool symbols (only change made)
-function getPlayerRoleHTML(points) {
-  const p = parseFloat(points) || 0;
-  if (p >= 100) return `<span class="rank master"><i class="fas fa-crown"></i> Mace Master</span>`;
-  if (p >= 50) return `<span class="rank ace"><i class="fas fa-shield-alt"></i> Mace Ace</span>`;
-  if (p >= 25) return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
-  if (p >= 10) return `<span class="rank" style="color:#22d3ee;"><i class="fas fa-user-shield"></i> Mace Cadet</span>`;
-  if (p >= 5) return `<span class="rank" style="color:#a78bfa;"><i class="fas fa-seedling"></i> Mace Novice</span>`;
-  if (p >= 1) return `<span class="rank" style="color:#f472b6;"><i class="fas fa-baby"></i> Mace Rookie</span>`;
+// RANK SYSTEM (POINT BASED)
+function getRankHTML(points){
+  points=parseFloat(points)||0;
+
+  if(points>=100) return `<span class="rank"><i class="fas fa-crown"></i> Mace Master</span>`;
+  if(points>=50) return `<span class="rank"><i class="fas fa-shield"></i> Mace Ace</span>`;
+  if(points>=25) return `<span class="rank"><i class="fas fa-star"></i> Mace Specialist</span>`;
+  if(points>=10) return `<span class="rank"><i class="fas fa-user-graduate"></i> Mace Cadet</span>`;
+  if(points>=5) return `<span class="rank"><i class="fas fa-seedling"></i> Mace Novice</span>`;
+  if(points>=1) return `<span class="rank"><i class="fas fa-feather"></i> Mace Rookie</span>`;
   return "";
 }
 
-function parseCSV(text){
-  const lines = text.split(/\r?\n/).filter(l=>l.trim());
-  const headers = lines[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.replace(/"/g,'').trim());
-  const data = lines.slice(1).map(l=>{
-    const cells = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/"/g,'').trim());
-    const obj = {};
-    headers.forEach((h,i)=>obj[h]=cells[i]||"");
-    obj["__region"] = cells[REGION_COLUMN_INDEX] || "";
-    return obj;
-  });
-  return { headers, data };
+function getModalRankHTML(points){
+  return getRankHTML(points);
 }
 
-async function loadCSV(){
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
-  const { headers, data } = parseCSV(text);
-  allRows = data;
-  nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
-  pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
-  allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
- 
-  const tabsDiv = document.getElementById("tabs");
-  tabsDiv.innerHTML = "";
-  allModes.forEach((mode,i)=>{
-    const btn = document.createElement("button");
-    btn.textContent = mode;
-    btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
-    if(i===0) btn.classList.add("tab-active");
-    btn.onclick = ()=>loadMode(mode,btn);
-    tabsDiv.appendChild(btn);
-  });
-  loadMode("Overall", document.querySelector("#tabs button"));
+// LOAD
+async function load(){
+  const res=await fetch(CSV_URL);
+  const text=await res.text();
+  const {headers,data}=parseCSV(text);
+
+  allRows=data;
+  nameCol=headers[0];
+  pointsCol=headers[1];
+
+  render();
 }
 
-function getModeIconsHTML(player) {
-  let html = '<div class="mode-icons">';
-  const orderedModes = ["LT Mace", "HT Mace", "Rocket Mace", "Rod Mace", "OG Mace", "Spear Mace"];
-  orderedModes.forEach(mode => {
-    const tier = (player[mode] || "").toUpperCase().trim();
-    if (!tier) return;
-    const iconUrl = modeIcons[mode];
-    const color = tierColors[tier] || "#666";
-    html += `
-      <div class="mode-icon-container">
-        <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
-        <div class="mode-tier" style="background:${color}; color:#000;">${tier}</div>
+// RENDER
+function render(){
+  let sorted=[...allRows].sort((a,b)=>b[pointsCol]-a[pointsCol]);
+  let html="";
+
+  sorted.forEach((r,i)=>{
+    const name=r[nameCol];
+    const pts=r[pointsCol];
+    const region=r[regionCol];
+
+    let regionHTML=region?`<span class="region-badge ${region}">${region}</span>`:"";
+
+    html+=`
+    <div class="player-card" data-player='${JSON.stringify(r)}'>
+      <img src="https://mc-heads.net/avatar/${name}" class="player-img">
+      <div class="flex-1">
+        ${i+1}. ${name} ${regionHTML} ${getRankHTML(pts)}
       </div>
-    `;
+      <div class="font-bold">${pts}</div>
+    </div>`;
   });
-  html += '</div>';
-  return html;
-}
 
-function loadMode(mode,btn){
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
-  btn.classList.add("tab-active");
-  document.getElementById("mode-title").textContent = mode+" Rankings";
-  let htmlOut = "";
+  document.getElementById("rankings").innerHTML=html;
 
-  if(mode==="Overall"){
-    currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-    currentSorted.forEach((r,i)=>{
-      const name = r[nameCol];
-      if(!name) return;
-   
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`;
-      const region = r[regionCol];
-      const points = r[pointsCol] || '0';
-
-      let medalIcon = "";
-      if(i===0) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
-      else if(i===1) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
-      else if(i===2) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
-
-      const roleHTML = getPlayerRoleHTML(points);
-
-      let regionHTML = "";
-      if (region) {
-        let regionClass = "";
-        const reg = region.toUpperCase().trim();
-        if (reg === "EU") regionClass = "EU";
-        else if (reg === "AS") regionClass = "AS";
-        else if (reg === "NA") regionClass = "NA";
-        else if (reg === "SA") regionClass = "SA";
-        else if (reg === "AU") regionClass = "AU";
-        regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
-      }
-
-      if (i < 3) {
-        const bannerColor = i===0 ? '#ffd700' : i===1 ? '#c0c0c0' : '#cd7f32';
-        htmlOut += `
-        <div class="top3-card player-card" data-player='${JSON.stringify(r)}'>
-          <div class="top3-banner" style="background: linear-gradient(90deg, ${bannerColor}88, transparent);"></div>
-          <img src="${avatar}" class="top3-skin">
-          <div class="flex-1 flex flex-col justify-center z-10">
-            <div class="flex items-center flex-wrap gap-x-2">
-              ${medalIcon}${i+1}. ${name}
-              ${regionHTML}
-              ${roleHTML}
-            </div>
-            ${getModeIconsHTML(r)}
-          </div>
-          <div class="font-mono text-lg font-bold relative z-10">${points}</div>
-        </div>`;
-      } else {
-        htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}'>
-          <img src="https://mc-heads.net/avatar/${encodeURIComponent(name)}/64" class="player-img">
-          <div class="flex-1 flex flex-col justify-center">
-            <div class="flex items-center flex-wrap gap-x-2">
-              ${medalIcon}${i+1}. ${name}
-              ${regionHTML}
-              ${roleHTML}
-            </div>
-            ${getModeIconsHTML(r)}
-          </div>
-          <div class="font-mono text-lg font-bold">${points}</div>
-        </div>`;
-      }
-    });
-  } else {
-    const groups = {};
-    allRows.forEach(r=>{
-      const name = r[nameCol];
-      if(!name) return;
-      const tier = (r[mode]||"").toUpperCase().trim();
-      if(!tier) return;
-      if(!groups[tier]) groups[tier]=[];
-      groups[tier].push(r);
-    });
- 
-    tierOrder.forEach(tier=>{
-      if(!groups[tier]) return;
-      htmlOut += `<div class="mb-6">
-        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
-      groups[tier].forEach(r=>{
-        const name = r[nameCol];
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        const region = r[regionCol];
-        const points = r[pointsCol] || '0';
-
-        let regionHTML = "";
-        if (region) {
-          let regionClass = "";
-          const reg = region.toUpperCase().trim();
-          if (reg === "EU") regionClass = "EU";
-          else if (reg === "AS") regionClass = "AS";
-          else if (reg === "NA") regionClass = "NA";
-          else if (reg === "SA") regionClass = "SA";
-          else if (reg === "AU") regionClass = "AU";
-          regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
-        }
-
-        const roleHTML = getPlayerRoleHTML(points);
-
-        htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}'>
-          <img src="${avatar}" class="player-img">
-          <div class="flex-1 flex flex-col justify-center">
-            <div class="flex items-center flex-wrap gap-x-2">
-              ${name}
-              ${regionHTML}
-              ${roleHTML}
-            </div>
-          </div>
-        </div>`;
-      });
-      htmlOut += `</div>`;
-    });
-  }
-  document.getElementById("rankings").innerHTML = htmlOut;
-
-  // Modal (role + region next to name)
   document.querySelectorAll(".player-card").forEach(card=>{
-    card.onclick = () => {
-      const playerData = JSON.parse(card.dataset.player);
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
-      const region = playerData[regionCol];
-      const points = playerData[pointsCol] || '0';
+    card.onclick=()=>{
+      const p=JSON.parse(card.dataset.player);
+      const region=p[regionCol];
 
-      let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
-      modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]}</h2>`;
-   
-      if(region) {
-        let regionClass = "";
-        const reg = region.toUpperCase().trim();
-        if (reg === "EU") regionClass = "EU";
-        else if (reg === "AS") regionClass = "AS";
-        else if (reg === "NA") regionClass = "NA";
-        else if (reg === "SA") regionClass = "SA";
-        else if (reg === "AU") regionClass = "AU";
-        modalHTML += `<div class="flex justify-center mt-2"><span class="region-badge ${regionClass}">${region}</span></div>`;
-      }
+      let regionHTML=region?`<span class="region-badge ${region}">${region}</span>`:"";
 
-      const roleHTML = getPlayerRoleHTML(points);
-      if (roleHTML) modalHTML += `<div class="text-center mt-4">${roleHTML}</div>`;
-   
-      modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
-   
-      modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
-        <span class="text-gray-400">Overall Points:</span>
-        <span class="text-xl font-bold text-red-400">${points}</span>
-      </div>`;
+      document.getElementById("modal-content").innerHTML=`
+        <h2 class="text-xl font-bold text-center">${p[nameCol]} ${regionHTML}</h2>
+        <div class="text-center mt-3">${getModalRankHTML(p[pointsCol])}</div>
+        <div class="text-center mt-4">Points: <b>${p[pointsCol]}</b></div>
+      `;
 
-      document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
     };
   });
 }
 
-document.getElementById("search-input").addEventListener("input", e=>{
-  const term = e.target.value.toLowerCase();
-  document.querySelectorAll(".player-card").forEach(card=>{
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(term) ? "flex" : "none";
-  });
-});
-
-document.getElementById("modal-close").onclick = ()=>{
+document.getElementById("modal-close").onclick=()=>{
   document.getElementById("player-modal").classList.add("hidden");
 };
 
-// Initialize
-window.onload = () => {
+window.onload=()=>{
   createParticles();
-  loadCSV();
-  setInterval(loadCSV, 30000);
+  load();
 };
+
 </script>
+
 </body>
 </html>
