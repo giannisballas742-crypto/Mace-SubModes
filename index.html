@@ -115,6 +115,14 @@ body {
   box-shadow: 0 0 12px #facc15;
 }
 
+/* Larger rank badge styling for overall tab */
+.rank-large {
+  font-size: 1rem !important;
+  padding: 0.35rem 1rem !important;
+  gap: 8px;
+  border-radius: 32px;
+}
+
 /* Mode icons styles */
 .mode-icons {
   display: flex;
@@ -145,6 +153,27 @@ body {
   text-align: center;
   min-width: 36px;
 }
+
+/* Tab image wrapper style */
+.tab-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 2px rgba(219,62,62,0.5));
+  transition: transform 0.2s;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.tab-item:hover .tab-icon {
+  transform: scale(1.05);
+}
 </style>
 </head>
 <body>
@@ -170,7 +199,7 @@ body {
   </div>
 </div>
 <input type="text" id="search-input" placeholder="Search players...">
-<div id="tabs" class="flex gap-3 mb-6 flex-wrap"></div>
+<div id="tabs" class="flex gap-6 mb-6 flex-wrap justify-center sm:justify-start"></div>
 <h2 id="mode-title" class="text-2xl mb-6">Overall Rankings</h2>
 <div id="rankings"></div>
 <div id="player-modal" class="hidden modal-bg">
@@ -199,7 +228,7 @@ function createParticles() {
   }
 }
 
-// Game mode icons mapping
+// Game mode icons mapping (for player mode icons & tab images)
 const modeIcons = {
   "LT Mace": "https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96",
   "HT Mace": "https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96",
@@ -208,6 +237,9 @@ const modeIcons = {
   "OG Mace": "https://cdn.discordapp.com/emojis/1305399676630994994.webp?size=96",
   "Spear Mace": "https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96"
 };
+
+// Special icon for Overall tab (provided link)
+const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp?size=96";
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
@@ -243,12 +275,19 @@ function getRoleByPoints(points) {
   return null;
 }
 
-// Generate rank badge HTML based on points
+// Generate rank badge HTML based on points (standard small version)
 function getRankBadge(points, isModal = false) {
   const role = getRoleByPoints(points);
   if (!role) return '';
   const styleClass = isModal ? 'text-lg px-4 py-1' : 'text-xs px-2 py-0.5';
   return `<span class="rank ${role.className} ${styleClass}"><i class="${role.icon.split(' ')[1]}"></i> ${role.name} ${role.symbol}</span>`;
+}
+
+// Generate LARGE rank badge for overall tab (bigger, placed near points)
+function getLargeRankBadge(points) {
+  const role = getRoleByPoints(points);
+  if (!role) return '';
+  return `<span class="rank ${role.className} rank-large"><i class="${role.icon.split(' ')[1]}"></i> ${role.name} ${role.symbol}</span>`;
 }
 
 function parseCSV(text){
@@ -273,17 +312,49 @@ async function loadCSV(){
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
  
+  // Build tabs with icons ABOVE each button
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
-  allModes.forEach((mode,i)=>{
+  
+  allModes.forEach((mode, idx) => {
+    const tabWrapper = document.createElement("div");
+    tabWrapper.className = "tab-item";
+    
+    // Choose icon: Overall uses special link, others from modeIcons mapping
+    let iconUrl = "";
+    if (mode === "Overall") {
+      iconUrl = OVERALL_ICON;
+    } else {
+      iconUrl = modeIcons[mode] || "";
+    }
+    
+    const img = document.createElement("img");
+    img.src = iconUrl;
+    img.alt = mode;
+    img.className = "tab-icon";
+    img.style.width = "36px";
+    img.style.height = "36px";
+    img.style.borderRadius = "8px";
+    
     const btn = document.createElement("button");
     btn.textContent = mode;
     btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
-    if(i===0) btn.classList.add("tab-active");
-    btn.onclick = ()=>loadMode(mode,btn);
-    tabsDiv.appendChild(btn);
+    if(idx === 0) btn.classList.add("tab-active");
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      loadMode(mode, btn);
+    };
+    
+    tabWrapper.appendChild(img);
+    tabWrapper.appendChild(btn);
+    // Also allow clicking the whole wrapper to trigger tab
+    tabWrapper.addEventListener("click", (e) => {
+      if(e.target !== btn) btn.click();
+    });
+    tabsDiv.appendChild(tabWrapper);
   });
-  loadMode("Overall", document.querySelector("#tabs button"));
+  
+  loadMode("Overall", document.querySelector("#tabs .tab-active"));
 }
 
 function getModeIconsHTML(player) {
@@ -309,14 +380,15 @@ function getModeIconsHTML(player) {
   return html;
 }
 
-function loadMode(mode,btn){
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("tab-active"));
-  btn.classList.add("tab-active");
+function loadMode(mode, activeBtn){
+  document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.remove("tab-active"));
+  activeBtn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
  
   let htmlOut = "";
 
-  if(mode==="Overall"){
+  if(mode === "Overall"){
+    // SORT BY POINTS (highest first)
     currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
     
     currentSorted.forEach((r, idx)=>{
@@ -331,14 +403,13 @@ function loadMode(mode,btn){
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      // Generate role badge (points-based) instead of old fixed tiers
-      const rankBadge = getRankBadge(pointsVal, false);
+      // Points-based role: large badge for overall (moved to right side)
+      const largeRankBadge = getLargeRankBadge(pointsVal);
       
-      // Special Grandmaster visual for #1 overall with points >=100? Keep grandmaster spark if top but we override with points-based role
-      // We'll still show points-based role, but add extra spark for top 1
-      let extraGlow = "";
+      // Special grandmaster spark for #1 with points >=100 (extra flair)
+      let extraGrandHtml = "";
       if(idx === 0 && pointsVal >= 100) {
-        extraGlow = `<span class="rank grandmaster ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
+        extraGrandHtml = `<span class="rank grandmaster rank-large ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
       }
 
       let regionHTML = "";
@@ -353,8 +424,19 @@ function loadMode(mode,btn){
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
 
+      // RIGHT SIDE: points + large rank badge (positioned next to points, a bit further than middle, bigger)
+      const rightSideContent = `
+        <div class="flex items-center gap-4 relative z-10 flex-shrink-0">
+          <div class="font-mono text-xl font-bold text-red-400">${r[pointsCol]}</div>
+          <div class="flex items-center gap-2">
+            ${largeRankBadge}
+            ${extraGrandHtml}
+          </div>
+        </div>
+      `;
+
       htmlOut += `
-      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r)}' data-index="${idx}" data-points="${pointsVal}">
+      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-index="${idx}" data-points="${pointsVal}">
         ${idx < 3 ? `
         <div class="absolute inset-0 pointer-events-none"
              style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
@@ -363,21 +445,19 @@ function loadMode(mode,btn){
        
         <img src="${avatar}" class="player-img">
        
-        <div class="flex-1 flex flex-col justify-center">
+        <div class="flex-1 flex flex-col justify-center min-w-0">
           <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
-            ${medalIcon}${idx+1}. ${name}
+            ${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}
             ${regionHTML}
-            ${rankBadge}
-            ${extraGlow}
           </div>
           ${getModeIconsHTML(r)}
         </div>
        
-        <div class="font-mono text-lg font-bold relative z-10">${r[pointsCol]}</div>
+        ${rightSideContent}
       </div>`;
     });
   } else {
-    // Other tabs (LT Mace, HT Mace, etc) unchanged but also show points in card hover? Not required but we maintain original grouping
+    // Other tabs: LT Mace, HT Mace etc — original tiered layout (no badge repositioning)
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -412,9 +492,9 @@ function loadMode(mode,btn){
         }
        
         htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r)}' data-points="${pointsVal}">
+        <div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
           <img src="${avatar}" class="player-img">
-          <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex items-center gap-2 flex-wrap flex-1">
             <span class="font-semibold">${name}</span>
             ${regionHTML}
             ${rankBadgeSmall}
@@ -431,12 +511,11 @@ function loadMode(mode,btn){
   // Attach click handlers for modal (region & role fully displayed)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
-      const playerData = JSON.parse(card.dataset.player);
+      const playerData = JSON.parse(card.dataset.player.replace(/&apos;/g, "'"));
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
       const region = playerData[regionCol];
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
       
-      // Generate proper role badge for modal (large version)
       const role = getRoleByPoints(pointsVal);
       let roleModalHTML = '';
       if(role) {
@@ -449,7 +528,6 @@ function loadMode(mode,btn){
         `;
       }
       
-      // Special Grandmaster extra if points >=100 and maybe top? just for style
       let extraGrand = '';
       if(pointsVal >= 100) {
         extraGrand = `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>`;
@@ -457,7 +535,6 @@ function loadMode(mode,btn){
       
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       
-      // Player name with region next to it (as requested: region next to name in profile)
       let regionInline = '';
       if(region) {
         let regionClass = "";
@@ -471,18 +548,14 @@ function loadMode(mode,btn){
       }
       
       modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]} ${regionInline}</h2>`;
-      
       modalHTML += roleModalHTML;
       modalHTML += extraGrand;
-      
-      // Show mode icons + overall points
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
         <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
       </div>`;
       
-      // Additional rank flavor based on points tier
       if(pointsVal >= 100) {
         modalHTML += `<div class="text-center text-yellow-300 text-sm mt-2"><i class="fas fa-crown"></i> Mace Master - Top Tier Dominator</div>`;
       } else if(pointsVal >= 50) {
