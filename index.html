@@ -331,11 +331,10 @@ function loadMode(mode,btn){
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
 
-      // Generate role badge (points-based) instead of old fixed tiers
+      // Generate role badge (points-based)
       const rankBadge = getRankBadge(pointsVal, false);
       
-      // Special Grandmaster visual for #1 overall with points >=100? Keep grandmaster spark if top but we override with points-based role
-      // We'll still show points-based role, but add extra spark for top 1
+      // Special Grandmaster visual for #1 overall with points >=100
       let extraGlow = "";
       if(idx === 0 && pointsVal >= 100) {
         extraGlow = `<span class="rank grandmaster ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
@@ -351,6 +350,16 @@ function loadMode(mode,btn){
         else if (reg === "SA") regionClass = "SA";
         else if (reg === "AU") regionClass = "AU";
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
+      }
+
+      // Minecraft / PvP tier icons for top 3
+      let mcTierHTML = "";
+      if(idx === 0) {
+        mcTierHTML = `<div class="flex items-center gap-2 mt-1"><img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/5/5c/Diamond_%28item%29_JE2_BE2.png" style="width:24px;height:24px;image-rendering:pixelated;"><span class="text-cyan-300 font-bold text-sm">Diamond Tier</span></div>`;
+      } else if(idx === 1) {
+        mcTierHTML = `<div class="flex items-center gap-2 mt-1"><img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/0/04/Emerald_%28item%29_JE2_BE2.png" style="width:24px;height:24px;image-rendering:pixelated;"><span class="text-emerald-300 font-bold text-sm">Emerald Tier</span></div>`;
+      } else if(idx === 2) {
+        mcTierHTML = `<div class="flex items-center gap-2 mt-1"><img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/9b/Gold_Ingot_JE2_BE2.png" style="width:24px;height:24px;image-rendering:pixelated;"><span class="text-yellow-300 font-bold text-sm">Gold Tier</span></div>`;
       }
 
       htmlOut += `
@@ -370,6 +379,7 @@ function loadMode(mode,btn){
             ${rankBadge}
             ${extraGlow}
           </div>
+          ${mcTierHTML}
           ${getModeIconsHTML(r)}
         </div>
        
@@ -377,7 +387,7 @@ function loadMode(mode,btn){
       </div>`;
     });
   } else {
-    // Other tabs (LT Mace, HT Mace, etc) unchanged but also show points in card hover? Not required but we maintain original grouping
+    // Other tabs (LT Mace, HT Mace, etc) unchanged
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -428,7 +438,7 @@ function loadMode(mode,btn){
   
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Attach click handlers for modal (region & role fully displayed)
+  // Attach click handlers for modal (unchanged)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player);
@@ -436,7 +446,6 @@ function loadMode(mode,btn){
       const region = playerData[regionCol];
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
       
-      // Generate proper role badge for modal (large version)
       const role = getRoleByPoints(pointsVal);
       let roleModalHTML = '';
       if(role) {
@@ -449,7 +458,6 @@ function loadMode(mode,btn){
         `;
       }
       
-      // Special Grandmaster extra if points >=100 and maybe top? just for style
       let extraGrand = '';
       if(pointsVal >= 100) {
         extraGrand = `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>`;
@@ -457,7 +465,6 @@ function loadMode(mode,btn){
       
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       
-      // Player name with region next to it (as requested: region next to name in profile)
       let regionInline = '';
       if(region) {
         let regionClass = "";
@@ -475,14 +482,12 @@ function loadMode(mode,btn){
       modalHTML += roleModalHTML;
       modalHTML += extraGrand;
       
-      // Show mode icons + overall points
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
       modalHTML += `<div class="text-center mt-6 pt-4 border-t border-gray-600">
         <span class="text-gray-400">Overall Points:</span>
         <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
       </div>`;
       
-      // Additional rank flavor based on points tier
       if(pointsVal >= 100) {
         modalHTML += `<div class="text-center text-yellow-300 text-sm mt-2"><i class="fas fa-crown"></i> Mace Master - Top Tier Dominator</div>`;
       } else if(pointsVal >= 50) {
