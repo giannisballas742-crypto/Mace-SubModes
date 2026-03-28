@@ -23,8 +23,10 @@ body {
   height: 100%;
   z-index: -1;
   pointer-events: none;
+  /* Stronger red radial gradient core + wider spread */
   background: radial-gradient(circle at center, rgba(219, 62, 62, 0.22) 0%, rgba(219, 62, 62, 0.05) 40%, transparent 80%);
 }
+/* additional side red glow layers */
 body::before {
   content: '';
   position: fixed;
@@ -198,6 +200,7 @@ body::before {
 </style>
 </head>
 <body>
+<!-- Particle Container (enhanced particles count) -->
 <div id="particles"></div>
 <div class="max-w-6xl mx-auto p-6 relative z-10">
 <div class="flex justify-between items-center mb-6">
@@ -231,8 +234,10 @@ body::before {
 </div>
 
 <script>
+// === ENHANCED PARTICLE SYSTEM (MORE RED PARTICLES) ===
 function createParticles() {
   const container = document.getElementById('particles');
+  // Increased particle count from 80 to 150 for richer red atmosphere
   for (let i = 0; i < 150; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
@@ -242,12 +247,13 @@ function createParticles() {
     particle.style.left = `${Math.random() * 100}vw`;
     particle.style.animationDuration = `${Math.random() * 18 + 12}s`;
     particle.style.animationDelay = `-${Math.random() * 25}s`;
-    particle.style.opacity = Math.random() * 0.45 + 0.2;
+    particle.style.opacity = Math.random() * 0.45 + 0.2; // slightly stronger glow
     particle.style.background = `#db3e3e`;
     container.appendChild(particle);
   }
 }
 
+// Game mode icons mapping (for player mode icons & tab images)
 const modeIcons = {
   "LT Mace": "https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96",
   "HT Mace": "https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96",
@@ -257,6 +263,7 @@ const modeIcons = {
   "Spear Mace": "https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96"
 };
 
+// Special icon for Overall tab (provided link)
 const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp?size=96";
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
@@ -271,9 +278,9 @@ const tierColors = {
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
-let currentSorted = [];
+let currentSorted = []; // Store sorted list for modal rank access
 
-// ========= POINTS-BASED ROLE FUNCTION WITH WORKING IMAGE SYMBOLS =========
+// ========= POINTS-BASED ROLE FUNCTION with WORKING SYMBOL IMAGES =========
 function getRoleByPoints(points) {
   const pts = parseFloat(points);
   if (isNaN(pts)) return null;
@@ -282,51 +289,48 @@ function getRoleByPoints(points) {
       name: "Mace Master",
       icon: "<i class='fas fa-crown'></i>",
       className: "master",
-      // Radiant rank icon (working direct image)
-      symbol: `<img src="https://emoji.gg/assets/emoji/6823-valorant-radiant.png" alt="★">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/56/Radiant_Rank.png" alt="Radiant">`
     };
   } else if (pts >= 50 && pts <= 99) {
     return {
       name: "Mace Ace",
       icon: "<i class='fas fa-shield-alt'></i>",
       className: "ace",
-      symbol: `<img src="https://emoji.gg/assets/emoji/5979-valorant-immortal-3.png" alt="⚡">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/1/13/Immortal_Rank.png" alt="Immortal">`
     };
   } else if (pts >= 25 && pts <= 49) {
     return {
       name: "Mace Specialist",
       icon: "<i class='fas fa-star'></i>",
       className: "specialist",
-      symbol: `<img src="https://emoji.gg/assets/emoji/4071-valorant-ascendant-3.png" alt="✨">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/7/7b/Ascendant_Rank.png" alt="Ascendant">`
     };
   } else if (pts >= 10 && pts <= 24) {
     return {
       name: "Mace Cadet",
       icon: "<i class='fas fa-user-graduate'></i>",
       className: "cadet",
-      // Using Diamond 3 as a respectable cadet rank (direct image)
-      symbol: `<img src="https://emoji.gg/assets/emoji/6096-valorant-diamond-3.png" alt="🎓">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/5/5c/Diamond_Rank.png" alt="Diamond">`
     };
   } else if (pts >= 5 && pts <= 9) {
     return {
       name: "Mace Novice",
       icon: "<i class='fas fa-feather-alt'></i>",
       className: "novice",
-      // Gold 3 rank
-      symbol: `<img src="https://emoji.gg/assets/emoji/1531-valorant-gold-3.png" alt="🌱">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/6/6b/Gold_Rank.png" alt="Gold">`
     };
   } else if (pts >= 1 && pts <= 4) {
     return {
       name: "Mace Rookie",
       icon: "<i class='fas fa-baby-carriage'></i>",
       className: "rookie",
-      // Silver 3 rank
-      symbol: `<img src="https://emoji.gg/assets/emoji/3293-valorant-silver-3.png" alt="🍼">`
+      symbol: `<img src="https://static.wikia.nocookie.net/valorant/images/d/d9/Silver_Rank.png" alt="Silver">`
     };
   }
   return null;
 }
 
+// Generate rank badge HTML based on points (standard small version)
 function getRankBadge(points, isModal = false) {
   const role = getRoleByPoints(points);
   if (!role) return '';
@@ -334,6 +338,7 @@ function getRankBadge(points, isModal = false) {
   return `<span class="rank ${role.className} ${styleClass}">${role.icon} ${role.name} ${role.symbol}</span>`;
 }
 
+// Generate LARGE rank badge for overall tab (bigger, placed before points now)
 function getLargeRankBadge(points) {
   const role = getRoleByPoints(points);
   if (!role) return '';
@@ -362,13 +367,22 @@ async function loadCSV(){
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
  
+  // Build tabs with icons ABOVE each button
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
   
   allModes.forEach((mode, idx) => {
     const tabWrapper = document.createElement("div");
     tabWrapper.className = "tab-item";
-    let iconUrl = mode === "Overall" ? OVERALL_ICON : (modeIcons[mode] || "");
+    
+    // Choose icon: Overall uses special link, others from modeIcons mapping
+    let iconUrl = "";
+    if (mode === "Overall") {
+      iconUrl = OVERALL_ICON;
+    } else {
+      iconUrl = modeIcons[mode] || "";
+    }
+    
     const img = document.createElement("img");
     img.src = iconUrl;
     img.alt = mode;
@@ -376,6 +390,7 @@ async function loadCSV(){
     img.style.width = "36px";
     img.style.height = "36px";
     img.style.borderRadius = "8px";
+    
     const btn = document.createElement("button");
     btn.textContent = mode;
     btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
@@ -384,8 +399,10 @@ async function loadCSV(){
       e.stopPropagation();
       loadMode(mode, btn);
     };
+    
     tabWrapper.appendChild(img);
     tabWrapper.appendChild(btn);
+    // Also allow clicking the whole wrapper to trigger tab
     tabWrapper.addEventListener("click", (e) => {
       if(e.target !== btn) btn.click();
     });
@@ -398,11 +415,14 @@ async function loadCSV(){
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
   const orderedModes = ["LT Mace", "HT Mace", "Rocket Mace", "Rod Mace", "OG Mace", "Spear Mace"];
+ 
   orderedModes.forEach(mode => {
     const tier = (player[mode] || "").toUpperCase().trim();
     if (!tier) return;
+   
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
+   
     html += `
       <div class="mode-icon-container">
         <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
@@ -410,6 +430,7 @@ function getModeIconsHTML(player) {
       </div>
     `;
   });
+ 
   html += '</div>';
   return html;
 }
@@ -418,25 +439,34 @@ function loadMode(mode, activeBtn){
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.remove("tab-active"));
   activeBtn.classList.add("tab-active");
   document.getElementById("mode-title").textContent = mode+" Rankings";
+ 
   let htmlOut = "";
 
   if(mode === "Overall"){
+    // SORT BY POINTS (highest first)
     currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
+    
     currentSorted.forEach((r, idx)=>{
       const name = r[nameCol];
       if(!name) return;
       const pointsVal = parseFloat(r[pointsCol]||0);
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
+     
       let medalClass = "", medalIcon = "";
       if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+
+      // Points-based role: large badge (placed BEFORE points)
       const largeRankBadge = getLargeRankBadge(pointsVal);
+      
+      // Extra grandmaster flair for #1 with high points
       let extraGrandHtml = "";
       if(idx === 0 && pointsVal >= 100) {
         extraGrandHtml = `<span class="rank grandmaster rank-large ml-2"><i class="fas fa-crown"></i> #1 Grand Champion</span>`;
       }
+
       let regionHTML = "";
       if (region) {
         let regionClass = "";
@@ -448,6 +478,8 @@ function loadMode(mode, activeBtn){
         else if (reg === "AU") regionClass = "AU";
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
+
+      // RIGHT SIDE: ROLE BADGE FIRST, then points with "pts" label, then extra grand champion.
       const rightSideContent = `
         <div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">
           ${largeRankBadge}
@@ -457,10 +489,17 @@ function loadMode(mode, activeBtn){
           ${extraGrandHtml}
         </div>
       `;
+
       htmlOut += `
       <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-index="${idx}" data-points="${pointsVal}">
-        ${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}
+        ${idx < 3 ? `
+        <div class="absolute inset-0 pointer-events-none"
+             style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);">
+        </div>
+        ` : ""}
+       
         <img src="${avatar}" class="player-img">
+       
         <div class="flex-1 flex flex-col justify-center min-w-0">
           <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
             ${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}
@@ -468,10 +507,12 @@ function loadMode(mode, activeBtn){
           </div>
           ${getModeIconsHTML(r)}
         </div>
+       
         ${rightSideContent}
       </div>`;
     });
   } else {
+    // Other tabs: LT Mace, HT Mace etc — original tiered layout (no badge repositioning, untouched)
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -481,15 +522,18 @@ function loadMode(mode, activeBtn){
       if(!groups[tier]) groups[tier]=[];
       groups[tier].push(r);
     });
+   
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
-      htmlOut += `<div class="mb-6"><div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
+      htmlOut += `<div class="mb-6">
+        <div class="tier-header" style="background:${tierColors[tier]}">${tier}</div>`;
       groups[tier].forEach(r=>{
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
         const pointsVal = parseFloat(r[pointsCol]||0);
         const rankBadgeSmall = getRankBadge(pointsVal, false);
+       
         let regionHTML = "";
         if (region) {
           let regionClass = "";
@@ -501,6 +545,7 @@ function loadMode(mode, activeBtn){
           else if (reg === "AU") regionClass = "AU";
           regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
+       
         htmlOut += `
         <div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
           <img src="${avatar}" class="player-img">
@@ -518,6 +563,7 @@ function loadMode(mode, activeBtn){
   
   document.getElementById("rankings").innerHTML = htmlOut;
 
+  // Helper function to compute overall rank for any player
   function getOverallRank(playerObj) {
     const sorted = [...allRows].sort((a,b) => parseFloat(b[pointsCol]||0) - parseFloat(a[pointsCol]||0));
     const playerName = playerObj[nameCol];
@@ -526,21 +572,35 @@ function loadMode(mode, activeBtn){
     return idx !== -1 ? idx + 1 : null;
   }
 
+  // Attach click handlers for modal (region & role fully displayed)
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player.replace(/&apos;/g, "'"));
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(playerData[nameCol])}/128`;
       const region = playerData[regionCol];
       const pointsVal = parseFloat(playerData[pointsCol] || 0);
+      
       const overallRank = getOverallRank(playerData);
+      
       const role = getRoleByPoints(pointsVal);
       let roleModalHTML = '';
       if(role) {
-        roleModalHTML = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`;
+        roleModalHTML = `
+          <div class="flex justify-center mt-3">
+            <div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">
+              ${role.icon} ${role.name} ${role.symbol}
+            </div>
+          </div>
+        `;
       }
+      
       let extraGrand = '';
-      if(pointsVal >= 100) extraGrand = `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>`;
+      if(pointsVal >= 100) {
+        extraGrand = `<div class="text-center text-amber-400 text-sm mt-1"><i class="fas fa-bolt"></i> Elite Mace Warrior</div>`;
+      }
+      
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
+      
       let regionInline = '';
       if(region) {
         let regionClass = "";
@@ -552,20 +612,38 @@ function loadMode(mode, activeBtn){
         else if (reg === "AU") regionClass = "AU";
         regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`;
       }
+      
       modalHTML += `<h2 class="text-2xl font-bold text-center">${playerData[nameCol]} ${regionInline}</h2>`;
       modalHTML += roleModalHTML;
       modalHTML += extraGrand;
       modalHTML += `<div class="mt-6">${getModeIconsHTML(playerData)}</div>`;
+      
       if (overallRank !== null) {
-        modalHTML += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span> <span class="text-lg font-bold text-yellow-400">#${overallRank}</span></div>`;
+        modalHTML += `<div class="text-center mt-4 pt-2">
+          <span class="text-gray-400">Overall Position:</span>
+          <span class="text-lg font-bold text-yellow-400">#${overallRank}</span>
+        </div>`;
       }
-      modalHTML += `<div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span> <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span></div>`;
-      if(pointsVal >= 100) modalHTML += `<div class="text-center text-yellow-300 text-sm mt-2"><i class="fas fa-crown"></i> Mace Master - Top Tier Dominator</div>`;
-      else if(pointsVal >= 50) modalHTML += `<div class="text-center text-blue-300 text-sm mt-2"><i class="fas fa-shield-alt"></i> Mace Ace - Elite Combatant</div>`;
-      else if(pointsVal >= 25) modalHTML += `<div class="text-center text-green-300 text-sm mt-2"><i class="fas fa-star"></i> Mace Specialist - Proven Warrior</div>`;
-      else if(pointsVal >= 10) modalHTML += `<div class="text-center text-cyan-300 text-sm mt-2"><i class="fas fa-user-graduate"></i> Mace Cadet - Rising Talent</div>`;
-      else if(pointsVal >= 5) modalHTML += `<div class="text-center text-purple-300 text-sm mt-2"><i class="fas fa-feather-alt"></i> Mace Novice - Learning the Craft</div>`;
-      else if(pointsVal >= 1) modalHTML += `<div class="text-center text-gray-400 text-sm mt-2"><i class="fas fa-baby-carriage"></i> Mace Rookie - Fresh Recruit</div>`;
+      
+      modalHTML += `<div class="text-center mt-2 pt-2 border-t border-gray-600">
+        <span class="text-gray-400">Overall Points:</span>
+        <span class="text-xl font-bold text-red-400">${playerData[pointsCol]}</span>
+      </div>`;
+      
+      if(pointsVal >= 100) {
+        modalHTML += `<div class="text-center text-yellow-300 text-sm mt-2"><i class="fas fa-crown"></i> Mace Master - Top Tier Dominator</div>`;
+      } else if(pointsVal >= 50) {
+        modalHTML += `<div class="text-center text-blue-300 text-sm mt-2"><i class="fas fa-shield-alt"></i> Mace Ace - Elite Combatant</div>`;
+      } else if(pointsVal >= 25) {
+        modalHTML += `<div class="text-center text-green-300 text-sm mt-2"><i class="fas fa-star"></i> Mace Specialist - Proven Warrior</div>`;
+      } else if(pointsVal >= 10) {
+        modalHTML += `<div class="text-center text-cyan-300 text-sm mt-2"><i class="fas fa-user-graduate"></i> Mace Cadet - Rising Talent</div>`;
+      } else if(pointsVal >= 5) {
+        modalHTML += `<div class="text-center text-purple-300 text-sm mt-2"><i class="fas fa-feather-alt"></i> Mace Novice - Learning the Craft</div>`;
+      } else if(pointsVal >= 1) {
+        modalHTML += `<div class="text-center text-gray-400 text-sm mt-2"><i class="fas fa-baby-carriage"></i> Mace Rookie - Fresh Recruit</div>`;
+      }
+
       document.getElementById("modal-content").innerHTML = modalHTML;
       document.getElementById("player-modal").classList.remove("hidden");
     };
@@ -584,8 +662,9 @@ document.getElementById("modal-close").onclick = ()=>{
   document.getElementById("player-modal").classList.add("hidden");
 };
 
+// Initialize
 window.onload = () => {
-  createParticles();
+  createParticles();  // enhanced particles (150, redder)
   loadCSV();
   setInterval(loadCSV, 30000);
 };
