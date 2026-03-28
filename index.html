@@ -115,6 +115,30 @@ body {
   text-align: center;
   min-width: 36px;
 }
+
+/* Special Top 3 Style - Only for Overall */
+.top3-card {
+  position: relative;
+  overflow: hidden;
+  padding: 12px;
+}
+.top3-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
+}
+.top3-skin {
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  border: 3px solid #fff;
+  z-index: 2;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+}
 </style>
 </head>
 <body>
@@ -190,7 +214,7 @@ const tierColors = {
 };
 
 let allRows = [], allModes = [], nameCol="", pointsCol="", regionCol="__region";
-let currentSorted = [];   // Global sorted overall list
+let currentSorted = [];
 
 function parseCSV(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
@@ -246,7 +270,6 @@ function getModeIconsHTML(player) {
   return html;
 }
 
-// Rank based on Overall position (used in ALL tabs)
 function getRankHTML(index) {
   if (index === 0) {
     return `<span class="rank grandmaster"><i class="fas fa-crown"></i> Mace Grand Master</span>`;
@@ -257,7 +280,7 @@ function getRankHTML(index) {
   } else if (index < 103) {
     return `<span class="rank spec"><i class="fas fa-star"></i> Mace Specialist</span>`;
   }
-  return ""; // No role
+  return "";
 }
 
 function loadMode(mode,btn){
@@ -273,13 +296,13 @@ function loadMode(mode,btn){
       const name = r[nameCol];
       if(!name) return;
     
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`;
       const region = r[regionCol];
     
-      let medalClass = "", medalIcon = "";
-      if(i===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
-      else if(i===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
-      else if(i===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+      let medalIcon = "";
+      if(i===0) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
+      else if(i===1) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
+      else if(i===2) medalIcon = `<i class='fas fa-medal medal-icon'></i>`;
 
       const rankHTML = getRankHTML(i);
 
@@ -295,22 +318,42 @@ function loadMode(mode,btn){
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
 
-      htmlOut += `
-      <div class="player-card" data-player='${JSON.stringify(r)}' data-index="${i}">
-        <img src="${avatar}" class="player-img">
-        <div class="flex-1 flex flex-col justify-center">
-          <div class="flex items-center flex-wrap gap-x-2">
-            ${medalIcon}${i+1}. ${name}
-            ${regionHTML}
-            ${rankHTML}
+      // Special styling ONLY for top 3 in Overall
+      if (i < 3) {
+        const bannerColor = i===0 ? '#ffd700' : i===1 ? '#c0c0c0' : '#cd7f32';
+        htmlOut += `
+        <div class="top3-card player-card" data-player='${JSON.stringify(r)}' data-index="${i}">
+          <div class="top3-banner" style="background: linear-gradient(90deg, ${bannerColor}88, transparent);"></div>
+          <img src="${avatar}" class="top3-skin">
+          <div class="flex-1 flex flex-col justify-center z-10">
+            <div class="flex items-center flex-wrap gap-x-2">
+              ${medalIcon}${i+1}. ${name}
+              ${regionHTML}
+              ${rankHTML}
+            </div>
+            ${getModeIconsHTML(r)}
           </div>
-          ${getModeIconsHTML(r)}
-        </div>
-        <div class="font-mono text-lg font-bold">${r[pointsCol]}</div>
-      </div>`;
+          <div class="font-mono text-lg font-bold relative z-10">${r[pointsCol]}</div>
+        </div>`;
+      } else {
+        // Normal style for other players
+        htmlOut += `
+        <div class="player-card" data-player='${JSON.stringify(r)}' data-index="${i}">
+          <img src="https://mc-heads.net/avatar/${encodeURIComponent(name)}/64" class="player-img">
+          <div class="flex-1 flex flex-col justify-center">
+            <div class="flex items-center flex-wrap gap-x-2">
+              ${medalIcon}${i+1}. ${name}
+              ${regionHTML}
+              ${rankHTML}
+            </div>
+            ${getModeIconsHTML(r)}
+          </div>
+          <div class="font-mono text-lg font-bold">${r[pointsCol]}</div>
+        </div>`;
+      }
     });
   } else {
-    // For sub-modes: still show tiers, but add overall-based rank
+    // Sub-modes (unchanged)
     const groups = {};
     allRows.forEach(r=>{
       const name = r[nameCol];
@@ -330,8 +373,6 @@ function loadMode(mode,btn){
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = r[regionCol];
-
-        // Find this player's overall position
         const overallIndex = currentSorted.findIndex(p => p[nameCol] === name);
 
         let regionHTML = "";
@@ -366,7 +407,7 @@ function loadMode(mode,btn){
  
   document.getElementById("rankings").innerHTML = htmlOut;
 
-  // Modal handler - works for all tabs
+  // Modal handler
   document.querySelectorAll(".player-card").forEach(card=>{
     card.onclick = () => {
       const playerData = JSON.parse(card.dataset.player);
