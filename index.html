@@ -400,7 +400,7 @@ const kitInfoMap = {
   }
 };
 
-// ==================== UPDATED: KIT INFO MODAL WITH ICON + DIRECT IMAGE ====================
+// ==================== FIX: KIT INFO MODAL WITH WORKING DIRECT IMAGES ====================
 function showKitInfo(mode) {
   const info = kitInfoMap[mode];
   if (!info) return;
@@ -415,12 +415,15 @@ function showKitInfo(mode) {
   });
   itemsHtml += '</ul>';
   
-  // Direct image display (use the provided URL as image source)
-  // Note: The user provided ibb.co links; they will be used directly as <img> source.
-  // If the image fails to load, it will show broken icon, but we respect the user's request.
+  // Convert ibb.co links to direct image URLs (replace "ibb.co" with "i.ibb.co")
+  let directImageUrl = info.image;
+  if (directImageUrl.includes('ibb.co')) {
+    directImageUrl = directImageUrl.replace('ibb.co', 'i.ibb.co');
+  }
+  
   const kitImageHtml = `
     <div class="mt-4">
-      <img src="${info.image}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
+      <img src="${directImageUrl}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
       <p class="text-gray-400 text-xs text-center mt-1">Kit preview</p>
     </div>
   `;
