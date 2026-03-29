@@ -400,21 +400,39 @@ const kitInfoMap = {
   }
 };
 
+// ==================== UPDATED: KIT INFO MODAL WITH ICON + DIRECT IMAGE ====================
 function showKitInfo(mode) {
   const info = kitInfoMap[mode];
   if (!info) return;
+  
+  // Get the tab icon for this kit (same as used in tabs)
+  const iconUrl = modeIcons[mode] || "";
+  const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width: 40px; height: 40px; border-radius: 8px; margin-right: 10px;">` : "";
+  
   let itemsHtml = '<ul class="list-disc pl-5 space-y-1 max-h-80 overflow-y-auto text-left">';
   info.items.forEach(item => {
     itemsHtml += `<li class="text-sm">${item}</li>`;
   });
   itemsHtml += '</ul>';
+  
+  // Direct image display (use the provided URL as image source)
+  // Note: The user provided ibb.co links; they will be used directly as <img> source.
+  // If the image fails to load, it will show broken icon, but we respect the user's request.
+  const kitImageHtml = `
+    <div class="mt-4">
+      <img src="${info.image}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
+      <p class="text-gray-400 text-xs text-center mt-1">Kit preview</p>
+    </div>
+  `;
+  
   const modalHtml = `
     <div class="text-center">
-      <h3 class="text-xl font-bold mb-2 flex items-center justify-center gap-2"><span class="text-red-400">${info.emoji}</span> ${info.title}</h3>
-      <div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>
-      <div class="mt-4">
-        <a href="${info.image}" target="_blank" class="text-red-400 underline hover:text-red-300 transition">📸 View Kit Image (Click to open)</a>
+      <div class="flex items-center justify-center gap-2 mb-3">
+        ${iconHtml}
+        <h3 class="text-xl font-bold">${info.title}</h3>
       </div>
+      <div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>
+      ${kitImageHtml}
       <p class="text-gray-400 text-xs mt-3">Kit details for ${mode}</p>
     </div>
   `;
