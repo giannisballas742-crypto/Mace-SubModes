@@ -261,7 +261,7 @@ function createParticles() {
   }
 }
 
-// ==================== KIT INFO DATABASE ====================
+// ==================== KIT INFO DATABASE WITH NEW IMAGE URLs ====================
 const kitInfoMap = {
   "LT Mace": {
     title: "Low Tier Mace Kit",
@@ -283,7 +283,7 @@ const kitInfoMap = {
       "11x Splash Potions of Speed II [1:30]",
       "11x Splash Potions of Strength II [1:30]"
     ],
-    image: "https://ibb.co/JRYNbtQW"
+    image: "https://i.postimg.cc/cvQSmZZw/LT-Mace.png"
   },
   "HT Mace": {
     title: "High Tier Mace Kit",
@@ -306,7 +306,7 @@ const kitInfoMap = {
       "10x Splash Potions of Speed II [1:30]",
       "10x Splash Potions of Strength II [1:30]"
     ],
-    image: "https://ibb.co/SD3Mp93x"
+    image: "https://i.postimg.cc/v4WszMM9/HT-mace.png"
   },
   "Rocket Mace": {
     title: "Rocket Mace Kit",
@@ -332,7 +332,7 @@ const kitInfoMap = {
       "2x Totems Of Undying",
       "1x Shulker Box [14x Speed 2, 13x Strength 2]"
     ],
-    image: "https://ibb.co/3mHF98LK"
+    image: "https://i.postimg.cc/jDzbXKKz/rocket-mace.png"
   },
   "OG Mace": {
     title: "OG Mace Kit",
@@ -353,7 +353,7 @@ const kitInfoMap = {
       "10x Splash Potions of Leaping II [1:30]",
       "3x Splash Potions of Speed I [8:00]"
     ],
-    image: "https://ibb.co/LXCkfD7c"
+    image: "https://i.postimg.cc/G4kCQrrs/OG-mace.png"
   },
   "Rod Mace": {
     title: "Rod Mace Kit",
@@ -377,7 +377,7 @@ const kitInfoMap = {
       "32x XP Bottles",
       "20x Splash Potions of Leaping II [1:30]"
     ],
-    image: "https://ibb.co/1YdQwWwT"
+    image: "https://i.postimg.cc/hX9BrggJ/rod-mace.png"
   },
   "Spear Mace": {
     title: "Spear Mace Kit",
@@ -396,16 +396,16 @@ const kitInfoMap = {
       "3x Totems Of Undying",
       "64x Steak"
     ],
-    image: "https://ibb.co/1Gf5t2z4"
+    image: "https://i.postimg.cc/cvQSmZZf/spear-mace.png"
   }
 };
 
-// ==================== FIX: KIT INFO MODAL WITH WORKING DIRECT IMAGES ====================
+// ==================== KIT INFO MODAL WITH DIRECT IMAGES ====================
 function showKitInfo(mode) {
   const info = kitInfoMap[mode];
   if (!info) return;
   
-  // Get the tab icon for this kit (same as used in tabs)
+  // Get the tab icon for this kit
   const iconUrl = modeIcons[mode] || "";
   const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width: 40px; height: 40px; border-radius: 8px; margin-right: 10px;">` : "";
   
@@ -415,15 +415,10 @@ function showKitInfo(mode) {
   });
   itemsHtml += '</ul>';
   
-  // Convert ibb.co links to direct image URLs (replace "ibb.co" with "i.ibb.co")
-  let directImageUrl = info.image;
-  if (directImageUrl.includes('ibb.co')) {
-    directImageUrl = directImageUrl.replace('ibb.co', 'i.ibb.co');
-  }
-  
+  // Use the direct image URL (already a direct link)
   const kitImageHtml = `
     <div class="mt-4">
-      <img src="${directImageUrl}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
+      <img src="${info.image}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
       <p class="text-gray-400 text-xs text-center mt-1">Kit preview</p>
     </div>
   `;
