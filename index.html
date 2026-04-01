@@ -173,9 +173,10 @@
     /* no data-tooltip here to avoid duplication */
     transition: all 0.1s;
   }
-  /* ========== FIX: give modal icons container some top margin so tooltips aren't cut ========== */
+  /* ========== FIX: center icons in modal, and give top margin ========== */
   .modal .mode-icons {
     margin-top: 12px;
+    justify-content: center;
   }
   /* rest of existing style (keep consistent) */
   .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; transition:0.2s; }
@@ -245,7 +246,7 @@
     </div>
     <div>
       <h1 class="text-4xl font-black tracking-tight">Mace SubModes Tiers</h1>
-      <p class="text-red-400 text-sm font-mono">Mace PvP Rankings • hover icons for tier info</p>
+      <p class="text-red-400 text-sm font-mono">Mace PvP Rankings</p>
     </div>
   </div>
   <div class="text-right flex flex-col items-end gap-2">
