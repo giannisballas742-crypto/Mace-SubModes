@@ -105,9 +105,8 @@
     opacity: 1;
     visibility: visible;
   }
-  /* specific positioning for .mode-icon-container & .mode-tier to align above element */
-  .mode-icon-container[data-tooltip]::after,
-  .mode-tier[data-tooltip]::after {
+  /* specific positioning for .mode-icon-container to align above element */
+  .mode-icon-container[data-tooltip]::after {
     bottom: calc(100% + 12px);
     left: 50%;
     transform: translateX(-50%);
@@ -130,8 +129,7 @@
       white-space: normal;
       max-width: 220px;
     }
-    .mode-icon-container[data-tooltip]::after,
-    .mode-tier[data-tooltip]::after {
+    .mode-icon-container[data-tooltip]::after {
       bottom: calc(100% + 8px);
     }
   }
@@ -172,8 +170,7 @@
     border-radius: 9999px;
     text-align: center;
     min-width: 36px;
-    cursor: help;
-    position: relative;   /* ensure tooltip aligns correctly */
+    /* no data-tooltip here to avoid duplication */
     transition: all 0.1s;
   }
   /* rest of existing style (keep consistent) */
@@ -371,7 +368,7 @@ function parseCSV(text) {
   return { headers, data };
 }
 
-// ========== ENHANCED ICON HTML WITH TOOLTIP ON CONTAINER (larger popup) ==========
+// ========== ENHANCED ICON HTML – tooltip only on container (no duplicate) ==========
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
   const orderedModes = ["LT Mace","HT Mace","Rocket Mace","Rod Mace","OG Mace","Spear Mace"];
@@ -393,8 +390,8 @@ function getModeIconsHTML(player) {
       const pts = tierPointsMap[baseTier] || "?";
       tooltipText = `${displayTier} → ${pts} points`;
     }
-    // ADD data-tooltip to the whole container -> makes icon area hoverable with bigger popup
-    html += `<div class="mode-icon-container" data-tooltip="${tooltipText}"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;" data-tooltip="${tooltipText}">${displayTier}</div></div>`;
+    // Only container has data-tooltip; inner .mode-tier does NOT have it to prevent duplication
+    html += `<div class="mode-icon-container" data-tooltip="${tooltipText}"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;">${displayTier}</div></div>`;
   });
   html += '</div>';
   return html;
