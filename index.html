@@ -2,201 +2,256 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Mace SubModes Tiers • Rankings</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-body {
-  background: #0a0a0a;
-  color:#e5e5e5;
-  font-family:system-ui;
-  overflow-x: hidden;
-  position: relative;
-}
-#particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(circle at center, rgba(219, 62, 62, 0.22) 0%, rgba(219, 62, 62, 0.05) 40%, transparent 80%);
-}
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at 20% 50%, rgba(219,62,62,0.12) 0%, transparent 60%),
-              radial-gradient(ellipse at 90% 40%, rgba(219,62,62,0.12) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: -1;
-}
-.particle {
-  position: absolute;
-  background: #db3e3e;
-  border-radius: 50%;
-  opacity: 0.35;
-  animation: floatParticle linear infinite;
-  box-shadow: 0 0 10px #db3e3e;
-}
-@keyframes floatParticle {
-  0% { transform: translateY(100vh) scale(0.4); opacity: 0; }
-  12% { opacity: 0.4; }
-  88% { opacity: 0.4; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
-}
-.tab { transition:0.2s; cursor:pointer; }
-.tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-.player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
-.player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
-.player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
-.tier-header {
-  font-weight:800;
-  padding:8px 16px;
-  border-radius:999px;
-  margin-bottom:10px;
-  display:inline-block;
-  cursor:help;
-  position: relative;
-}
-.tier-header[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #111;
-  color: #ffcc88;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: normal;
-  white-space: nowrap;
-  z-index: 20;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  border: 1px solid #db3e3e;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  font-family: monospace;
-}
-.tier-header[data-tooltip]:hover::after {
-  opacity: 1;
-}
-.mode-tier {
-  position: relative;
-  cursor: help;
-}
-.mode-tier[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #111;
-  color: #ffcc88;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: normal;
-  white-space: nowrap;
-  z-index: 20;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  border: 1px solid #db3e3e;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  font-family: monospace;
-}
-.mode-tier[data-tooltip]:hover::after {
-  opacity: 1;
-}
-.discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
-#search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
-
-.region-badge {
-  padding:2px 8px;
-  border-radius:6px;
-  font-size:0.8rem;
-  color:#000;
-  font-weight:600;
-  margin-left:6px;
-}
-.region-badge.EU { background:#22c55e; }
-.region-badge.AS { background:#3b82f6; }
-.region-badge.NA { background:#ef4444; }
-.region-badge.SA { background:#db2777; }
-.region-badge.AU { background:#fbbf24; }
-
-.modal-bg { background: rgba(0,0,0,0.7); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:50; }
-.modal { background:#1f2937; padding:20px; border-radius:12px; max-width:500px; width:90%; max-height:85vh; overflow-y:auto; }
-.modal-close { cursor:pointer; float:right; font-weight:bold; font-size:1.5rem; line-height:1; }
-.gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
-.silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
-.bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
-.medal-icon { margin-right:8px; }
-
-.rank {
-  font-weight:700;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  background: rgba(0,0,0,0.5);
-}
-.rank.master { background: linear-gradient(135deg, #ffd966, #ffaa33); color: #2c1a00; box-shadow: 0 0 8px #ffaa33; }
-.rank.ace { background: linear-gradient(135deg, #a0a0ff, #6c6cff); color: white; box-shadow: 0 0 6px #6c6cff; }
-.rank.specialist { background: linear-gradient(135deg, #6ab04c, #2ecc71); color: #1a3a1a; }
-.rank.cadet { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
-.rank.novice { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
-.rank.rookie { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
-.rank.grandmaster { background: linear-gradient(135deg, #eab308, #facc15); color: #1e1a00; text-shadow: 0 0 4px gold; box-shadow: 0 0 12px #facc15; }
-
-.rank-large { font-size: 1rem !important; padding: 0.35rem 1rem !important; gap: 8px; border-radius: 32px; }
-
-.mode-icons { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
-.mode-icon-container { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 48px; }
-.mode-icon { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #333; object-fit: contain; background: #111; }
-.mode-tier { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 9999px; text-align: center; min-width: 36px; cursor: help; }
-
-.tab-icon { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
-.tab-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
-.tab-item:hover .tab-icon { transform: scale(1.05); }
-.kit-info-btn { background: #db3e3e; transition: all 0.2s; }
-.kit-info-btn:hover { background: #b12d2d; transform: scale(1.02); }
-
-@media (max-width: 640px) {
-  .player-card { flex-wrap: wrap; }
-  .player-card > .flex-1 { flex: 1 1 auto; min-width: 0; }
-  .player-card > div:last-child { width: 100%; justify-content: flex-start; margin-top: 8px; }
-}
+  /* ----- BASE & PARTICLES (unchanged but enhanced tooltip style) ----- */
+  body {
+    background: #0a0a0a;
+    color:#e5e5e5;
+    font-family:system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    position: relative;
+  }
+  #particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(219, 62, 62, 0.22) 0%, rgba(219, 62, 62, 0.05) 40%, transparent 80%);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at 20% 50%, rgba(219,62,62,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 40%, rgba(219,62,62,0.12) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .particle {
+    position: absolute;
+    background: #db3e3e;
+    border-radius: 50%;
+    opacity: 0.35;
+    animation: floatParticle linear infinite;
+    box-shadow: 0 0 10px #db3e3e;
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0.4); opacity: 0; }
+    12% { opacity: 0.4; }
+    88% { opacity: 0.4; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+  }
+  .tab { transition:0.2s; cursor:pointer; }
+  .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
+  .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
+  .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
+  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
+  .tier-header {
+    font-weight:800;
+    padding:8px 16px;
+    border-radius:999px;
+    margin-bottom:10px;
+    display:inline-block;
+    cursor:help;
+    position: relative;
+  }
+  /* ========== ENHANCED TOOLTIP – LARGER, BOLDER, EASIER TO READ ========== */
+  [data-tooltip] {
+    position: relative;
+    cursor: help;
+  }
+  /* unified base for all data-tooltip pseudo-elements */
+  [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0b0f1c;
+    color: #ffecb3;
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: normal;
+    min-width: 170px;
+    max-width: 280px;
+    width: max-content;
+    text-align: center;
+    letter-spacing: 0.3px;
+    font-family: 'Inter', system-ui, monospace;
+    border: 1px solid #db3e3e;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(219,62,62,0.3);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+    opacity: 0;
+    word-break: break-word;
+    box-sizing: border-box;
+  }
+  [data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* specific positioning for .mode-icon-container & .mode-tier to align above element */
+  .mode-icon-container[data-tooltip]::after,
+  .mode-tier[data-tooltip]::after {
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0;
+  }
+  /* keep tier-header tooltip also modern */
+  .tier-header[data-tooltip]::after {
+    bottom: 130%;
+    white-space: nowrap;
+    min-width: 140px;
+    font-size: 0.9rem;
+    padding: 8px 14px;
+  }
+  /* small responsive adjustment for narrow screens */
+  @media (max-width: 640px) {
+    [data-tooltip]::after {
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      min-width: 150px;
+      white-space: normal;
+      max-width: 220px;
+    }
+    .mode-icon-container[data-tooltip]::after,
+    .mode-tier[data-tooltip]::after {
+      bottom: calc(100% + 8px);
+    }
+  }
+  /* fix overflow for mode icons so tooltips aren't clipped */
+  .mode-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    overflow: visible !important;
+  }
+  .mode-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 48px;
+    position: relative;   /* needed for absolute tooltip positioning */
+    cursor: help;
+  }
+  .mode-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    object-fit: contain;
+    background: #111;
+    transition: transform 0.1s ease;
+  }
+  .mode-icon-container:hover .mode-icon {
+    transform: scale(1.05);
+    border-color: #db3e3e;
+  }
+  .mode-tier {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    text-align: center;
+    min-width: 36px;
+    cursor: help;
+    position: relative;   /* ensure tooltip aligns correctly */
+    transition: all 0.1s;
+  }
+  /* rest of existing style (keep consistent) */
+  .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; transition:0.2s; }
+  .discord-btn:hover { background:#5b6eae; transform:scale(1.02); }
+  #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; outline: none; transition:0.2s;}
+  #search-input:focus { box-shadow:0 0 0 2px #db3e3e; background:#111a24; }
+  .region-badge {
+    padding:2px 8px;
+    border-radius:6px;
+    font-size:0.8rem;
+    color:#000;
+    font-weight:600;
+    margin-left:6px;
+  }
+  .region-badge.EU { background:#22c55e; }
+  .region-badge.AS { background:#3b82f6; }
+  .region-badge.NA { background:#ef4444; }
+  .region-badge.SA { background:#db2777; }
+  .region-badge.AU { background:#fbbf24; }
+  .modal-bg { background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:1000; }
+  .modal { background:#1f2937; padding:20px; border-radius:24px; max-width:500px; width:90%; max-height:85vh; overflow-y:auto; border: 1px solid #db3e3e; box-shadow:0 20px 35px rgba(0,0,0,0.5); }
+  .modal-close { cursor:pointer; float:right; font-weight:bold; font-size:1.8rem; line-height:1; color:#aaa; transition:0.2s; }
+  .modal-close:hover { color:#db3e3e; }
+  .gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
+  .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
+  .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
+  .medal-icon { margin-right:8px; }
+  .rank {
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    background: rgba(0,0,0,0.5);
+  }
+  .rank.master { background: linear-gradient(135deg, #ffd966, #ffaa33); color: #2c1a00; box-shadow: 0 0 8px #ffaa33; }
+  .rank.ace { background: linear-gradient(135deg, #a0a0ff, #6c6cff); color: white; box-shadow: 0 0 6px #6c6cff; }
+  .rank.specialist { background: linear-gradient(135deg, #6ab04c, #2ecc71); color: #1a3a1a; }
+  .rank.cadet { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+  .rank.novice { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+  .rank.rookie { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
+  .rank.grandmaster { background: linear-gradient(135deg, #eab308, #facc15); color: #1e1a00; text-shadow: 0 0 4px gold; box-shadow: 0 0 12px #facc15; }
+  .rank-large { font-size: 1rem !important; padding: 0.35rem 1rem !important; gap: 8px; border-radius: 32px; }
+  .tab-icon { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
+  .tab-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+  .tab-item:hover .tab-icon { transform: scale(1.05); }
+  .kit-info-btn { background:#db3e3e; transition: all 0.2s; border: none; font-weight: bold; letter-spacing: 0.3px; }
+  .kit-info-btn:hover { background:#b12d2d; transform: scale(1.02); box-shadow:0 4px 12px rgba(219,62,62,0.4); }
+  @media (max-width: 640px) {
+    .player-card { flex-wrap: wrap; }
+    .player-card > .flex-1 { flex: 1 1 auto; min-width: 0; }
+    .player-card > div:last-child { width: 100%; justify-content: flex-start; margin-top: 8px; }
+    .mode-icon-container { width: 42px; }
+    .mode-icon { width: 32px; height: 32px; }
+  }
 </style>
 </head>
 <body>
 <div id="particles"></div>
 <div class="max-w-6xl mx-auto p-6 relative z-10">
-<div class="flex justify-between items-center mb-6">
+<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
   <div class="flex items-center gap-4">
     <div class="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center">
       <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
     </div>
     <div>
-      <h1 class="text-4xl font-black">Mace SubModes Tiers</h1>
-      <p class="text-red-400 text-sm">Mace PvP Rankings</p>
+      <h1 class="text-4xl font-black tracking-tight">Mace SubModes Tiers</h1>
+      <p class="text-red-400 text-sm font-mono">Mace PvP Rankings • hover icons for tier info</p>
     </div>
   </div>
   <div class="text-right flex flex-col items-end gap-2">
     <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn"><i class="fab fa-discord"></i> Join Discord</a>
   </div>
 </div>
-<input type="text" id="search-input" placeholder="Search players...">
+<input type="text" id="search-input" placeholder="🔍 Search players...">
 <div id="tabs" class="flex gap-6 mb-6 flex-wrap justify-center sm:justify-start"></div>
 <div id="mode-title-container"></div>
 <div id="rankings"></div>
@@ -209,7 +264,7 @@ body::before {
 </div>
 
 <script>
-// Particles
+// ========== PARTICLES (dynamic) ==========
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 150; i++) {
@@ -227,7 +282,7 @@ function createParticles() {
   }
 }
 
-// Kit Info Database (unchanged)
+// Kit info database (unchanged)
 const kitInfoMap = {
   "LT Mace": { title: "Low Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "2 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "11x Splash Potions of Speed II [1:30]", "11x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/cvQSmZZw/LT-Mace.png" },
   "HT Mace": { title: "High Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "Elytra [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "3 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "10x Splash Potions of Speed II [1:30]", "10x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/v4WszMM9/HT-mace.png" },
@@ -244,20 +299,18 @@ function showKitInfo(mode) {
   let itemsHtml = '<ul class="list-disc pl-5 space-y-1 max-h-80 overflow-y-auto text-left">';
   info.items.forEach(i => itemsHtml += `<li class="text-sm">${i}</li>`);
   itemsHtml += '</ul>';
-  const kitImageHtml = `<div class="mt-4"><img src="${info.image}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height:200px;object-fit:contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';"><p class="text-gray-400 text-xs text-center mt-1">Kit preview</p></div>`;
+  const kitImageHtml = `<div class="mt-4"><img src="${info.image}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height:200px;object-fit:contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Kit+Preview';"><p class="text-gray-400 text-xs text-center mt-1">Kit preview</p></div>`;
   const modalHtml = `<div class="text-center"><div class="flex items-center justify-center gap-2 mb-3">${iconHtml}<h3 class="text-xl font-bold">${info.title}</h3></div><div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>${kitImageHtml}<p class="text-gray-400 text-xs mt-3">Kit details for ${mode}</p></div>`;
   document.getElementById("modal-content").innerHTML = modalHtml;
   document.getElementById("player-modal").classList.remove("hidden");
 }
 
-// ========== ENHANCED TIER PARSING (Handles prefixed tiers like RHT2, RLT1, etc.) ==========
+// ========== TIER LOGIC (supports prefixes like RHT2, RLT1) ==========
 const tierPointsMap = { "HT1":60,"LT1":45,"HT2":30,"LT2":20,"HT3":10,"LT3":6,"HT4":4,"LT4":3,"HT5":2,"LT5":1 };
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = { HT1:"#f1c40f", LT1:"#ffa600", HT2:"#bdc3c7", LT2:"#95a5a6", HT3:"#ff8531", LT3:"#f37324", HT4:"#55ffff", LT4:"#aaffff", HT5:"#5555ff", LT5:"#AAAAFF" };
 
-// Helper: extract base standard tier (e.g., "HT2" from "RHT2", "RLT1" -> "LT1")
 function extractBaseTierFromCode(tierCode) {
-  // match any prefix (letters, maybe numbers) followed by a standard tier (HT1..HT5, LT1..LT5)
   const match = tierCode.match(/(HT[1-5]|LT[1-5])/i);
   if (match) return match[1].toUpperCase();
   return null;
@@ -266,28 +319,17 @@ function extractBaseTierFromCode(tierCode) {
 function parseTierString(tierStr) {
   if (!tierStr) return null;
   const upper = tierStr.toUpperCase().trim();
-  // Check for peak pattern: something like "RHT2 (PEAK HT2)" or "HT2 (PEAK HT2)"
   const peakMatch = upper.match(/^(.*?)\s*\(\s*PEAK\s+(HT[1-5]|LT[1-5])\s*\)$/i);
   if (peakMatch) {
     const rawDisplay = peakMatch[1].trim();
     const peakTier = peakMatch[2].toUpperCase();
-    // Determine base tier from rawDisplay (might have prefix)
     const baseTier = extractBaseTierFromCode(rawDisplay);
     if (!baseTier) return null;
-    return {
-      display: rawDisplay,   // e.g., "RHT2"
-      baseTier: baseTier,    // e.g., "HT2"
-      peakTier: peakTier
-    };
+    return { display: rawDisplay, baseTier: baseTier, peakTier: peakTier };
   }
-  // No peak: just a tier string (could have prefix)
   const baseTier = extractBaseTierFromCode(upper);
   if (!baseTier) return null;
-  return {
-    display: upper,          // e.g., "RHT2"
-    baseTier: baseTier,      // e.g., "HT2"
-    peakTier: null
-  };
+  return { display: upper, baseTier: baseTier, peakTier: null };
 }
 
 function extractBaseTier(rawTier) {
@@ -295,7 +337,7 @@ function extractBaseTier(rawTier) {
   return parsed ? parsed.baseTier : null;
 }
 
-// Globals
+// globals
 const modeIcons = { "LT Mace":"https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96","HT Mace":"https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96","Rocket Mace":"https://cdn.discordapp.com/emojis/1305399636030128178.webp?size=96","Rod Mace":"https://cdn.discordapp.com/emojis/1305399563716268095.webp?size=96","OG Mace":"https://cdn.discordapp.com/emojis/1305399676630994994.webp?size=96","Spear Mace":"https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96" };
 const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp?size=96";
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
@@ -329,6 +371,7 @@ function parseCSV(text) {
   return { headers, data };
 }
 
+// ========== ENHANCED ICON HTML WITH TOOLTIP ON CONTAINER (larger popup) ==========
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
   const orderedModes = ["LT Mace","HT Mace","Rocket Mace","Rod Mace","OG Mace","Spear Mace"];
@@ -345,12 +388,13 @@ function getModeIconsHTML(player) {
     let tooltipText = "";
     if (peakTier) {
       const pts = tierPointsMap[peakTier] || "?";
-      tooltipText = `Peak: ${peakTier} → ${pts} points`;
+      tooltipText = `⚡ Peak: ${peakTier} → ${pts} points`;
     } else {
       const pts = tierPointsMap[baseTier] || "?";
       tooltipText = `${displayTier} → ${pts} points`;
     }
-    html += `<div class="mode-icon-container"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;" data-tooltip="${tooltipText}">${displayTier}</div></div>`;
+    // ADD data-tooltip to the whole container -> makes icon area hoverable with bigger popup
+    html += `<div class="mode-icon-container" data-tooltip="${tooltipText}"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;" data-tooltip="${tooltipText}">${displayTier}</div></div>`;
   });
   html += '</div>';
   return html;
@@ -364,15 +408,15 @@ function updateModeTitleWithKitButton(mode) {
   if (mode !== "Overall") {
     const wrapper = document.createElement("div");
     wrapper.id = "kit-info-wrapper";
-    wrapper.className = "flex justify-between items-center mb-6";
+    wrapper.className = "flex justify-between items-center mb-6 flex-wrap gap-3";
     const title = document.createElement("h2");
     title.id = "mode-title";
-    title.className = "text-2xl";
+    title.className = "text-2xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent";
     title.textContent = mode + " Rankings";
     wrapper.appendChild(title);
     const btn = document.createElement("button");
-    btn.textContent = "Kit Info";
-    btn.className = "kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition shadow-md";
+    btn.textContent = "📦 Kit Info";
+    btn.className = "kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition shadow-md flex items-center gap-2";
     btn.onclick = (e) => { e.stopPropagation(); showKitInfo(mode); };
     wrapper.appendChild(btn);
     container.innerHTML = "";
@@ -380,8 +424,8 @@ function updateModeTitleWithKitButton(mode) {
   } else {
     const title = document.createElement("h2");
     title.id = "mode-title";
-    title.className = "text-2xl mb-6";
-    title.textContent = "Overall Rankings";
+    title.className = "text-2xl font-bold mb-6 border-l-4 border-red-500 pl-3";
+    title.textContent = "🏆 Overall Rankings";
     container.innerHTML = "";
     container.appendChild(title);
   }
@@ -409,7 +453,7 @@ async function loadCSV() {
     img.style.borderRadius = "8px";
     const btn = document.createElement("button");
     btn.textContent = mode;
-    btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
+    btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl font-medium";
     if(idx === 0) btn.classList.add("tab-active");
     btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); };
     wrapper.appendChild(img);
@@ -445,7 +489,7 @@ function loadMode(mode, activeBtn) {
         if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
         regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
       }
-      htmlOut += `<div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
+      htmlOut += `<div class="player-card relative overflow-visible ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
     });
   } else {
     const groups = {};
@@ -508,8 +552,8 @@ function loadMode(mode, activeBtn) {
         regionInline = `<span class="region-badge ${rc} ml-2 align-middle">${region}</span>`;
       }
       let modalHtml = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div><h2 class="text-2xl font-bold text-center">${p[nameCol]} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(p)}</div>`;
-      if(overallRank) modalHtml += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400">#${overallRank}</span></div>`;
-      modalHtml += `<div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400">${p[pointsCol]}</span></div>`;
+      if(overallRank) modalHtml += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div>`;
+      modalHtml += `<div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${p[pointsCol]}</span></div>`;
       document.getElementById("modal-content").innerHTML = modalHtml;
       document.getElementById("player-modal").classList.remove("hidden");
     };
