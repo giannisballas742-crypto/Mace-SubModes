@@ -65,7 +65,7 @@ body::before {
   cursor:help;
   position: relative;
 }
-/* Custom tooltip for tier headers */
+/* Tooltip for tier headers */
 .tier-header[data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -88,6 +88,35 @@ body::before {
   font-family: monospace;
 }
 .tier-header[data-tooltip]:hover::after {
+  opacity: 1;
+}
+/* Tooltip for mode tier badges (the small circles) */
+.mode-tier {
+  position: relative;
+  cursor: help;
+}
+.mode-tier[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #ffcc88;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: normal;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  border: 1px solid #db3e3e;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  font-family: monospace;
+}
+.mode-tier[data-tooltip]:hover::after {
   opacity: 1;
 }
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
@@ -195,6 +224,7 @@ body::before {
   border-radius: 9999px;
   text-align: center;
   min-width: 36px;
+  cursor: help;
 }
 
 .tab-icon {
@@ -524,7 +554,9 @@ function getModeIconsHTML(player) {
     if (!tier) return;
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
-    html += `<div class="mode-icon-container"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;">${tier}</div></div>`;
+    const pointsValue = tierPointsMap[tier] || "?";
+    const tooltipText = `Peak: ${tier} → ${pointsValue} points`;
+    html += `<div class="mode-icon-container"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;" data-tooltip="${tooltipText}">${tier}</div></div>`;
   });
   html += '</div>';
   return html;
@@ -641,7 +673,6 @@ function loadMode(mode, activeBtn){
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
       const pointsValue = tierPointsMap[tier] || "?";
-      // Tooltip: "Peak Tier: X • Points: Y" (moves "PEAK HT2" style into hover)
       const tooltipText = `Peak: ${tier} → ${pointsValue} points`;
       htmlOut += `<div class="mb-6"><div class="tier-header" style="background:${tierColors[tier]}" data-tooltip="${tooltipText}">${tier}</div>`;
       groups[tier].forEach(r=>{
