@@ -173,6 +173,10 @@
     /* no data-tooltip here to avoid duplication */
     transition: all 0.1s;
   }
+  /* ========== FIX: give modal icons container some top margin so tooltips aren't cut ========== */
+  .modal .mode-icons {
+    margin-top: 12px;
+  }
   /* rest of existing style (keep consistent) */
   .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; transition:0.2s; }
   .discord-btn:hover { background:#5b6eae; transform:scale(1.02); }
