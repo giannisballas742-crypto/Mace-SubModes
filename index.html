@@ -56,7 +56,40 @@ body::before {
 .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; }
 .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
 .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
-.tier-header { font-weight:800; padding:8px 16px; border-radius:999px; margin-bottom:10px; display:inline-block; cursor:help; }
+.tier-header {
+  font-weight:800;
+  padding:8px 16px;
+  border-radius:999px;
+  margin-bottom:10px;
+  display:inline-block;
+  cursor:help;
+  position: relative;
+}
+/* Custom tooltip for tier headers */
+.tier-header[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #ffcc88;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: normal;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  border: 1px solid #db3e3e;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  font-family: monospace;
+}
+.tier-header[data-tooltip]:hover::after {
+  opacity: 1;
+}
 .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; }
 #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; }
 
@@ -226,7 +259,7 @@ body::before {
     <a href="https://discord.gg/qHXgUhVj" target="_blank" class="discord-btn">
       <i class="fab fa-discord"></i> Join Discord
     </a>
-    <!-- REMOVED: Your Server and mcpvp.club lines -->
+    <!-- Removed "Your Server" and "mcpvp.club" lines -->
   </div>
 </div>
 <input type="text" id="search-input" placeholder="Search players...">
@@ -260,7 +293,7 @@ function createParticles() {
   }
 }
 
-// ==================== KIT INFO DATABASE WITH NEW IMAGE URLs ====================
+// ==================== KIT INFO DATABASE ====================
 const kitInfoMap = {
   "LT Mace": {
     title: "Low Tier Mace Kit",
@@ -399,40 +432,16 @@ const kitInfoMap = {
   }
 };
 
-// ==================== KIT INFO MODAL WITH DIRECT IMAGES ====================
 function showKitInfo(mode) {
   const info = kitInfoMap[mode];
   if (!info) return;
-  
-  // Get the tab icon for this kit
   const iconUrl = modeIcons[mode] || "";
   const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width: 40px; height: 40px; border-radius: 8px; margin-right: 10px;">` : "";
-  
   let itemsHtml = '<ul class="list-disc pl-5 space-y-1 max-h-80 overflow-y-auto text-left">';
-  info.items.forEach(item => {
-    itemsHtml += `<li class="text-sm">${item}</li>`;
-  });
+  info.items.forEach(item => { itemsHtml += `<li class="text-sm">${item}</li>`; });
   itemsHtml += '</ul>';
-  
-  // Use the direct image URL (already a direct link)
-  const kitImageHtml = `
-    <div class="mt-4">
-      <img src="${info.image}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';">
-      <p class="text-gray-400 text-xs text-center mt-1">Kit preview</p>
-    </div>
-  `;
-  
-  const modalHtml = `
-    <div class="text-center">
-      <div class="flex items-center justify-center gap-2 mb-3">
-        ${iconHtml}
-        <h3 class="text-xl font-bold">${info.title}</h3>
-      </div>
-      <div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>
-      ${kitImageHtml}
-      <p class="text-gray-400 text-xs mt-3">Kit details for ${mode}</p>
-    </div>
-  `;
+  const kitImageHtml = `<div class="mt-4"><img src="${info.image}" alt="${info.title}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height: 200px; object-fit: contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Image+Not+Available';"><p class="text-gray-400 text-xs text-center mt-1">Kit preview</p></div>`;
+  const modalHtml = `<div class="text-center"><div class="flex items-center justify-center gap-2 mb-3">${iconHtml}<h3 class="text-xl font-bold">${info.title}</h3></div><div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>${kitImageHtml}<p class="text-gray-400 text-xs mt-3">Kit details for ${mode}</p></div>`;
   document.getElementById("modal-content").innerHTML = modalHtml;
   document.getElementById("player-modal").classList.remove("hidden");
 }
@@ -457,7 +466,7 @@ const tierColors = {
   HT4:"#55ffff", LT4:"#aaffff",
   HT5:"#5555ff", LT5:"#AAAAFF"
 };
-// Tier points mapping for hover display
+// Points per tier (for hover)
 const tierPointsMap = {
   "HT1": 60, "LT1": 45,
   "HT2": 30, "LT2": 20,
@@ -515,24 +524,17 @@ function getModeIconsHTML(player) {
     if (!tier) return;
     const iconUrl = modeIcons[mode];
     const color = tierColors[tier] || "#666";
-    html += `
-      <div class="mode-icon-container">
-        <img src="${iconUrl}" class="mode-icon" style="border-color: ${color};">
-        <div class="mode-tier" style="background:${color}; color:#000;">${tier}</div>
-      </div>
-    `;
+    html += `<div class="mode-icon-container"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;">${tier}</div></div>`;
   });
   html += '</div>';
   return html;
 }
 
-// ========== KIT BUTTON + WRAPPER LOGIC ==========
 function updateModeTitleWithKitButton(mode) {
   const container = document.getElementById("mode-title-container");
   if (!container) return;
   let existingWrapper = document.getElementById("kit-info-wrapper");
   if (existingWrapper) existingWrapper.remove();
-  
   if (mode !== "Overall") {
     const wrapper = document.createElement("div");
     wrapper.id = "kit-info-wrapper";
@@ -545,10 +547,7 @@ function updateModeTitleWithKitButton(mode) {
     const kitBtn = document.createElement("button");
     kitBtn.textContent = "Kit Info";
     kitBtn.className = "kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition shadow-md";
-    kitBtn.onclick = (e) => {
-      e.stopPropagation();
-      showKitInfo(mode);
-    };
+    kitBtn.onclick = (e) => { e.stopPropagation(); showKitInfo(mode); };
     wrapper.appendChild(kitBtn);
     container.innerHTML = "";
     container.appendChild(wrapper);
@@ -570,7 +569,6 @@ async function loadCSV(){
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
-  
   const tabsDiv = document.getElementById("tabs");
   tabsDiv.innerHTML = "";
   allModes.forEach((mode, idx) => {
@@ -588,10 +586,7 @@ async function loadCSV(){
     btn.textContent = mode;
     btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl";
     if(idx === 0) btn.classList.add("tab-active");
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      loadMode(mode, btn);
-    };
+    btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); };
     tabWrapper.appendChild(img);
     tabWrapper.appendChild(btn);
     tabWrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); });
@@ -605,7 +600,6 @@ function loadMode(mode, activeBtn){
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.remove("tab-active"));
   activeBtn.classList.add("tab-active");
   updateModeTitleWithKitButton(mode);
-  
   let htmlOut = "";
   if(mode === "Overall"){
     currentSorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
@@ -620,7 +614,6 @@ function loadMode(mode, activeBtn){
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       const largeRankBadge = getLargeRankBadge(pointsVal);
-      // REMOVED: #1 Grand Champion badge (no extraGrandHtml)
       let regionHTML = "";
       if (region) {
         let regionClass = "";
@@ -632,27 +625,8 @@ function loadMode(mode, activeBtn){
         else if (reg === "AU") regionClass = "AU";
         regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
-      const rightSideContent = `
-        <div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">
-          ${largeRankBadge}
-          <div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">
-            ${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span>
-          </div>
-        </div>
-      `;
-      htmlOut += `
-      <div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-index="${idx}" data-points="${pointsVal}">
-        ${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}
-        <img src="${avatar}" class="player-img">
-        <div class="flex-1 flex flex-col justify-center min-w-0">
-          <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
-            ${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}
-            ${regionHTML}
-          </div>
-          ${getModeIconsHTML(r)}
-        </div>
-        ${rightSideContent}
-      </div>`;
+      const rightSideContent = `<div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${largeRankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div>`;
+      htmlOut += `<div class="player-card relative overflow-hidden ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-index="${idx}" data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div>${rightSideContent}</div>`;
     });
   } else {
     const groups = {};
@@ -666,10 +640,10 @@ function loadMode(mode, activeBtn){
     });
     tierOrder.forEach(tier=>{
       if(!groups[tier]) return;
-      // Add title attribute to display points on hover (tier points mapping)
       const pointsValue = tierPointsMap[tier] || "?";
-      const tooltipText = `${tier} → ${pointsValue} points`;
-      htmlOut += `<div class="mb-6"><div class="tier-header" style="background:${tierColors[tier]}" title="${tooltipText}">${tier}</div>`;
+      // Tooltip: "Peak Tier: X • Points: Y" (moves "PEAK HT2" style into hover)
+      const tooltipText = `Peak: ${tier} → ${pointsValue} points`;
+      htmlOut += `<div class="mb-6"><div class="tier-header" style="background:${tierColors[tier]}" data-tooltip="${tooltipText}">${tier}</div>`;
       groups[tier].forEach(r=>{
         const name = r[nameCol];
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
@@ -687,16 +661,7 @@ function loadMode(mode, activeBtn){
           else if (reg === "AU") regionClass = "AU";
           regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
-        htmlOut += `
-        <div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
-          <img src="${avatar}" class="player-img">
-          <div class="flex items-center gap-2 flex-wrap flex-1">
-            <span class="font-semibold">${name}</span>
-            ${regionHTML}
-            ${rankBadgeSmall}
-          </div>
-          <div class="ml-auto font-mono text-sm">${r[pointsCol] || 0} pts</div>
-        </div>`;
+        htmlOut += `<div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${regionHTML}${rankBadgeSmall}</div><div class="ml-auto font-mono text-sm">${r[pointsCol] || 0} pts</div></div>`;
       });
       htmlOut += `</div>`;
     });
@@ -721,7 +686,6 @@ function loadMode(mode, activeBtn){
       const role = getRoleByPoints(pointsVal);
       let roleModalHTML = '';
       if(role) roleModalHTML = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`;
-      // REMOVED: Elite Mace Warrior extraGrand line
       let modalHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div>`;
       let regionInline = '';
       if(region) {
@@ -743,32 +707,26 @@ function loadMode(mode, activeBtn){
   });
 }
 
-// ========== AUTO-RESET TO OVERALL TAB EVERY 1 MINUTE ==========
 let autoOverallInterval;
 function startAutoOverallSwitch(intervalMs) {
   if (autoOverallInterval) clearInterval(autoOverallInterval);
   autoOverallInterval = setInterval(() => {
     const overallTabBtn = document.querySelector("#tabs .tab-item:first-child button");
-    if (overallTabBtn && !overallTabBtn.classList.contains("tab-active")) {
-      overallTabBtn.click();
-    }
+    if (overallTabBtn && !overallTabBtn.classList.contains("tab-active")) overallTabBtn.click();
   }, intervalMs);
 }
 
 document.getElementById("search-input").addEventListener("input", e=>{
   const term = e.target.value.toLowerCase();
   document.querySelectorAll(".player-card").forEach(card=>{
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(term) ? "flex" : "none";
+    card.style.display = card.textContent.toLowerCase().includes(term) ? "flex" : "none";
   });
 });
 document.getElementById("modal-close").onclick = ()=> document.getElementById("player-modal").classList.add("hidden");
 
 window.onload = () => {
   createParticles();
-  loadCSV().then(() => {
-    startAutoOverallSwitch(60000); // 1 minute
-  });
+  loadCSV().then(() => startAutoOverallSwitch(60000));
   setInterval(() => loadCSV().catch(console.warn), 60000);
 };
 </script>
