@@ -584,7 +584,7 @@ window.onload = () => {
   loadCSV().then(() => {
     // startAutoSwitch(60000);   // DISABLED: no longer auto‑switches to Overall every minute
   });
-  setInterval(() => loadCSV().catch(console.warn), 60000);
+  setInterval(() => loadCSV().catch(console.warn), 90000);
 };
 </script>
 </body>
