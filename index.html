@@ -581,7 +581,9 @@ document.getElementById("modal-close").onclick = () => document.getElementById("
 
 window.onload = () => {
   createParticles();
-  loadCSV().then(() => startAutoSwitch(60000));
+  loadCSV().then(() => {
+    // startAutoSwitch(60000);   // DISABLED: no longer auto‑switches to Overall every minute
+  });
   setInterval(() => loadCSV().catch(console.warn), 60000);
 };
 </script>
