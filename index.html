@@ -193,12 +193,25 @@
     color:#000;
     font-weight:600;
     margin-left:6px;
+    display: inline-block;
   }
   .region-badge.EU { background:#22c55e; }
   .region-badge.AS { background:#3b82f6; }
   .region-badge.NA { background:#ef4444; }
   .region-badge.SA { background:#db2777; }
   .region-badge.AU { background:#fbbf24; }
+  .region-badge.ME { background:#008b8b; color: white; }  /* dark cyan for Middle East */
+  /* Slide effect for region badge in non-Overall tabs */
+  .region-slide-card .region-badge {
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.25s ease-out;
+    pointer-events: none;
+  }
+  .region-slide-card:hover .region-badge {
+    opacity: 1;
+    transform: translateX(0);
+  }
   .modal-bg { background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); position:fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:1000; }
   .modal { background:#1f2937; padding:20px; border-radius:24px; max-width:500px; width:90%; max-height:85vh; overflow-y:auto; border: 1px solid #db3e3e; box-shadow:0 20px 35px rgba(0,0,0,0.5); }
   .modal-close { cursor:pointer; float:right; font-weight:bold; font-size:1.8rem; line-height:1; color:#aaa; transition:0.2s; }
@@ -584,7 +597,20 @@ async function loadCSV() {
   if(active) loadMode("Overall", active);
 }
 
-// Modified: Only show name, tier (sub-tier badge), region, icon (avatar). No role, no points.
+// Helper to get region class
+function getRegionClass(region) {
+  if (!region) return "";
+  const reg = region.toUpperCase().trim();
+  if (reg === "EU") return "EU";
+  if (reg === "AS") return "AS";
+  if (reg === "NA") return "NA";
+  if (reg === "SA") return "SA";
+  if (reg === "AU") return "AU";
+  if (reg === "ME") return "ME";
+  return "";
+}
+
+// Non-Overall tabs: minimal info, region hidden until hover (slide effect)
 function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => {
@@ -621,15 +647,14 @@ function renderModeGroupedByTier(mode) {
         const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
         const region = p[regionCol];
         let regionHTML = "";
-        if(region) {
-          let rc = ""; const reg = region.toUpperCase().trim();
-          if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
-          regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
+        const regionClass = getRegionClass(region);
+        if (region && regionClass) {
+          regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
         }
         const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
         const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
-        // Minimal card: only avatar, name, sub-tier badge, region. NO rank badge, NO points display.
-        columnHtml += `<div class="player-card ${playerTypeClass}" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}">
+        // add class region-slide-card to enable hover slide effect for region badge
+        columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}">
           <img src="${avatar}" class="player-img">
           <div class="flex items-center gap-2 flex-wrap flex-1">
             <span class="font-semibold">${escapeHtml(name)}</span>
@@ -662,7 +687,7 @@ function loadMode(mode, activeBtn) {
   updateModeTitleWithKitButton(mode);
   let htmlOut = "";
   if (mode === "Overall") {
-    // Overall tab: full details including role and points
+    // Overall tab: full details including role and points, region always visible (no slide class)
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
     sorted.forEach((r, idx) => {
       const name = r[nameCol];
@@ -678,15 +703,14 @@ function loadMode(mode, activeBtn) {
       else { bgClass = "gray-bg"; }
       const rankBadge = getLargeRankBadge(pointsVal);
       let regionHTML = "";
-      if(region) {
-        let rc = ""; const reg = region.toUpperCase().trim();
-        if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
-        regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
+      const regionClass = getRegionClass(region);
+      if (region && regionClass) {
+        regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       }
       htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
     });
   } else {
-    // Non-Overall tabs: minimal info (name, tier, region, icon) – no role, no points on card
+    // Non-Overall tabs: minimal info (name, tier badge, region hidden until hover slide)
     htmlOut = renderModeGroupedByTier(mode);
   }
   document.getElementById("rankings").innerHTML = htmlOut;
@@ -710,10 +734,9 @@ function loadMode(mode, activeBtn) {
       let roleHtml = '';
       if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`;
       let regionInline = '';
-      if(region) {
-        let rc = ""; const reg = region.toUpperCase().trim();
-        if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
-        regionInline = `<span class="region-badge ${rc} ml-2 align-middle">${region}</span>`;
+      const regionClass = getRegionClass(region);
+      if (region && regionClass) {
+        regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`;
       }
       let modalHtml = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(p[nameCol])} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(p)}</div>`;
       if(overallRank) modalHtml += `<div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div>`;
