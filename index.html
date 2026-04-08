@@ -53,8 +53,11 @@
   }
   .tab { transition:0.2s; cursor:pointer; }
   .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-  .player-card { background:#1f2937; padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
+  .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
   .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
+  /* Gray/dark gray backgrounds for HT/LT */
+  .player-card.player-ht { background: #4b5563; }  /* gray */
+  .player-card.player-lt { background: #1f2937; }  /* dark gray */
   .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
   .tier-header {
     font-weight:800;
@@ -255,12 +258,36 @@
   .tier-group-header.bronze { background: linear-gradient(135deg, #cd7f32, #b86b2c); color: #2f1a0a; box-shadow: 0 0 8px #cd7f32; }
   .tier-group-header.iron { background: linear-gradient(135deg, #5a6e7a, #3e5568); color: white; }
   .tier-group-header.purple { background: linear-gradient(135deg, #a855f7, #7e3af2); color: white; }
+  /* NEW: side-by-side tier grid layout */
+  .tier-grid {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .tier-column {
+    flex: 1 1 280px;
+    min-width: 260px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 24px;
+    padding: 1rem 0.8rem;
+    backdrop-filter: blur(2px);
+  }
+  .tier-column .tier-group-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
   @media (max-width: 640px) {
     .player-card { flex-wrap: wrap; }
     .player-card > .flex-1 { flex: 1 1 auto; min-width: 0; }
     .player-card > div:last-child { width: 100%; justify-content: flex-start; margin-top: 8px; }
     .mode-icon-container { width: 42px; }
     .mode-icon { width: 32px; height: 32px; }
+    .tier-column {
+      min-width: 240px;
+    }
   }
 </style>
 </head>
@@ -494,7 +521,6 @@ async function loadCSV() {
 }
 
 function renderModeGroupedByTier(mode) {
-  // Build map: tierNum => { htPlayers: [], ltPlayers: [] }
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => {
     const rawTier = r[mode];
@@ -505,11 +531,11 @@ function renderModeGroupedByTier(mode) {
     const match = baseTier.match(/^(HT|LT)([1-5])$/);
     if (!match) return;
     const tierNum = parseInt(match[2], 10);
-    const type = match[1]; // HT or LT
+    const type = match[1];
     const pointsVal = parseFloat(r[pointsCol] || 0);
     groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: pointsVal, subTier: baseTier });
   });
-  let html = '';
+  let gridHtml = '<div class="tier-grid">';
   for (let t = 1; t <= 5; t++) {
     const htPlayers = groups[t].ht;
     const ltPlayers = groups[t].lt;
@@ -520,8 +546,8 @@ function renderModeGroupedByTier(mode) {
     else if (t === 3) headerClass += 'bronze';
     else if (t === 4) headerClass += 'iron';
     else headerClass += 'purple';
-    html += `<div class="mb-8"><div class="${headerClass}">TIER ${t}</div>`;
     const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)];
+    let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`;
     allPlayers.forEach(item => {
       const p = item.player;
       const name = p[nameCol];
@@ -536,15 +562,18 @@ function renderModeGroupedByTier(mode) {
         regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
       }
       const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
-      html += `<div class="player-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
+      const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
+      columnHtml += `<div class="player-card ${playerTypeClass}" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
         <img src="${avatar}" class="player-img">
         <div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${subTierBadge}${regionHTML}${rankBadge}</div>
         <div class="ml-auto font-mono text-sm">${p[pointsCol] || 0} pts</div>
       </div>`;
     });
-    html += `</div>`;
+    columnHtml += `</div>`;
+    gridHtml += columnHtml;
   }
-  return html;
+  gridHtml += '</div>';
+  return gridHtml;
 }
 
 function loadMode(mode, activeBtn) {
