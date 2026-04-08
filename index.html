@@ -246,47 +246,105 @@
   /* tier group headers (gold/silver/bronze etc) */
   .tier-group-header {
     font-weight: 800;
-    font-size: 1.5rem;
-    padding: 6px 20px;
+    font-size: 1.2rem;
+    padding: 4px 12px;
     border-radius: 60px;
     display: inline-block;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     background: #2d2d2d;
     color: white;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
-  .tier-group-header.gold { background: linear-gradient(135deg, #ffd966, #ffb347); color: #2c1a00; box-shadow: 0 0 12px #ffb347; }
-  .tier-group-header.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #1f1f1f; box-shadow: 0 0 8px #b0b0b0; }
-  .tier-group-header.bronze { background: linear-gradient(135deg, #cd7f32, #b86b2c); color: #2f1a0a; box-shadow: 0 0 8px #cd7f32; }
+  .tier-group-header.gold { background: linear-gradient(135deg, #ffd966, #ffb347); color: #2c1a00; box-shadow: 0 0 8px #ffb347; }
+  .tier-group-header.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #1f1f1f; box-shadow: 0 0 6px #b0b0b0; }
+  .tier-group-header.bronze { background: linear-gradient(135deg, #cd7f32, #b86b2c); color: #2f1a0a; box-shadow: 0 0 6px #cd7f32; }
   .tier-group-header.iron { background: linear-gradient(135deg, #5a6e7a, #3e5568); color: white; }
   .tier-group-header.purple { background: linear-gradient(135deg, #a855f7, #7e3af2); color: white; }
-  /* side-by-side tier grid layout: always show 5 columns */
+  /* side-by-side tier grid: all 5 columns in one row, smaller and compact */
   .tier-grid {
-    display: flex;
-    flex-flow: row wrap;
-    gap: 1.5rem;
-    justify-content: center;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.8rem;
+    align-items: start;
+    overflow-x: auto;
   }
   .tier-column {
-    flex: 1 1 280px;
-    min-width: 260px;
     background: rgba(0,0,0,0.25);
-    border-radius: 24px;
-    padding: 1rem 0.8rem;
+    border-radius: 20px;
+    padding: 0.6rem 0.5rem;
     backdrop-filter: blur(2px);
+    min-width: 0;
   }
   .tier-column .tier-group-header {
     display: block;
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    padding: 3px 8px;
   }
   .empty-tier-message {
     text-align: center;
-    padding: 1rem;
+    padding: 0.8rem 0;
     color: #aaa;
     font-style: italic;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+  }
+  /* adjust player cards inside tier columns for compactness */
+  .tier-column .player-card {
+    padding: 6px 8px;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .tier-column .player-img {
+    width: 36px;
+    height: 36px;
+  }
+  .tier-column .mode-icons {
+    gap: 6px;
+    margin-top: 3px;
+  }
+  .tier-column .mode-icon-container {
+    width: 36px;
+  }
+  .tier-column .mode-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .tier-column .mode-tier {
+    font-size: 8px;
+    padding: 1px 3px;
+    min-width: 28px;
+  }
+  .tier-column .sub-tier-badge {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    margin-left: 4px;
+  }
+  .tier-column .rank {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+  }
+  .tier-column .font-mono.text-sm {
+    font-size: 0.7rem;
+  }
+  .tier-column .flex.items-center.gap-2 {
+    gap: 4px;
+  }
+  .tier-column .font-semibold {
+    font-size: 0.85rem;
+  }
+  @media (max-width: 900px) {
+    .tier-grid {
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+      gap: 0.5rem;
+    }
+  }
+  @media (max-width: 700px) {
+    .tier-grid {
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      overflow-x: scroll;
+      padding-bottom: 8px;
+    }
   }
   @media (max-width: 640px) {
     .player-card { flex-wrap: wrap; }
@@ -294,9 +352,6 @@
     .player-card > div:last-child { width: 100%; justify-content: flex-start; margin-top: 8px; }
     .mode-icon-container { width: 42px; }
     .mode-icon { width: 32px; height: 32px; }
-    .tier-column {
-      min-width: 240px;
-    }
   }
 </style>
 </head>
