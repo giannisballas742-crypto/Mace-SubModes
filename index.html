@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  /* ----- BASE & PARTICLES (unchanged but enhanced tooltip style) ----- */
+  /* ----- BASE & PARTICLES (enhanced) ----- */
   body {
     background: #0a0a0a;
     color:#e5e5e5;
@@ -65,12 +65,11 @@
     cursor:help;
     position: relative;
   }
-  /* ========== ENHANCED TOOLTIP – LARGER, BOLDER, EASIER TO READ ========== */
+  /* enhanced tooltip */
   [data-tooltip] {
     position: relative;
     cursor: help;
   }
-  /* unified base for all data-tooltip pseudo-elements */
   [data-tooltip]::after {
     content: attr(data-tooltip);
     position: absolute;
@@ -105,14 +104,12 @@
     opacity: 1;
     visibility: visible;
   }
-  /* specific positioning for .mode-icon-container to align above element */
   .mode-icon-container[data-tooltip]::after {
     bottom: calc(100% + 12px);
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 0;
   }
-  /* keep tier-header tooltip also modern */
   .tier-header[data-tooltip]::after {
     bottom: 130%;
     white-space: nowrap;
@@ -120,7 +117,6 @@
     font-size: 0.9rem;
     padding: 8px 14px;
   }
-  /* small responsive adjustment for narrow screens */
   @media (max-width: 640px) {
     [data-tooltip]::after {
       font-size: 0.85rem;
@@ -133,7 +129,6 @@
       bottom: calc(100% + 8px);
     }
   }
-  /* fix overflow for mode icons so tooltips aren't clipped */
   .mode-icons {
     display: flex;
     gap: 12px;
@@ -147,7 +142,7 @@
     align-items: center;
     gap: 3px;
     width: 48px;
-    position: relative;   /* needed for absolute tooltip positioning */
+    position: relative;
     cursor: help;
   }
   .mode-icon {
@@ -170,15 +165,18 @@
     border-radius: 9999px;
     text-align: center;
     min-width: 36px;
-    /* no data-tooltip here to avoid duplication */
     transition: all 0.1s;
   }
-  /* ========== FIX: center icons in modal, and give top margin ========== */
+  /* dark blue for R-prefix tiers */
+  .mode-tier.r-prefix-tier {
+    background: #0f2b6d !important;
+    color: #e0e7ff;
+    box-shadow: 0 0 4px #2563eb;
+  }
   .modal .mode-icons {
     margin-top: 12px;
     justify-content: center;
   }
-  /* rest of existing style (keep consistent) */
   .discord-btn { background:#7289da; padding:5px 12px; border-radius:8px; transition:0.2s; }
   .discord-btn:hover { background:#5b6eae; transform:scale(1.02); }
   #search-input { padding:8px; border-radius:8px; width:100%; max-width:400px; margin-bottom:16px; background:#1f2937; color:#e5e5e5; border:none; outline: none; transition:0.2s;}
@@ -227,6 +225,36 @@
   .tab-item:hover .tab-icon { transform: scale(1.05); }
   .kit-info-btn { background:#db3e3e; transition: all 0.2s; border: none; font-weight: bold; letter-spacing: 0.3px; }
   .kit-info-btn:hover { background:#b12d2d; transform: scale(1.02); box-shadow:0 4px 12px rgba(219,62,62,0.4); }
+  /* sub-tier badges for HT/LT differentiation inside per-mode cards */
+  .sub-tier-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sub-tier-ht { background: #6b7280; color: white; box-shadow: 0 0 2px #9ca3af; }
+  .sub-tier-lt { background: #374151; color: #f3f4f6; box-shadow: 0 0 2px #4b5563; }
+  /* tier group headers (gold/silver/bronze etc) */
+  .tier-group-header {
+    font-weight: 800;
+    font-size: 1.5rem;
+    padding: 6px 20px;
+    border-radius: 60px;
+    display: inline-block;
+    margin-bottom: 16px;
+    background: #2d2d2d;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .tier-group-header.gold { background: linear-gradient(135deg, #ffd966, #ffb347); color: #2c1a00; box-shadow: 0 0 12px #ffb347; }
+  .tier-group-header.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #1f1f1f; box-shadow: 0 0 8px #b0b0b0; }
+  .tier-group-header.bronze { background: linear-gradient(135deg, #cd7f32, #b86b2c); color: #2f1a0a; box-shadow: 0 0 8px #cd7f32; }
+  .tier-group-header.iron { background: linear-gradient(135deg, #5a6e7a, #3e5568); color: white; }
+  .tier-group-header.purple { background: linear-gradient(135deg, #a855f7, #7e3af2); color: white; }
   @media (max-width: 640px) {
     .player-card { flex-wrap: wrap; }
     .player-card > .flex-1 { flex: 1 1 auto; min-width: 0; }
@@ -266,7 +294,7 @@
 </div>
 
 <script>
-// ========== PARTICLES (dynamic) ==========
+// ========== PARTICLES ==========
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 150; i++) {
@@ -284,7 +312,6 @@ function createParticles() {
   }
 }
 
-// Kit info database (unchanged)
 const kitInfoMap = {
   "LT Mace": { title: "Low Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "2 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "11x Splash Potions of Speed II [1:30]", "11x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/cvQSmZZw/LT-Mace.png" },
   "HT Mace": { title: "High Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "Elytra [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "3 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "10x Splash Potions of Speed II [1:30]", "10x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/v4WszMM9/HT-mace.png" },
@@ -307,7 +334,7 @@ function showKitInfo(mode) {
   document.getElementById("player-modal").classList.remove("hidden");
 }
 
-// ========== TIER LOGIC (supports prefixes like RHT2, RLT1) ==========
+// ========== TIER LOGIC with R-prefix detection ==========
 const tierPointsMap = { "HT1":60,"LT1":45,"HT2":30,"LT2":20,"HT3":10,"LT3":6,"HT4":4,"LT4":3,"HT5":2,"LT5":1 };
 const tierOrder = ["HT1","LT1","HT2","LT2","HT3","LT3","HT4","LT4","HT5","LT5"];
 const tierColors = { HT1:"#f1c40f", LT1:"#ffa600", HT2:"#bdc3c7", LT2:"#95a5a6", HT3:"#ff8531", LT3:"#f37324", HT4:"#55ffff", LT4:"#aaffff", HT5:"#5555ff", LT5:"#AAAAFF" };
@@ -322,16 +349,16 @@ function parseTierString(tierStr) {
   if (!tierStr) return null;
   const upper = tierStr.toUpperCase().trim();
   const peakMatch = upper.match(/^(.*?)\s*\(\s*PEAK\s+(HT[1-5]|LT[1-5])\s*\)$/i);
+  let rawDisplay = upper;
+  let peakTier = null;
   if (peakMatch) {
-    const rawDisplay = peakMatch[1].trim();
-    const peakTier = peakMatch[2].toUpperCase();
-    const baseTier = extractBaseTierFromCode(rawDisplay);
-    if (!baseTier) return null;
-    return { display: rawDisplay, baseTier: baseTier, peakTier: peakTier };
+    rawDisplay = peakMatch[1].trim();
+    peakTier = peakMatch[2].toUpperCase();
   }
-  const baseTier = extractBaseTierFromCode(upper);
+  const hasRPrefix = /^R(HT|LT)/i.test(rawDisplay);
+  const baseTier = extractBaseTierFromCode(rawDisplay);
   if (!baseTier) return null;
-  return { display: upper, baseTier: baseTier, peakTier: null };
+  return { display: rawDisplay, baseTier: baseTier, peakTier: peakTier, hasRPrefix: hasRPrefix };
 }
 
 function extractBaseTier(rawTier) {
@@ -339,7 +366,6 @@ function extractBaseTier(rawTier) {
   return parsed ? parsed.baseTier : null;
 }
 
-// globals
 const modeIcons = { "LT Mace":"https://cdn.discordapp.com/emojis/1305399436708544512.webp?size=96","HT Mace":"https://cdn.discordapp.com/emojis/1431240960506990592.webp?size=96","Rocket Mace":"https://cdn.discordapp.com/emojis/1305399636030128178.webp?size=96","Rod Mace":"https://cdn.discordapp.com/emojis/1305399563716268095.webp?size=96","OG Mace":"https://cdn.discordapp.com/emojis/1305399676630994994.webp?size=96","Spear Mace":"https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96" };
 const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp?size=96";
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1Z8SzplonsR2NbZ20b6TazugXY4YjX3sMeIxGG_cXErabJUERRszTqoOX7RPAYQXnlfnwbQemEP7k/pub?output=csv";
@@ -373,7 +399,6 @@ function parseCSV(text) {
   return { headers, data };
 }
 
-// ========== ENHANCED ICON HTML – tooltip only on container (no duplicate) ==========
 function getModeIconsHTML(player) {
   let html = '<div class="mode-icons">';
   const orderedModes = ["LT Mace","HT Mace","Rocket Mace","Rod Mace","OG Mace","Spear Mace"];
@@ -385,18 +410,19 @@ function getModeIconsHTML(player) {
     const displayTier = parsed.display;
     const baseTier = parsed.baseTier;
     const peakTier = parsed.peakTier;
+    const hasRPrefix = parsed.hasRPrefix;
     const iconUrl = modeIcons[mode];
-    const color = tierColors[baseTier] || "#666";
+    let bgColor = hasRPrefix ? "#0f2b6d" : (tierColors[baseTier] || "#666");
     let tooltipText = "";
     if (peakTier) {
       const pts = tierPointsMap[peakTier] || "?";
-      tooltipText = `⚡ Peak: ${peakTier} → ${pts} points`;
+      tooltipText = ` Peak: ${peakTier} → ${pts} points`;
     } else {
       const pts = tierPointsMap[baseTier] || "?";
       tooltipText = `${displayTier} → ${pts} points`;
     }
-    // Only container has data-tooltip; inner .mode-tier does NOT have it to prevent duplication
-    html += `<div class="mode-icon-container" data-tooltip="${tooltipText}"><img src="${iconUrl}" class="mode-icon" style="border-color: ${color};"><div class="mode-tier" style="background:${color}; color:#000;">${displayTier}</div></div>`;
+    const extraClass = hasRPrefix ? 'r-prefix-tier' : '';
+    html += `<div class="mode-icon-container" data-tooltip="${tooltipText}"><img src="${iconUrl}" class="mode-icon" style="border-color: ${bgColor};"><div class="mode-tier ${extraClass}" style="${!hasRPrefix ? `background:${bgColor}; color:#000;` : ''}">${displayTier}</div></div>`;
   });
   html += '</div>';
   return html;
@@ -467,6 +493,60 @@ async function loadCSV() {
   if(active) loadMode("Overall", active);
 }
 
+function renderModeGroupedByTier(mode) {
+  // Build map: tierNum => { htPlayers: [], ltPlayers: [] }
+  const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
+  allRows.forEach(r => {
+    const rawTier = r[mode];
+    if (!rawTier) return;
+    const parsed = parseTierString(rawTier);
+    if (!parsed) return;
+    const baseTier = parsed.baseTier;
+    const match = baseTier.match(/^(HT|LT)([1-5])$/);
+    if (!match) return;
+    const tierNum = parseInt(match[2], 10);
+    const type = match[1]; // HT or LT
+    const pointsVal = parseFloat(r[pointsCol] || 0);
+    groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: pointsVal, subTier: baseTier });
+  });
+  let html = '';
+  for (let t = 1; t <= 5; t++) {
+    const htPlayers = groups[t].ht;
+    const ltPlayers = groups[t].lt;
+    if (htPlayers.length === 0 && ltPlayers.length === 0) continue;
+    let headerClass = 'tier-group-header ';
+    if (t === 1) headerClass += 'gold';
+    else if (t === 2) headerClass += 'silver';
+    else if (t === 3) headerClass += 'bronze';
+    else if (t === 4) headerClass += 'iron';
+    else headerClass += 'purple';
+    html += `<div class="mb-8"><div class="${headerClass}">TIER ${t}</div>`;
+    const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)];
+    allPlayers.forEach(item => {
+      const p = item.player;
+      const name = p[nameCol];
+      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+      const region = p[regionCol];
+      const pointsVal = item.points;
+      const rankBadge = getRankBadge(pointsVal, false);
+      let regionHTML = "";
+      if(region) {
+        let rc = ""; const reg = region.toUpperCase().trim();
+        if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
+        regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
+      }
+      const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
+      html += `<div class="player-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
+        <img src="${avatar}" class="player-img">
+        <div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${subTierBadge}${regionHTML}${rankBadge}</div>
+        <div class="ml-auto font-mono text-sm">${p[pointsCol] || 0} pts</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  return html;
+}
+
 function loadMode(mode, activeBtn) {
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.remove("tab-active"));
   activeBtn.classList.add("tab-active");
@@ -494,38 +574,7 @@ function loadMode(mode, activeBtn) {
       htmlOut += `<div class="player-card relative overflow-visible ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
     });
   } else {
-    const groups = {};
-    allRows.forEach(r => {
-      const name = r[nameCol];
-      if(!name) return;
-      const raw = r[mode];
-      if(!raw) return;
-      const baseTier = extractBaseTier(raw);
-      if(!baseTier) return;
-      if(!groups[baseTier]) groups[baseTier]=[];
-      groups[baseTier].push(r);
-    });
-    tierOrder.forEach(tier => {
-      if(!groups[tier]) return;
-      const pointsValue = tierPointsMap[tier] || "?";
-      const tooltip = `${tier} → ${pointsValue} points`;
-      htmlOut += `<div class="mb-6"><div class="tier-header" style="background:${tierColors[tier]}" data-tooltip="${tooltip}">${tier}</div>`;
-      groups[tier].forEach(r => {
-        const name = r[nameCol];
-        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-        const region = r[regionCol];
-        const pointsVal = parseFloat(r[pointsCol]||0);
-        const rankBadge = getRankBadge(pointsVal, false);
-        let regionHTML = "";
-        if(region) {
-          let rc = ""; const reg = region.toUpperCase().trim();
-          if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
-          regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
-        }
-        htmlOut += `<div class="player-card" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${regionHTML}${rankBadge}</div><div class="ml-auto font-mono text-sm">${r[pointsCol] || 0} pts</div></div>`;
-      });
-      htmlOut += `</div>`;
-    });
+    htmlOut = renderModeGroupedByTier(mode);
   }
   document.getElementById("rankings").innerHTML = htmlOut;
 
@@ -562,15 +611,6 @@ function loadMode(mode, activeBtn) {
   });
 }
 
-let autoInterval;
-function startAutoSwitch(ms) {
-  if(autoInterval) clearInterval(autoInterval);
-  autoInterval = setInterval(() => {
-    const firstTab = document.querySelector("#tabs .tab-item:first-child button");
-    if(firstTab && !firstTab.classList.contains("tab-active")) firstTab.click();
-  }, ms);
-}
-
 document.getElementById("search-input").addEventListener("input", e => {
   const term = e.target.value.toLowerCase();
   document.querySelectorAll(".player-card").forEach(card => {
@@ -581,9 +621,7 @@ document.getElementById("modal-close").onclick = () => document.getElementById("
 
 window.onload = () => {
   createParticles();
-  loadCSV().then(() => {
-    // startAutoSwitch(60000);   // DISABLED: no longer auto‑switches to Overall every minute
-  });
+  loadCSV().then(() => {});
   setInterval(() => loadCSV().catch(console.warn), 60000);
 };
 </script>
