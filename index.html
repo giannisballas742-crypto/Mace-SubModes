@@ -568,6 +568,17 @@ async function loadCSV() {
   const text = await res.text();
   const { headers, data } = parseCSV(text);
   allRows = data;
+  
+  // FIX: Swap OG Mace and Rod Mace tiers because they are switched in the source data
+  for (const row of allRows) {
+    const ogValue = row["OG Mace"];
+    const rodValue = row["Rod Mace"];
+    if (ogValue !== undefined && rodValue !== undefined) {
+      row["OG Mace"] = rodValue;
+      row["Rod Mace"] = ogValue;
+    }
+  }
+  
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
   const allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"];
