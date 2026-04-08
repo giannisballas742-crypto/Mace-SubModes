@@ -55,9 +55,11 @@
   .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
   .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
   .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
-  /* Gray/dark gray backgrounds for HT/LT */
-  .player-card.player-ht { background: #4b5563; }  /* gray */
-  .player-card.player-lt { background: #1f2937; }  /* dark gray */
+  /* Gray/dark gray backgrounds for HT/LT in mode tabs */
+  .player-card.player-ht { background: #4b5563; }
+  .player-card.player-lt { background: #1f2937; }
+  /* Simple gray background for non-top3 in Overall tab */
+  .player-card.gray-bg { background: #374151; }
   .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
   .tier-header {
     font-weight:800;
@@ -258,7 +260,7 @@
   .tier-group-header.bronze { background: linear-gradient(135deg, #cd7f32, #b86b2c); color: #2f1a0a; box-shadow: 0 0 8px #cd7f32; }
   .tier-group-header.iron { background: linear-gradient(135deg, #5a6e7a, #3e5568); color: white; }
   .tier-group-header.purple { background: linear-gradient(135deg, #a855f7, #7e3af2); color: white; }
-  /* NEW: side-by-side tier grid layout */
+  /* side-by-side tier grid layout: always show 5 columns */
   .tier-grid {
     display: flex;
     flex-flow: row wrap;
@@ -278,6 +280,13 @@
     display: block;
     text-align: center;
     margin-bottom: 1rem;
+  }
+  .empty-tier-message {
+    text-align: center;
+    padding: 1rem;
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.9rem;
   }
   @media (max-width: 640px) {
     .player-card { flex-wrap: wrap; }
@@ -536,39 +545,43 @@ function renderModeGroupedByTier(mode) {
     groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: pointsVal, subTier: baseTier });
   });
   let gridHtml = '<div class="tier-grid">';
+  // always show all tiers 1 to 5 (strict rule)
   for (let t = 1; t <= 5; t++) {
     const htPlayers = groups[t].ht;
     const ltPlayers = groups[t].lt;
-    if (htPlayers.length === 0 && ltPlayers.length === 0) continue;
     let headerClass = 'tier-group-header ';
     if (t === 1) headerClass += 'gold';
     else if (t === 2) headerClass += 'silver';
     else if (t === 3) headerClass += 'bronze';
     else if (t === 4) headerClass += 'iron';
     else headerClass += 'purple';
-    const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)];
     let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`;
-    allPlayers.forEach(item => {
-      const p = item.player;
-      const name = p[nameCol];
-      const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
-      const region = p[regionCol];
-      const pointsVal = item.points;
-      const rankBadge = getRankBadge(pointsVal, false);
-      let regionHTML = "";
-      if(region) {
-        let rc = ""; const reg = region.toUpperCase().trim();
-        if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
-        regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
-      }
-      const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
-      const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
-      columnHtml += `<div class="player-card ${playerTypeClass}" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
-        <img src="${avatar}" class="player-img">
-        <div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${subTierBadge}${regionHTML}${rankBadge}</div>
-        <div class="ml-auto font-mono text-sm">${p[pointsCol] || 0} pts</div>
-      </div>`;
-    });
+    const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)];
+    if (allPlayers.length === 0) {
+      columnHtml += `<div class="empty-tier-message">— No players —</div>`;
+    } else {
+      allPlayers.forEach(item => {
+        const p = item.player;
+        const name = p[nameCol];
+        const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+        const region = p[regionCol];
+        const pointsVal = item.points;
+        const rankBadge = getRankBadge(pointsVal, false);
+        let regionHTML = "";
+        if(region) {
+          let rc = ""; const reg = region.toUpperCase().trim();
+          if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
+          regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
+        }
+        const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
+        const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
+        columnHtml += `<div class="player-card ${playerTypeClass}" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
+          <img src="${avatar}" class="player-img">
+          <div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${name}</span>${subTierBadge}${regionHTML}${rankBadge}</div>
+          <div class="ml-auto font-mono text-sm">${p[pointsCol] || 0} pts</div>
+        </div>`;
+      });
+    }
     columnHtml += `</div>`;
     gridHtml += columnHtml;
   }
@@ -590,9 +603,11 @@ function loadMode(mode, activeBtn) {
       const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
       const region = r[regionCol];
       let medalClass = "", medalIcon = "";
+      let bgClass = "";
       if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
       else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; }
+      else { bgClass = "gray-bg"; }
       const rankBadge = getLargeRankBadge(pointsVal);
       let regionHTML = "";
       if(region) {
@@ -600,7 +615,7 @@ function loadMode(mode, activeBtn) {
         if(reg==="EU") rc="EU"; else if(reg==="AS") rc="AS"; else if(reg==="NA") rc="NA"; else if(reg==="SA") rc="SA"; else if(reg==="AU") rc="AU";
         regionHTML = `<span class="region-badge ${rc}">${region}</span>`;
       }
-      htmlOut += `<div class="player-card relative overflow-visible ${medalClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
+      htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${name}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold text-red-400 flex items-center gap-1">${r[pointsCol]} <span class="text-sm text-gray-300 font-medium">pts</span></div></div></div>`;
     });
   } else {
     htmlOut = renderModeGroupedByTier(mode);
