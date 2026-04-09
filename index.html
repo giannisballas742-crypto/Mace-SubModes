@@ -569,15 +569,7 @@ async function loadCSV() {
   const { headers, data } = parseCSV(text);
   allRows = data;
   
-  // FIX: Swap OG Mace and Rod Mace tiers because they are switched in the source data
-  for (const row of allRows) {
-    const ogValue = row["OG Mace"];
-    const rodValue = row["Rod Mace"];
-    if (ogValue !== undefined && rodValue !== undefined) {
-      row["OG Mace"] = rodValue;
-      row["Rod Mace"] = ogValue;
-    }
-  }
+  // No swapping of OG Mace and Rod Mace – the CSV provides correct values
   
   nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0];
   pointsCol = headers.find(h=>/points/i.test(h)) || headers[1];
