@@ -761,7 +761,7 @@ document.getElementById("modal-close").onclick = () => document.getElementById("
 window.onload = () => {
   createParticles();
   loadCSV().then(() => {});
-  setInterval(() => loadCSV().catch(console.warn), 60000);
+  // AUTOMATIC REFRESH REMOVED: no longer switches to Overall tab every minute
 };
 </script>
 </body>
