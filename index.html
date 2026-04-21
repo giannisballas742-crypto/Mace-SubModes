@@ -51,7 +51,16 @@
     88% { opacity: 0.4; }
     100% { transform: translateY(-100px) scale(1); opacity: 0; }
   }
-  .tab { transition:0.2s; cursor:pointer; }
+  .tab {
+    transition: 0.2s;
+    cursor: pointer;
+    padding: 12px 24px !important;        /* bigger tabs */
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    border-radius: 40px;
+    width: 100%;
+    text-align: center;
+  }
   .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
   .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
   .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
@@ -132,6 +141,10 @@
     }
     .mode-icon-container[data-tooltip]::after {
       bottom: calc(100% + 8px);
+    }
+    .tab {
+      padding: 8px 16px !important;
+      font-size: 0.9rem !important;
     }
   }
   .mode-icons {
@@ -238,9 +251,26 @@
   .rank.rookie { background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: white; }
   .rank.grandmaster { background: linear-gradient(135deg, #eab308, #facc15); color: #1e1a00; text-shadow: 0 0 4px gold; box-shadow: 0 0 12px #facc15; }
   .rank-large { font-size: 1rem !important; padding: 0.35rem 1rem !important; gap: 8px; border-radius: 32px; }
-  .tab-icon { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
-  .tab-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+  .tab-icon { width: 36px; height: 36px; object-fit: contain; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 2px rgba(219,62,62,0.5)); transition: transform 0.2s; }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
   .tab-item:hover .tab-icon { transform: scale(1.05); }
+  /* make tabs container full width and tabs stretch */
+  #tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
   .kit-info-btn { background:#db3e3e; transition: all 0.2s; border: none; font-weight: bold; letter-spacing: 0.3px; }
   .kit-info-btn:hover { background:#b12d2d; transform: scale(1.02); box-shadow:0 4px 12px rgba(219,62,62,0.4); }
   /* sub-tier badges for HT/LT differentiation inside per-mode cards */
@@ -418,11 +448,11 @@ function createParticles() {
 
 const kitInfoMap = {
   "LT Mace": { title: "Low Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "2 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "11x Splash Potions of Speed II [1:30]", "11x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/cvQSmZZw/LT-Mace.png" },
-  "HT Mace": { title: "High Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Mace 1 [Density V, Wind Burst I, Unbreaking III]", "Mace 2 [Breach IV, Unbreaking III]", "Shield [Maxed]", "Elytra", "1x Totem of Undying", "2 Stacks of Golden Apples", "3 Stacks of Wind Charges", "5 Stacks of Ender Pearls", "9x Splash Potions of Speed II [1:30]", "10x Splash Potions of Strength II [1:30]", "1 Shulker of Potions (13x Strength II 14x Speed II)" ], image: "https://ibb.co/chNgRRWr" },
+  "HT Mace": { title: "High Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Mace 1 [Density V, Wind Burst I, Unbreaking III]", "Mace 2 [Breach IV, Unbreaking III]", "Shield [Maxed]", "Elytra", "1x Totem of Undying", "2 Stacks of Golden Apples", "3 Stacks of Wind Charges", "5 Stacks of Ender Pearls", "9x Splash Potions of Speed II [1:30]", "10x Splash Potions of Strength II [1:30]", "1 Shulker of Potions (13x Strength II 14x Speed II)" ], image: "https://freeimage.host/i/BrhC7PR" },
   "Rocket Mace": { title: "Rocket Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Windburst II, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Elytra [Unbreaking III]", "Shield [Maxed]", "32x Firework Rockets [Flight Duration 1]", "48x Ender Pearls", "128x Golden Apples", "10x Splash Potion of Strength II [1:30]", "9x Splash Potion of Speed II [1:30]", "128x Wind Charges", "64x Experience Bottles", "2x Totems Of Undying", "1x Shulker Box [14x Speed 2, 13x Strength 2]" ], image: "https://i.postimg.cc/jDzbXKKz/rocket-mace.png" },
   "OG Mace": { title: "OG Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III, Mending]", "Netherite Chestplate [Protection IV, Unbreaking III, Mending]", "Netherite Leggings [Protection IV, Unbreaking III, Mending]", "Netherite Boots [Protection IV, Unbreaking III, Mending, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Mace [Density V, Wind Burst I, Unbreaking III, Mending]", "1x Totem of Undying", "1 Stack of Golden Apples", "5 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "1 Stack of XP Bottles", "10x Splash Potions of Strength II [1:30]", "10x Splash Potions of Leaping II [1:30]", "3x Splash Potions of Speed I [8:00]" ], image: "https://i.postimg.cc/G4kCQrrs/OG-mace.png" },
   "Rod Mace": { title: "Rod Mace Kit", items: [ "Diamond Helmet [Protection IV, Unbreaking III]", "Diamond Chestplate [Protection IV, Unbreaking III]", "Diamond Leggings [Protection IV, Unbreaking III]", "Diamond Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Diamond Axe [Efficiency V, Unbreaking III, Mending]", "Mace [Density V, Wind Burst II, Unbreaking III, Mending]", "Shield [Unbreaking III, Mending]", "Fishing Rod [Unbreaking III, Mending]", "Crossbow [Quick Charge III, Unbreaking III]", "16x Arrows", "3x Boats", "4x Totem of Undying", "1 Stack of Golden Apples", "16x Doors", "16x Slime Blocks", "32x XP Bottles", "20x Splash Potions of Leaping II [1:30]" ], image: "https://i.postimg.cc/hX9BrggJ/rod-mace.png" },
-  "Spear Mace": { title: "Spear Mace Kit", items: [ "Full Netherite Armor [Protection IV, Unbreaking III, Feather Falling IV Boots]", "Netherite Sword [Sharpness V, Unbreaking III]", "Shield [Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Netherite Spear [Lunge III, Sharpness V, Unbreaking III]", "Mace [Density V, Unbreaking III, Wind Burst I]", "11x Splash Potion of Strength 2 [1:30]", "11x Splash Potion of Speed 2 [1:30]", "64x Steak", "64x Golden Apple", "48x Ender Pearl", "192x Windcharge", "2x Totem" ], image: "https://ibb.co/wrb6HP0q" }
+  "Spear Mace": { title: "Spear Mace Kit", items: [ "Full Netherite Armor [Protection IV, Unbreaking III, Feather Falling IV Boots]", "Netherite Sword [Sharpness V, Unbreaking III]", "Shield [Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Netherite Spear [Lunge III, Sharpness V, Unbreaking III]", "Mace [Density V, Unbreaking III, Wind Burst I]", "11x Splash Potion of Strength 2 [1:30]", "11x Splash Potion of Speed 2 [1:30]", "64x Steak", "64x Golden Apple", "48x Ender Pearl", "192x Windcharge", "2x Totem" ], image: "https://freeimage.host/i/BrhCaFp" }
 };
 function showKitInfo(mode) {
   const info = kitInfoMap[mode];
