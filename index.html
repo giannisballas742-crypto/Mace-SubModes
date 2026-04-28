@@ -472,7 +472,7 @@
   .bigger-title {
     font-size: 2.5rem;
   }
-  /* REDESIGNED DISCORD CARD with dark red/black, 3 wavy lines, particles */
+  /* REDESIGNED DISCORD CARD with 3D wavy lines */
   .discord-card {
     position: relative;
     background: linear-gradient(145deg, #5a1e1e 0%, #2a0a0a 100%);
@@ -490,34 +490,53 @@
     transform: translateY(-5px);
     box-shadow: 0 25px 40px -12px #000000aa;
   }
-  /* 3 big wavy lines in different directions */
+  /* 3D wavy lines with depth */
   .discord-card .wavy-line {
     position: absolute;
-    background: repeating-linear-gradient(90deg, rgba(200,200,220,0.3), rgba(200,200,220,0.3) 6px, transparent 6px, transparent 18px);
-    width: 120%;
-    height: 3px;
+    width: 130%;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, 
+      rgba(255,220,180,0.5) 0px, rgba(255,220,180,0.5) 8px,
+      rgba(255,100,80,0.3) 8px, rgba(255,100,80,0.3) 16px,
+      rgba(255,220,180,0.4) 16px, rgba(255,220,180,0.4) 24px);
+    filter: blur(0.5px) drop-shadow(0 2px 3px rgba(0,0,0,0.5));
     transform-origin: center;
     pointer-events: none;
+    border-radius: 3px;
+    opacity: 0.9;
   }
+  /* Each line has unique path and wavy distortion */
   .discord-card .wavy-line-1 {
-    top: 15%;
-    left: -10%;
-    transform: rotate(5deg) skewX(-5deg);
-    background: repeating-linear-gradient(45deg, rgba(255,180,180,0.4), rgba(255,180,180,0.4) 8px, transparent 8px, transparent 24px);
+    top: 12%;
+    left: -15%;
+    transform: rotate(3deg) skewX(-6deg);
+    background: repeating-linear-gradient(45deg, 
+      rgba(255,200,150,0.6) 0px, rgba(255,200,150,0.6) 6px,
+      rgba(200,120,100,0.4) 6px, rgba(200,120,100,0.4) 14px,
+      rgba(255,220,180,0.5) 14px, rgba(255,220,180,0.5) 22px);
+    box-shadow: 0 0 8px rgba(255,180,100,0.3);
   }
   .discord-card .wavy-line-2 {
-    bottom: 25%;
-    right: -10%;
-    transform: rotate(-8deg) skewX(3deg);
-    width: 130%;
-    background: repeating-linear-gradient(135deg, rgba(220,220,240,0.35), rgba(220,220,240,0.35) 5px, transparent 5px, transparent 20px);
+    bottom: 20%;
+    right: -15%;
+    width: 140%;
+    transform: rotate(-6deg) skewX(4deg);
+    background: repeating-linear-gradient(135deg, 
+      rgba(255,210,170,0.55) 0px, rgba(255,210,170,0.55) 5px,
+      rgba(180,100,80,0.35) 5px, rgba(180,100,80,0.35) 12px,
+      rgba(255,230,200,0.5) 12px, rgba(255,230,200,0.5) 20px);
+    box-shadow: 0 0 12px rgba(255,160,100,0.4);
   }
   .discord-card .wavy-line-3 {
-    top: 50%;
-    left: -5%;
-    transform: rotate(15deg);
-    width: 110%;
-    background: repeating-linear-gradient(90deg, rgba(255,210,150,0.3), rgba(255,210,150,0.3) 4px, transparent 4px, transparent 16px);
+    top: 45%;
+    left: -10%;
+    width: 120%;
+    transform: rotate(12deg);
+    background: repeating-linear-gradient(90deg, 
+      rgba(255,190,140,0.65) 0px, rgba(255,190,140,0.65) 7px,
+      rgba(220,130,100,0.4) 7px, rgba(220,130,100,0.4) 15px,
+      rgba(255,210,170,0.55) 15px, rgba(255,210,170,0.55) 23px);
+    box-shadow: 0 0 10px rgba(255,140,80,0.35);
   }
   /* particles inside discord card */
   .discord-particle {
@@ -633,7 +652,7 @@
       </div>
     </div>
     <div id="searchWrapper" class="flex items-center gap-2">
-      <button id="toggleRetiredBtn" class="holo-star-btn" title="Show retired players"><i class="fa-regular fa-star"></i></button>
+      <button id="toggleRetiredBtn" class="holo-star-btn" title="Retired players Shown"><i class="fa-regular fa-star"></i></button>
       <input type="text" id="search-input" placeholder="🔍 Player name...">
       <button id="searchButton" class="search-btn"><i class="fas fa-search"></i> Search</button>
       <div id="suggestions" class="suggestions hidden"></div>
@@ -744,7 +763,6 @@ let allRows = [], nameCol = "", pointsCol = "", regionCol = "__region";
 let hideRetired = false;  // false = show retired, true = hide retired
 
 function isRetiredPlayer(player) {
-  // check any mode tier string for retirement patterns
   const retiredPatterns = ["RLT1", "RHT1", "RLT2", "RHT2"];
   for (let mode of ["LT Mace","HT Mace","Rocket Mace","Rod Mace","OG Mace","Spear Mace"]) {
     const tier = player[mode];
@@ -765,7 +783,7 @@ function updateModeTitleWithKitButton(mode) { const container = document.getElem
 function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => {
-    if (hideRetired && isRetiredPlayer(r)) return;  // filter out retired players if toggle active
+    if (hideRetired && isRetiredPlayer(r)) return;
     const rawTier = r[mode];
     if (!rawTier) return;
     const parsed = parseTierString(rawTier);
@@ -846,7 +864,6 @@ function loadMode(mode, activeBtn) {
   updateModeTitleWithKitButton(mode);
   let htmlOut = "";
   if (mode === "Overall") {
-    // Overall tab always shows all players (retired filter does not apply)
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
     sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
   } else {
@@ -928,23 +945,21 @@ function toggleRetiredPlayers() {
   hideRetired = !hideRetired;
   if (hideRetired) {
     toggleRetiredBtn.classList.add("active");
-    toggleRetiredBtn.title = "Show retired players (active)";
+    toggleRetiredBtn.title = "Retired players Hidden";
   } else {
     toggleRetiredBtn.classList.remove("active");
-    toggleRetiredBtn.title = "Show retired players";
+    toggleRetiredBtn.title = "Retired players Shown";
   }
-  // Reload current mode (if not overall) to apply filter
   const currentActiveTab = document.querySelector("#tabs .tab-active");
   if (currentActiveTab && currentActiveMode !== "Overall") {
     loadMode(currentActiveMode, currentActiveTab);
   } else if (currentActiveMode !== "Overall") {
-    // fallback: re-render current mode
     loadMode(currentActiveMode, document.querySelector("#tabs .tab-active"));
   }
 }
 toggleRetiredBtn.addEventListener("click", toggleRetiredPlayers);
-// set initial tooltip
-toggleRetiredBtn.title = "Show retired players";
+// initial tooltip
+toggleRetiredBtn.title = "Retired players Shown";
 
 async function loadCSV() { const res = await fetch(CSV_URL); const text = await res.text(); const { headers, data } = parseCSV(text); allRows = data; nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0]; pointsCol = headers.find(h=>/points/i.test(h)) || headers[1]; const allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"]; const tabsDiv = document.getElementById("tabs"); tabsDiv.innerHTML = ""; allModes.forEach((mode, idx) => { const wrapper = document.createElement("div"); wrapper.className = "tab-item"; let iconUrl = mode === "Overall" ? OVERALL_ICON : modeIcons[mode] || ""; const img = document.createElement("img"); img.src = iconUrl; img.className = "tab-icon"; img.style.width = "36px"; img.style.height = "36px"; const btn = document.createElement("button"); btn.textContent = mode; btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl font-medium"; if(idx === 0) btn.classList.add("tab-active"); btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); }; wrapper.appendChild(img); wrapper.appendChild(btn); wrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); }); tabsDiv.appendChild(wrapper); }); loadMode("Overall", document.querySelector("#tabs .tab-active")); }
 
