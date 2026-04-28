@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -612,6 +613,34 @@ function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, fun
 function getRegionClass(region) { if (!region) return ""; const reg = region.toUpperCase().trim(); if (reg === "EU") return "EU"; if (reg === "AS") return "AS"; if (reg === "NA") return "NA"; if (reg === "SA") return "SA"; if (reg === "AU") return "AU"; if (reg === "ME") return "ME"; return ""; }
 let currentActiveMode = "Overall";
 
+// Helper to get overall rank for any player object
+function getOverallRankForPlayer(p) {
+  if (!allRows.length) return null;
+  const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
+  const pName = p[nameCol];
+  const pPoints = parseFloat(p[pointsCol]||0);
+  const idx = sorted.findIndex(row => row[nameCol] === pName && parseFloat(row[pointsCol]||0) === pPoints);
+  return idx !== -1 ? idx+1 : null;
+}
+
+// Show full profile modal for a player object (same as card click)
+function showPlayerProfile(playerObj) {
+  const name = playerObj[nameCol];
+  const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`;
+  const region = playerObj[regionCol];
+  const pointsVal = parseFloat(playerObj[pointsCol]||0);
+  const overallRank = getOverallRankForPlayer(playerObj);
+  const role = getRoleByPoints(pointsVal);
+  let roleHtml = '';
+  if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`;
+  let regionInline = '';
+  const regionClass = getRegionClass(region);
+  if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`;
+  let modalHtml = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`;
+  document.getElementById("modal-content").innerHTML = modalHtml;
+  document.getElementById("player-modal").classList.remove("hidden");
+}
+
 function loadMode(mode, activeBtn) {
   currentActiveMode = mode;
   document.querySelectorAll("#tabs .tab").forEach(b=>b.classList.remove("tab-active"));
@@ -626,8 +655,25 @@ function loadMode(mode, activeBtn) {
   attachCardEvents();
   applySearchFilter();
 }
-function attachCardEvents() { document.querySelectorAll(".player-card").forEach(card => { card.onclick = () => { const p = JSON.parse(card.dataset.player.replace(/&apos;/g, "'")); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(p[nameCol])}/128`; const region = p[regionCol]; const pointsVal = parseFloat(p[pointsCol]||0); const overallRank = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)).findIndex(row=>row[nameCol]===p[nameCol] && parseFloat(row[pointsCol]||0)===pointsVal)+1; const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; let modalHtml = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(p[nameCol])} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(p)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${p[pointsCol]}</span></div>`; document.getElementById("modal-content").innerHTML = modalHtml; document.getElementById("player-modal").classList.remove("hidden"); }; }); }
+function attachCardEvents() { document.querySelectorAll(".player-card").forEach(card => { card.onclick = () => { const p = JSON.parse(card.dataset.player.replace(/&apos;/g, "'")); showPlayerProfile(p); }; }); }
 function applySearchFilter() { const term = document.getElementById("search-input").value.toLowerCase(); document.querySelectorAll("#rankings .player-card").forEach(card => { const text = card.textContent.toLowerCase(); card.style.display = text.includes(term) ? "flex" : "none"; }); }
+
+// Search button: find first player matching the search term (case-insensitive partial match) and show profile modal
+function searchAndShowProfile() {
+  const term = document.getElementById("search-input").value.trim().toLowerCase();
+  if (!term) return;
+  const matchedPlayer = allRows.find(player => {
+    const name = player[nameCol];
+    return name && name.toLowerCase().includes(term);
+  });
+  if (matchedPlayer) {
+    showPlayerProfile(matchedPlayer);
+  } else {
+    // optional: silent fail, no alert to keep clean
+    console.log("No player found");
+  }
+}
+
 async function loadCSV() { const res = await fetch(CSV_URL); const text = await res.text(); const { headers, data } = parseCSV(text); allRows = data; nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0]; pointsCol = headers.find(h=>/points/i.test(h)) || headers[1]; const allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"]; const tabsDiv = document.getElementById("tabs"); tabsDiv.innerHTML = ""; allModes.forEach((mode, idx) => { const wrapper = document.createElement("div"); wrapper.className = "tab-item"; let iconUrl = mode === "Overall" ? OVERALL_ICON : modeIcons[mode] || ""; const img = document.createElement("img"); img.src = iconUrl; img.className = "tab-icon"; img.style.width = "36px"; img.style.height = "36px"; const btn = document.createElement("button"); btn.textContent = mode; btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl font-medium"; if(idx === 0) btn.classList.add("tab-active"); btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); }; wrapper.appendChild(img); wrapper.appendChild(btn); wrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); }); tabsDiv.appendChild(wrapper); }); loadMode("Overall", document.querySelector("#tabs .tab-active")); }
 
 // View Toggle Logic
@@ -658,7 +704,7 @@ function setView(view) {
 leaderboardBtn.onclick = () => setView('leaderboard');
 discordBtn.onclick = () => setView('discord');
 document.getElementById("instantJoinBtn")?.addEventListener("click", () => window.open("https://discord.gg/vSh3PfMyeG", "_blank"));
-document.getElementById("searchButton").addEventListener("click", applySearchFilter);
+document.getElementById("searchButton").addEventListener("click", searchAndShowProfile);
 document.getElementById("modal-close").onclick = () => document.getElementById("player-modal").classList.add("hidden");
 window.onload = () => { createParticles(); loadCSV().then(() => setView('leaderboard')); };
 </script>
