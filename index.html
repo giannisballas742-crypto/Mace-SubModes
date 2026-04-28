@@ -409,75 +409,82 @@
   .bigger-title {
     font-size: 2.5rem;
   }
-  /* WAVY BIG DISCORD BUTTON with stars */
-  .wavy-discord-button {
-    position: relative;
-    background: #db3e3e;
+  /* redesigned Discord card (inspired by screenshot) */
+  .discord-card {
+    background: linear-gradient(145deg, #1e1e2a 0%, #14141c 100%);
+    border-radius: 2rem;
+    padding: 2rem;
+    max-width: 560px;
     width: 100%;
-    max-width: 550px;
     margin: 2rem auto;
-    padding: 3rem 2rem;
-    border-radius: 72px;
     text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    overflow: hidden;
-    box-shadow: 0 25px 40px rgba(219,62,62,0.3), inset 0 1px 2px rgba(255,255,255,0.2);
-    border: none;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(219,62,62,0.2);
+    transition: transform 0.2s;
   }
-  .wavy-discord-button:hover {
-    transform: scale(1.02);
-    background: #c23636;
-    box-shadow: 0 30px 50px rgba(219,62,62,0.5);
+  .discord-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 40px -12px rgba(219,62,62,0.3);
   }
-  /* wavy lines + stars */
-  .wavy-discord-button::before {
-    content: "★ ★ ★";
-    position: absolute;
-    top: 10%;
-    left: 0;
-    width: 100%;
-    font-size: 2rem;
-    color: rgba(255,240,150,0.35);
-    text-shadow: 0 0 3px gold;
-    letter-spacing: 12px;
-    white-space: nowrap;
-    pointer-events: none;
-    transform: rotate(-4deg);
-    font-family: monospace;
-  }
-  .wavy-discord-button::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(115deg, rgba(180,180,200,0.2) 0px, rgba(180,180,200,0.2) 3px, transparent 3px, transparent 18px),
-                repeating-linear-gradient(25deg, rgba(100,100,120,0.15) 0px, rgba(100,100,120,0.15) 2px, transparent 2px, transparent 14px);
-    pointer-events: none;
-    mix-blend-mode: overlay;
-  }
-  .discord-btn-inner {
-    position: relative;
-    z-index: 3;
+  .discord-card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #2d2d3a;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    color: white;
-    font-weight: bold;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 2px solid #db3e3e;
+    overflow: hidden;
   }
-  .discord-btn-inner i {
-    font-size: 3rem;
-    filter: drop-shadow(0 0 6px black);
+  .discord-card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
-  .discord-btn-inner span {
+  .discord-card h3 {
     font-size: 1.8rem;
-    letter-spacing: 2px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #db3e3e);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 0.75rem;
+  }
+  .discord-card p {
+    color: #b0b0c0;
+    margin-bottom: 1.8rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .instant-join-btn {
+    background: #db3e3e;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(219,62,62,0.4);
+  }
+  .instant-join-btn:hover {
+    background: #c23636;
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(219,62,62,0.6);
   }
   @media (max-width: 640px) {
-    .wavy-discord-button { padding: 2rem 1rem; max-width: 90%; }
-    .discord-btn-inner i { font-size: 2.2rem; }
-    .discord-btn-inner span { font-size: 1.3rem; }
+    .discord-card { padding: 1.5rem; max-width: 95%; }
+    .discord-card h3 { font-size: 1.4rem; }
+    .discord-card p { font-size: 0.85rem; }
+    .instant-join-btn { padding: 8px 20px; font-size: 1rem; }
     .bigger-title { font-size: 1.8rem; }
     .bigger-icon { width: 44px; height: 44px; }
   }
@@ -520,14 +527,18 @@
     <div id="rankings"></div>
   </div>
 
-  <!-- DISCORD VIEW (big wavy button with stars and discord icon) -->
+  <!-- DISCORD VIEW (redesigned card) -->
   <div id="discordView" style="display: none;">
     <div class="flex justify-center items-center min-h-[55vh]">
-      <div id="bigDiscordButton" class="wavy-discord-button">
-        <div class="discord-btn-inner">
-          <i class="fab fa-discord"></i>
-          <span>Join Our Discord</span>
+      <div class="discord-card">
+        <div class="discord-card-icon">
+          <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Mace Icon">
         </div>
+        <h3>Mace Submodes</h3>
+        <p>Hop into the right hub for your game mode, find practice partners, and stay updated on tier changes.</p>
+        <button id="instantJoinBtn" class="instant-join-btn">
+          <i class="fab fa-discord"></i> Instant join
+        </button>
       </div>
     </div>
   </div>
@@ -646,7 +657,7 @@ function setView(view) {
 }
 leaderboardBtn.onclick = () => setView('leaderboard');
 discordBtn.onclick = () => setView('discord');
-document.getElementById("bigDiscordButton")?.addEventListener("click", () => window.open("https://discord.gg/vSh3PfMyeG", "_blank"));
+document.getElementById("instantJoinBtn")?.addEventListener("click", () => window.open("https://discord.gg/vSh3PfMyeG", "_blank"));
 document.getElementById("searchButton").addEventListener("click", applySearchFilter);
 document.getElementById("modal-close").onclick = () => document.getElementById("player-modal").classList.add("hidden");
 window.onload = () => { createParticles(); loadCSV().then(() => setView('leaderboard')); };
