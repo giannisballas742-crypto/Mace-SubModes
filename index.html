@@ -553,7 +553,7 @@
     .retired-toggle i { font-size: 1.4rem; }
   }
   
-  /* ----- EXTRA MOBILE FRIENDLY TWEAKS (phone only) ----- */
+  /* ----- EXTRA MOBILE FRIENDLY TWEAKS (phone only, keeps PC/tablet unchanged) ----- */
   @media (max-width: 480px) {
     .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
     .holo-btn { padding: 6px 18px; font-size: 0.9rem; }
@@ -593,6 +593,18 @@
     .modal { padding: 16px; max-width: 95%; }
     .modal h2 { font-size: 1.4rem; }
     [data-tooltip]::after { font-size: 0.75rem; padding: 6px 10px; min-width: 120px; white-space: normal; bottom: 120%; }
+    
+    /* Additional mobile-friendly improvements */
+    .player-card .mode-icons { justify-content: flex-start; }
+    .player-card .flex-1 { min-width: 0; }
+    .rank-large { white-space: nowrap; }
+    .sub-tier-badge { white-space: nowrap; }
+    .tier-column .player-card .font-semibold { font-size: 0.75rem; }
+    .region-badge { font-size: 0.7rem; padding: 1px 6px; }
+    .suggestion-item { padding: 10px 14px; font-size: 0.8rem; }
+    #search-input { font-size: 0.85rem; }
+    .search-btn { padding: 6px 12px; }
+    .instant-join-btn { white-space: nowrap; }
   }
 </style>
 </head>
