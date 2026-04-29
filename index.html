@@ -289,6 +289,19 @@
   }
   .sub-tier-ht { background: #6b7280; color: white; box-shadow: 0 0 2px #9ca3af; }
   .sub-tier-lt { background: #374151; color: #f3f4f6; box-shadow: 0 0 2px #4b5563; }
+  .retired-badge {
+    background: #dc2626;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 0 4px #ff4444;
+  }
   .tier-group-header {
     font-weight: 800;
     font-size: 1.2rem;
@@ -363,6 +376,11 @@
     padding: 1px 5px;
     margin-left: 4px;
   }
+  .tier-column .retired-badge {
+    font-size: 0.55rem;
+    padding: 1px 4px;
+    margin-left: 2px;
+  }
   
   /* ----- HOLO BUTTON EFFECT ----- */
   .holo-btn {
@@ -415,46 +433,46 @@
     font-size: 2.5rem;
   }
   
-  /* ---------- RETIRED TOGGLE SWITCH (icon only, no text) ---------- */
+  /* ---------- RETIRED TOGGLE SWITCH (bigger) ---------- */
   .retired-toggle {
     background: #1f2937;
     border: 1px solid #db3e3e;
-    border-radius: 32px;
-    padding: 6px 12px;
-    font-size: 1.2rem;
+    border-radius: 40px;
+    padding: 8px 16px;
+    font-size: 1.4rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
     color: #e5e5e5;
-    width: 42px;
+    width: 54px;
   }
   .retired-toggle i {
-    font-size: 1.3rem;
+    font-size: 1.6rem;
   }
   .retired-toggle.active {
     background: #db3e3e;
     color: black;
     border-color: #ffd966;
-    box-shadow: 0 0 8px rgba(219,62,62,0.5);
+    box-shadow: 0 0 10px rgba(219,62,62,0.6);
   }
   .retired-toggle:hover {
     transform: scale(1.05);
     background: #b12d2d;
   }
   
-  /* redesigned discord card */
+  /* redesigned discord card (matching picture style) */
   .discord-card {
     position: relative;
-    background: linear-gradient(145deg, #5a1e1e 0%, #2a0a0a 100%);
+    background: linear-gradient(145deg, #3a1010 0%, #1e0505 100%);
     border-radius: 2rem;
     padding: 2rem;
     max-width: 560px;
     width: 100%;
     margin: 2rem auto;
     text-align: center;
-    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(219,62,62,0.4);
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(219,62,62,0.5);
     transition: transform 0.2s;
     overflow: hidden;
   }
@@ -462,16 +480,16 @@
   .discord-card .wavy-line {
     position: absolute;
     width: 130%;
-    height: 6px;
-    background: repeating-linear-gradient(90deg, rgba(255,220,180,0.5) 0px, rgba(255,220,180,0.5) 8px, rgba(255,100,80,0.3) 8px, rgba(255,100,80,0.3) 16px, rgba(255,220,180,0.4) 16px, rgba(255,220,180,0.4) 24px);
-    filter: blur(0.5px) drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+    height: 8px;
+    background: repeating-linear-gradient(90deg, rgba(255,200,150,0.7) 0px, rgba(255,200,150,0.7) 6px, rgba(255,80,60,0.4) 6px, rgba(255,80,60,0.4) 14px, rgba(255,200,150,0.6) 14px, rgba(255,200,150,0.6) 22px);
+    filter: blur(0.5px) drop-shadow(0 2px 5px rgba(0,0,0,0.6));
     pointer-events: none;
-    border-radius: 3px;
+    border-radius: 4px;
     opacity: 0.9;
   }
-  .discord-card .wavy-line-1 { top: 12%; left: -15%; transform: rotate(3deg) skewX(-6deg); }
-  .discord-card .wavy-line-2 { bottom: 20%; right: -15%; width: 140%; transform: rotate(-6deg) skewX(4deg); }
-  .discord-card .wavy-line-3 { top: 45%; left: -10%; width: 120%; transform: rotate(12deg); }
+  .discord-card .wavy-line-1 { top: 10%; left: -15%; transform: rotate(2deg) skewX(-5deg); }
+  .discord-card .wavy-line-2 { bottom: 18%; right: -15%; width: 140%; transform: rotate(-5deg) skewX(6deg); }
+  .discord-card .wavy-line-3 { top: 45%; left: -10%; width: 120%; transform: rotate(10deg); }
   .discord-card-icon {
     width: 80px;
     height: 80px;
@@ -531,10 +549,11 @@
     .bigger-title { font-size: 1.8rem; }
     .bigger-icon { width: 44px; height: 44px; }
     .tabs-outline { padding: 6px 12px; }
-    .retired-toggle { width: 38px; padding: 4px 8px; font-size: 1rem; }
+    .retired-toggle { width: 46px; padding: 6px 12px; font-size: 1.2rem; }
+    .retired-toggle i { font-size: 1.4rem; }
   }
   
-  /* ----- EXTRA MOBILE FRIENDLY TWEAKS (phone only, keeps PC/tablet unchanged) ----- */
+  /* ----- EXTRA MOBILE FRIENDLY TWEAKS (phone only) ----- */
   @media (max-width: 480px) {
     .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
     .holo-btn { padding: 6px 18px; font-size: 0.9rem; }
@@ -547,8 +566,8 @@
     #searchWrapper { gap: 6px; }
     #search-input { max-width: 160px; font-size: 0.8rem; padding: 6px 10px; }
     .search-btn { padding: 5px 12px; font-size: 0.8rem; }
-    .retired-toggle { width: 36px; padding: 3px 6px; font-size: 0.9rem; }
-    .retired-toggle i { font-size: 1.1rem; }
+    .retired-toggle { width: 42px; padding: 4px 8px; font-size: 1rem; }
+    .retired-toggle i { font-size: 1.2rem; }
     .kit-info-btn { padding: 5px 12px; font-size: 0.8rem; }
     .player-card { padding: 8px; gap: 8px; }
     .player-img { width: 40px; height: 40px; }
@@ -701,7 +720,7 @@ const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKHryT8GKlMBjSowNQqBYdtVYVUMXOA12q1e9upH901YAfdi2sP2E5xU-VXqY-fFh__dRdIwvKM_Or/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
 let allRows = [], nameCol = "", pointsCol = "", regionCol = "__region";
-let hideRetired = false;
+let markRetired = false; // renamed: true = show R badge, false = no R
 
 function isRetiredPlayer(player) {
   const retiredPatterns = ["RLT1", "RHT1", "RLT2", "RHT2"];
@@ -744,16 +763,17 @@ function updateModeHeader(mode) {
     kitBtn.className = "kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition shadow-md flex items-center gap-2";
     kitBtn.onclick = (e) => { e.stopPropagation(); showKitInfo(mode); };
     actionGroup.appendChild(kitBtn);
+    
+    // Retired toggle switch (only for non-Overall)
+    const retiredBtn = document.createElement("button");
+    retiredBtn.id = "retiredToggleBtn";
+    retiredBtn.className = `retired-toggle ${markRetired ? "active" : ""}`;
+    const icon = markRetired ? '<i class="fas fa-toggle-on"></i>' : '<i class="fas fa-toggle-off"></i>';
+    retiredBtn.innerHTML = icon;
+    retiredBtn.setAttribute("data-tooltip", markRetired ? "Show R badge for retired players (active)" : "Hide retired badges (inactive)");
+    retiredBtn.onclick = (e) => { e.stopPropagation(); toggleRetiredMarker(); };
+    actionGroup.appendChild(retiredBtn);
   }
-  // Retired toggle switch (icon only)
-  const retiredBtn = document.createElement("button");
-  retiredBtn.id = "retiredToggleBtn";
-  retiredBtn.className = `retired-toggle ${hideRetired ? "active" : ""}`;
-  const icon = hideRetired ? '<i class="fas fa-toggle-on"></i>' : '<i class="fas fa-toggle-off"></i>';
-  retiredBtn.innerHTML = icon;
-  retiredBtn.setAttribute("data-tooltip", hideRetired ? "Hide retired players (active)" : "Show retired players (inactive)");
-  retiredBtn.onclick = (e) => { e.stopPropagation(); toggleRetiredPlayers(); };
-  actionGroup.appendChild(retiredBtn);
   wrapper.appendChild(actionGroup);
   container.innerHTML = "";
   container.appendChild(wrapper);
@@ -762,8 +782,6 @@ function updateModeHeader(mode) {
 function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => {
-    // Only apply retired filter when not on Overall tab
-    if (mode !== "Overall" && hideRetired && isRetiredPlayer(r)) return;
     const rawTier = r[mode];
     if (!rawTier) return;
     const parsed = parseTierString(rawTier);
@@ -796,7 +814,11 @@ function renderModeGroupedByTier(mode) {
       let regionHTML = "";
       const regionClass = getRegionClass(region);
       if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
-      const subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
+      let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
+      // Add retired badge if needed
+      if (markRetired && isRetiredPlayer(p)) {
+        subTierBadge += `<span class="retired-badge">R</span>`;
+      }
       const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
       columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${escapeHtml(name)}</span>${subTierBadge}${regionHTML}</div></div>`;
     });
@@ -821,9 +843,7 @@ function loadMode(mode, activeBtn) {
   updateModeHeader(mode);
   let htmlOut = "";
   if (mode === "Overall") {
-    // Overall: always show all players, ignore hideRetired
-    const filteredRows = allRows;
-    const sorted = [...filteredRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
+    const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
     sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">${idx < 3 ? `<div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(192,192,192,0.2) 40%, rgba(205,127,50,0.2) 60%, rgba(0,0,0,0) 75%); clip-path: polygon(0 0, 70% 0, 55% 100%, 0% 100%);"></div>` : ""}<img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
   } else {
     htmlOut = renderModeGroupedByTier(mode);
@@ -835,26 +855,22 @@ function loadMode(mode, activeBtn) {
 function attachCardEvents() { document.querySelectorAll(".player-card").forEach(card => { card.onclick = () => { const p = JSON.parse(card.dataset.player.replace(/&apos;/g, "'")); showPlayerProfile(p); }; }); }
 function applySearchFilter() { const term = document.getElementById("search-input").value.toLowerCase(); document.querySelectorAll("#rankings .player-card").forEach(card => { const text = card.textContent.toLowerCase(); card.style.display = text.includes(term) ? "flex" : "none"; }); }
 
-function toggleRetiredPlayers() {
-  hideRetired = !hideRetired;
+function toggleRetiredMarker() {
+  markRetired = !markRetired;
   const toggleBtn = document.getElementById("retiredToggleBtn");
   if (toggleBtn) {
-    if (hideRetired) {
+    if (markRetired) {
       toggleBtn.classList.add("active");
       toggleBtn.innerHTML = '<i class="fas fa-toggle-on"></i>';
-      toggleBtn.setAttribute("data-tooltip", "Hide retired players (active)");
+      toggleBtn.setAttribute("data-tooltip", "Show R badge for retired players (active)");
     } else {
       toggleBtn.classList.remove("active");
       toggleBtn.innerHTML = '<i class="fas fa-toggle-off"></i>';
-      toggleBtn.setAttribute("data-tooltip", "Show retired players (inactive)");
+      toggleBtn.setAttribute("data-tooltip", "Hide retired badges (inactive)");
     }
   }
-  // Reload current mode if it's not Overall (filter applies only to non-Overall)
+  // Reload current mode if it's not Overall
   if (currentActiveMode !== "Overall") {
-    const currentActiveTab = document.querySelector("#tabs .tab-active");
-    if (currentActiveTab) loadMode(currentActiveMode, currentActiveTab);
-  } else {
-    // For Overall, we don't filter, but we still reload to reflect toggle state? Actually Overall ignores filter, but we reload anyway to update the toggle appearance.
     const currentActiveTab = document.querySelector("#tabs .tab-active");
     if (currentActiveTab) loadMode(currentActiveMode, currentActiveTab);
   }
