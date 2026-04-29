@@ -551,9 +551,13 @@
     .tabs-outline { padding: 6px 12px; }
     .retired-toggle { width: 46px; padding: 6px 12px; font-size: 1.2rem; }
     .retired-toggle i { font-size: 1.4rem; }
+    /* Ensure tier-grid stays horizontal on tablets */
+    .tier-grid {
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+    }
   }
   
-  /* ----- EXTRA MOBILE FRIENDLY TWEAKS (phone only, keeps PC/tablet unchanged) ----- */
+  /* ----- MOBILE FIX: keep horizontal grid, prevent vertical stacking ----- */
   @media (max-width: 480px) {
     .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
     .holo-btn { padding: 6px 18px; font-size: 0.9rem; }
@@ -575,59 +579,44 @@
     .mode-icon { width: 30px; height: 30px; }
     .mode-tier { font-size: 8px; padding: 1px 4px; min-width: 30px; }
     .rank-large { font-size: 0.8rem !important; padding: 0.2rem 0.8rem !important; }
-    .tier-grid { gap: 0.4rem; }
-    .tier-column { padding: 0.4rem 0.3rem; }
+    /* Force horizontal scrolling grid, not vertical list */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tier-column {
+      min-width: 130px;
+      padding: 0.4rem 0.3rem;
+    }
     .tier-column .tier-group-header { font-size: 0.8rem; padding: 2px 6px; margin-bottom: 0.5rem; }
-    .tier-column .player-card { padding: 4px 6px; gap: 6px; }
-    .tier-column .player-img { width: 30px; height: 30px; }
-    .tier-column .sub-tier-badge { font-size: 0.55rem; padding: 1px 4px; margin-left: 4px; }
-    .tier-column .mode-icons { gap: 4px; }
+    .tier-column .player-card { padding: 4px 6px; gap: 6px; align-items: flex-start; }
+    .tier-column .player-img { width: 30px; height: 30px; flex-shrink: 0; }
+    .tier-column .flex.items-center.gap-2 { flex-wrap: wrap; row-gap: 4px; }
+    .tier-column .font-semibold { font-size: 0.75rem; word-break: break-word; line-height: 1.3; }
+    .tier-column .sub-tier-badge { font-size: 0.55rem; padding: 1px 4px; margin-left: 4px; white-space: nowrap; }
+    .tier-column .retired-badge { font-size: 0.55rem; padding: 1px 4px; margin-left: 2px; white-space: nowrap; }
+    .tier-column .region-badge { font-size: 0.65rem; padding: 1px 5px; white-space: nowrap; }
+    .tier-column .mode-icons { gap: 4px; margin-top: 4px; }
     .tier-column .mode-icon-container { width: 28px; }
     .tier-column .mode-icon { width: 24px; height: 24px; }
     .tier-column .mode-tier { font-size: 7px; min-width: 24px; }
+    
     .discord-card { padding: 1.2rem; }
     .discord-card-icon { width: 60px; height: 60px; }
     .discord-card h3 { font-size: 1.2rem; }
     .discord-card p { font-size: 0.8rem; margin-bottom: 1.2rem; }
-    .instant-join-btn { padding: 6px 16px; font-size: 0.9rem; }
+    .instant-join-btn { padding: 6px 16px; font-size: 0.9rem; white-space: nowrap; }
     .modal { padding: 16px; max-width: 95%; }
     .modal h2 { font-size: 1.4rem; }
     [data-tooltip]::after { font-size: 0.75rem; padding: 6px 10px; min-width: 120px; white-space: normal; bottom: 120%; }
     
-    /* Additional mobile-friendly improvements */
     .player-card .mode-icons { justify-content: flex-start; }
     .player-card .flex-1 { min-width: 0; }
     .rank-large { white-space: nowrap; }
-    .sub-tier-badge { white-space: nowrap; }
-    .tier-column .player-card .font-semibold { font-size: 0.75rem; }
-    .region-badge { font-size: 0.7rem; padding: 1px 6px; }
     .suggestion-item { padding: 10px 14px; font-size: 0.8rem; }
-    #search-input { font-size: 0.85rem; }
-    .search-btn { padding: 6px 12px; }
-    .instant-join-btn { white-space: nowrap; }
-    
-    /* FIX: prevent overlapping names in tier columns on phones */
-    .tier-column .player-card {
-      align-items: flex-start;
-    }
-    .tier-column .player-card .flex-1 {
-      min-width: 0;
-    }
-    .tier-column .player-card .flex.items-center.gap-2 {
-      flex-wrap: wrap;
-      row-gap: 4px;
-    }
-    .tier-column .player-card .font-semibold {
-      word-break: break-word;
-      line-height: 1.3;
-      max-width: 100%;
-    }
-    .tier-column .player-card .sub-tier-badge,
-    .tier-column .player-card .retired-badge,
-    .tier-column .player-card .region-badge {
-      margin-top: 2px;
-      margin-bottom: 2px;
-    }
   }
 </style>
 </head>
