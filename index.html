@@ -720,18 +720,15 @@ const OVERALL_ICON = "https://cdn.discordapp.com/emojis/1487324288175308971.webp
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRKHryT8GKlMBjSowNQqBYdtVYVUMXOA12q1e9upH901YAfdi2sP2E5xU-VXqY-fFh__dRdIwvKM_Or/pub?output=csv";
 const REGION_COLUMN_INDEX = 2;
 let allRows = [], nameCol = "", pointsCol = "", regionCol = "__region";
-let markRetired = false; // renamed: true = show R badge, false = no R
+let markRetired = false; // false = hide retired players in this mode, true = show with R badge
 
-function isRetiredPlayer(player) {
+// Per-mode retirement check
+function isRetiredInMode(player, mode) {
+  const tier = player[mode];
+  if (!tier) return false;
+  const upperTier = tier.toUpperCase();
   const retiredPatterns = ["RLT1", "RHT1", "RLT2", "RHT2"];
-  for (let mode of ["LT Mace","HT Mace","Rocket Mace","Rod Mace","OG Mace","Spear Mace"]) {
-    const tier = player[mode];
-    if (tier) {
-      const upperTier = tier.toUpperCase();
-      if (retiredPatterns.some(p => upperTier.includes(p))) return true;
-    }
-  }
-  return false;
+  return retiredPatterns.some(p => upperTier.includes(p));
 }
 
 function getRoleByPoints(p) { const pts = parseFloat(p); if (isNaN(pts)) return null; if (pts >= 100) return { name:"Mace Master", icon:"<i class='fas fa-crown'></i>", className:"master", symbol:"🏆" }; if (pts >= 50) return { name:"Mace Ace", icon:"<i class='fas fa-shield-alt'></i>", className:"ace", symbol:"⚡" }; if (pts >= 25) return { name:"Mace Specialist", icon:"<i class='fas fa-star'></i>", className:"specialist", symbol:"✨" }; if (pts >= 10) return { name:"Mace Cadet", icon:"<i class='fas fa-user-graduate'></i>", className:"cadet", symbol:"🎓" }; if (pts >= 5) return { name:"Mace Novice", icon:"<i class='fas fa-feather-alt'></i>", className:"novice", symbol:"🌱" }; if (pts >= 1) return { name:"Mace Rookie", icon:"<i class='fas fa-baby-carriage'></i>", className:"rookie", symbol:"🍼" }; return null; }
@@ -770,7 +767,7 @@ function updateModeHeader(mode) {
     retiredBtn.className = `retired-toggle ${markRetired ? "active" : ""}`;
     const icon = markRetired ? '<i class="fas fa-toggle-on"></i>' : '<i class="fas fa-toggle-off"></i>';
     retiredBtn.innerHTML = icon;
-    retiredBtn.setAttribute("data-tooltip", markRetired ? "Show R badge for retired players (active)" : "Hide retired badges (inactive)");
+    retiredBtn.setAttribute("data-tooltip", markRetired ? "Show retired players (with R badge)" : "Hide retired players");
     retiredBtn.onclick = (e) => { e.stopPropagation(); toggleRetiredMarker(); };
     actionGroup.appendChild(retiredBtn);
   }
@@ -782,6 +779,9 @@ function updateModeHeader(mode) {
 function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => {
+    // Filter based on per-mode retirement
+    const retiredInThisMode = isRetiredInMode(r, mode);
+    if (!markRetired && retiredInThisMode) return; // hide retired players when toggle OFF
     const rawTier = r[mode];
     if (!rawTier) return;
     const parsed = parseTierString(rawTier);
@@ -791,7 +791,7 @@ function renderModeGroupedByTier(mode) {
     if (!match) return;
     const tierNum = parseInt(match[2], 10);
     const type = match[1];
-    groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier });
+    groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier, retired: retiredInThisMode });
   });
   let gridHtml = '<div class="tier-grid">';
   for (let t = 1; t <= 5; t++) {
@@ -815,8 +815,8 @@ function renderModeGroupedByTier(mode) {
       const regionClass = getRegionClass(region);
       if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`;
       let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`;
-      // Add retired badge if needed
-      if (markRetired && isRetiredPlayer(p)) {
+      // Add retired badge only if toggle ON and player is retired in this mode
+      if (markRetired && item.retired) {
         subTierBadge += `<span class="retired-badge">R</span>`;
       }
       const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt';
@@ -862,11 +862,11 @@ function toggleRetiredMarker() {
     if (markRetired) {
       toggleBtn.classList.add("active");
       toggleBtn.innerHTML = '<i class="fas fa-toggle-on"></i>';
-      toggleBtn.setAttribute("data-tooltip", "Show R badge for retired players (active)");
+      toggleBtn.setAttribute("data-tooltip", "Show retired players (with R badge)");
     } else {
       toggleBtn.classList.remove("active");
       toggleBtn.innerHTML = '<i class="fas fa-toggle-off"></i>';
-      toggleBtn.setAttribute("data-tooltip", "Hide retired badges (inactive)");
+      toggleBtn.setAttribute("data-tooltip", "Hide retired players");
     }
   }
   // Reload current mode if it's not Overall
