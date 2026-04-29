@@ -605,6 +605,29 @@
     #search-input { font-size: 0.85rem; }
     .search-btn { padding: 6px 12px; }
     .instant-join-btn { white-space: nowrap; }
+    
+    /* FIX: prevent overlapping names in tier columns on phones */
+    .tier-column .player-card {
+      align-items: flex-start;
+    }
+    .tier-column .player-card .flex-1 {
+      min-width: 0;
+    }
+    .tier-column .player-card .flex.items-center.gap-2 {
+      flex-wrap: wrap;
+      row-gap: 4px;
+    }
+    .tier-column .player-card .font-semibold {
+      word-break: break-word;
+      line-height: 1.3;
+      max-width: 100%;
+    }
+    .tier-column .player-card .sub-tier-badge,
+    .tier-column .player-card .retired-badge,
+    .tier-column .player-card .region-badge {
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
   }
 </style>
 </head>
