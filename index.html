@@ -68,35 +68,69 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
   
-  /* ----- ANIMATION for GOLD/SILVER/BRONZE top 3 (Overall) ----- */
-  .player-card.gold, .player-card.silver, .player-card.bronze {
-    animation: medalPulse 2s infinite ease-in-out;
+  /* ----- MEDAL EFFECT ONLY ON ICON + OVERLAY ANIMATION (gold/silver/bronze) ----- */
+  .player-card.gold .player-img,
+  .player-card.silver .player-img,
+  .player-card.bronze .player-img {
     position: relative;
     z-index: 2;
   }
-  @keyframes medalPulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
-    50% { box-shadow: 0 0 0 8px rgba(255, 215, 0, 0.2); }
+  /* pulse ring around the icon */
+  .player-card.gold .player-img {
+    animation: iconPulseGold 1.8s infinite ease-out;
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6);
+    border-color: #ffd700;
+  }
+  .player-card.silver .player-img {
+    animation: iconPulseSilver 1.8s infinite ease-out;
+    box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.6);
+    border-color: #c0c0c0;
+  }
+  .player-card.bronze .player-img {
+    animation: iconPulseBronze 1.8s infinite ease-out;
+    box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.6);
+    border-color: #cd7f32;
+  }
+  @keyframes iconPulseGold {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
     100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
   }
-  .player-card.silver {
-    animation-name: medalPulseSilver;
-  }
-  @keyframes medalPulseSilver {
-    0% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.5); }
-    50% { box-shadow: 0 0 0 8px rgba(192, 192, 192, 0.25); }
+  @keyframes iconPulseSilver {
+    0% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(192, 192, 192, 0); }
     100% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0); }
   }
-  .player-card.bronze {
-    animation-name: medalPulseBronze;
-  }
-  @keyframes medalPulseBronze {
-    0% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.5); }
-    50% { box-shadow: 0 0 0 8px rgba(205, 127, 50, 0.25); }
+  @keyframes iconPulseBronze {
+    0% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(205, 127, 50, 0); }
     100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
   }
+  /* Overlay shine effect on the icon */
+  .player-card.gold .player-img::after,
+  .player-card.silver .player-img::after,
+  .player-card.bronze .player-img::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.3) 100%);
+    opacity: 0;
+    animation: shineOverlay 2.5s infinite;
+    pointer-events: none;
+    z-index: 3;
+  }
+  @keyframes shineOverlay {
+    0% { opacity: 0; transform: scale(0.8); }
+    20% { opacity: 0.8; transform: scale(1.1); }
+    40% { opacity: 0; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
+  }
   
-  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
+  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; }
   [data-tooltip] {
     position: relative;
     cursor: help;
