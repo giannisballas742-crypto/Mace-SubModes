@@ -668,23 +668,47 @@
     margin-bottom: 1rem;
     margin-top: 0.5rem;
   }
-  .points-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.8rem;
+  /* New tier pair grid styles */
+  .tier-pair-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
-  .points-item {
+  .tier-pair-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .tier-cell {
     background: #1e2937;
-    border-radius: 1.5rem;
-    padding: 0.6rem 1rem;
+    border-radius: 1.2rem;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 500;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
-  .trophy-gold { color: #ffd966; }
-  .trophy-silver { color: #c0c0c0; }
-  .trophy-bronze { color: #cd7f32; }
+  .tier-cell i {
+    margin-left: auto;
+  }
+  @media (max-width: 560px) {
+    .tier-pair-row {
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+    .tier-cell i {
+      margin-left: 0;
+    }
+  }
+  .trophy-gold { color: #ffeb3b; text-shadow: 0 0 2px #b8860b; }
+  .trophy-silver { color: #e0e0e0; text-shadow: 0 0 2px #888; }
+  .trophy-bronze { color: #cd7f32; text-shadow: 0 0 2px #a0522d; }
   @media (max-width: 640px) {
     .overall-rankings {
       display: grid !important;
@@ -753,7 +777,7 @@
     </div>
   </div>
 
-  <!-- NEW HOME / INFORMATION VIEW -->
+  <!-- NEW HOME / INFORMATION VIEW (Points now with paired tiers + original colors) -->
   <div id="homeView" style="display: none;">
     <div class="max-w-4xl mx-auto">
       <div class="info-card">
@@ -773,21 +797,36 @@
           </div>
         </div>
         
-        <!-- Points section -->
+        <!-- Points section - TIERS PAIRED SIDE BY SIDE WITH ORIGINAL COLORS -->
         <div class="mb-10">
           <div class="info-section-title">Points</div>
           <div class="text-gray-300 mb-4">How ranking points are calculated:</div>
-          <div class="points-grid">
-            <div class="points-item"><span>HT1</span><span>60 pts <i class="fas fa-trophy trophy-gold"></i></span></div>
-            <div class="points-item"><span>LT1</span><span>45 pts <i class="fas fa-trophy trophy-gold"></i></span></div>
-            <div class="points-item"><span>HT2</span><span>30 pts <i class="fas fa-medal trophy-silver"></i></span></div>
-            <div class="points-item"><span>LT2</span><span>20 pts <i class="fas fa-medal trophy-silver"></i></span></div>
-            <div class="points-item"><span>HT3</span><span>10 pts <i class="fas fa-award trophy-bronze"></i></span></div>
-            <div class="points-item"><span>LT3</span><span>6 pts <i class="fas fa-award trophy-bronze"></i></span></div>
-            <div class="points-item"><span>HT4</span><span>4 pts</span></div>
-            <div class="points-item"><span>LT4</span><span>3 pts</span></div>
-            <div class="points-item"><span>HT5</span><span>2 pts</span></div>
-            <div class="points-item"><span>LT5</span><span>1 pt</span></div>
+          <div class="tier-pair-grid">
+            <!-- Tier1 pair: HT1 gold / LT1 deep gold -->
+            <div class="tier-pair-row">
+              <div class="tier-cell" style="background: #f1c40f; color:#1e1a00;">HT1 · 60 pts <i class="fas fa-trophy trophy-gold"></i></div>
+              <div class="tier-cell" style="background: #ffa600; color:#1e1a00;">LT1 · 45 pts <i class="fas fa-trophy trophy-gold"></i></div>
+            </div>
+            <!-- Tier2 pair: silver colors -->
+            <div class="tier-pair-row">
+              <div class="tier-cell" style="background: #bdc3c7; color:#1f1f1f;">HT2 · 30 pts <i class="fas fa-medal trophy-silver"></i></div>
+              <div class="tier-cell" style="background: #95a5a6; color:#1f1f1f;">LT2 · 20 pts <i class="fas fa-medal trophy-silver"></i></div>
+            </div>
+            <!-- Tier3 pair: bronze colors -->
+            <div class="tier-pair-row">
+              <div class="tier-cell" style="background: #ff8531; color:#2a1506;">HT3 · 10 pts <i class="fas fa-award trophy-bronze"></i></div>
+              <div class="tier-cell" style="background: #f37324; color:#2a1506;">LT3 · 6 pts <i class="fas fa-award trophy-bronze"></i></div>
+            </div>
+            <!-- Tier4 pair: cyan tones (ironish) -->
+            <div class="tier-pair-row">
+              <div class="tier-cell" style="background: #55ffff; color:#003333;">HT4 · 4 pts</div>
+              <div class="tier-cell" style="background: #aaffff; color:#004d4d;">LT4 · 3 pts</div>
+            </div>
+            <!-- Tier5 pair: purple/blue -->
+            <div class="tier-pair-row">
+              <div class="tier-cell" style="background: #5555ff; color:#ffffff;">HT5 · 2 pts</div>
+              <div class="tier-cell" style="background: #AAAAFF; color:#000033;">LT5 · 1 pt</div>
+            </div>
           </div>
           <div class="text-sm text-gray-400 mt-3 italic">🏆 Tier1 = Gold Trophy &nbsp;&nbsp; 🥈 Tier2 = Silver &nbsp;&nbsp; 🥉 Tier3 = Bronze</div>
         </div>
