@@ -544,8 +544,6 @@
   .bigger-title {
     font-size: 2.3rem;
   }
-  
-  /* ---------- RETIRED TOGGLE SWITCH (bigger) ---------- */
   .retired-toggle {
     background: #1f2937;
     border: 1px solid #db3e3e;
@@ -653,114 +651,53 @@
     100% { transform: translateY(-100%) scale(1); opacity: 0; }
   }
   
-  /* ----- OVERALL MOBILE GRID (single column vertical list) ----- */
+  /* ----- HOME INFO CARD STYLES ----- */
+  .info-card {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 2rem;
+    border: 1px solid rgba(219,62,62,0.4);
+    padding: 1.8rem;
+    transition: 0.2s;
+  }
+  .info-section-title {
+    font-size: 1.7rem;
+    font-weight: 800;
+    border-left: 6px solid #db3e3e;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+  }
+  .points-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+  }
+  .points-item {
+    background: #1e2937;
+    border-radius: 1.5rem;
+    padding: 0.6rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+  }
+  .trophy-gold { color: #ffd966; }
+  .trophy-silver { color: #c0c0c0; }
+  .trophy-bronze { color: #cd7f32; }
   @media (max-width: 640px) {
     .overall-rankings {
       display: grid !important;
       grid-template-columns: 1fr !important;
       gap: 0.75rem;
     }
-    .overall-rankings .player-card {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 0;
-      padding: 12px 10px;
-      position: relative;
-      width: 100%;
-    }
-    .overall-rankings .player-card .flex-1 {
-      width: 100%;
-    }
-    .overall-rankings .player-card .flex.items-center.gap-4 {
-      flex-wrap: wrap;
-      margin-top: 8px;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .overall-rankings .player-card .mode-icons {
-      justify-content: flex-start;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    .overall-rankings .player-card .rank-large {
-      font-size: 0.75rem !important;
-      padding: 0.2rem 0.6rem !important;
-      margin-top: 4px;
-    }
-    .overall-rankings .player-card .player-img {
-      width: 44px;
-      height: 44px;
-      margin-bottom: 6px;
-    }
-    .overall-rankings .player-card .font-bold:first-child {
-      font-size: 0.9rem;
-    }
-    .overall-rankings .region-badge {
-      font-size: 0.65rem;
-      padding: 1px 6px;
-      margin-left: 4px;
-    }
-    .overall-rankings .mode-icon-container {
-      width: 38px;
-    }
-    .overall-rankings .mode-icon {
-      width: 30px;
-      height: 30px;
-    }
-    .overall-rankings .mode-tier {
-      font-size: 8px;
-      min-width: 28px;
-    }
-    .overall-rankings .font-mono.text-xl {
-      font-size: 1rem;
-    }
-    /* adjust plate for mobile */
-    .player-card.gold::before, .player-card.silver::before, .player-card.bronze::before,
-    .player-card.gold::after, .player-card.silver::after, .player-card.bronze::after {
-      width: 80%;
-      clip-path: polygon(0% 0%, 100% 0%, 93% 100%, 0% 100%);
-    }
-  }
-  
-  /* desktop overall layout stays 1 column full width */
-  @media (min-width: 641px) {
-    .overall-rankings {
-      display: block !important;
-    }
-    .overall-rankings .player-card {
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-    }
-    .overall-rankings .player-card .flex.items-center.gap-4 {
-      margin-top: 0 !important;
-      justify-content: flex-end !important;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .overall-rankings {
-      gap: 0.6rem;
-    }
     .tier-grid {
       grid-template-columns: repeat(5, minmax(140px, 1fr));
       gap: 0.5rem;
       overflow-x: auto;
     }
-    .discord-card { padding: 1.2rem; max-width: 95%; }
+    .info-card { padding: 1.2rem; }
     .bigger-title { font-size: 1.5rem; }
-    .bigger-icon { width: 40px; height: 40px; }
-    .tabs-outline { padding: 6px 8px; }
-    .tab { padding: 4px 10px !important; font-size: 0.7rem !important; }
-    .tab-icon { width: 28px; height: 28px; margin-bottom: 4px; }
-    .retired-toggle { width: 42px; padding: 4px 8px; font-size: 1rem; }
-    #search-input { max-width: 160px; font-size: 0.8rem; }
-    .player-card.gold::before, .player-card.silver::before, .player-card.bronze::before,
-    .player-card.gold::after, .player-card.silver::after, .player-card.bronze::after {
-      width: 85%;
-      clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 0% 100%);
-    }
   }
 </style>
 </head>
@@ -812,6 +749,54 @@
         <h3>Mace Submodes</h3>
         <p>Hop into the right hub for your game mode, find practice partners, and stay updated on tier changes.</p>
         <button id="instantJoinBtn" class="instant-join-btn"><i class="fab fa-discord"></i> Instant join</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW HOME / INFORMATION VIEW -->
+  <div id="homeView" style="display: none;">
+    <div class="max-w-4xl mx-auto">
+      <div class="info-card">
+        <h2 class="text-3xl font-black mb-5 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">📖 Information</h2>
+        
+        <!-- Tittles section -->
+        <div class="mb-8">
+          <div class="info-section-title">Tittles</div>
+          <div class="text-gray-300 mb-3 font-medium">How to obtain Achievement Titles:</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-yellow-400">Mace Master</span><span>🏆 Obtained by 100+ total points.</span></div>
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-indigo-300">Mace Ace</span><span>⚡ Obtained by 50+ total points.</span></div>
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-green-400">Mace Specialist</span><span>✨ Obtained by 25+ total points.</span></div>
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-blue-400">Mace Cadet</span><span>🎓 Obtained by 10+ total points.</span></div>
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-purple-400">Mace Novice</span><span>🌱 Obtained by 5+ total points.</span></div>
+            <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl"><span class="w-32 font-bold text-gray-400">Mace Rookie</span><span>🍼 Obtained by 1+ total points.</span></div>
+          </div>
+        </div>
+        
+        <!-- Points section -->
+        <div class="mb-10">
+          <div class="info-section-title">Points</div>
+          <div class="text-gray-300 mb-4">How ranking points are calculated:</div>
+          <div class="points-grid">
+            <div class="points-item"><span>HT1</span><span>60 pts <i class="fas fa-trophy trophy-gold"></i></span></div>
+            <div class="points-item"><span>LT1</span><span>45 pts <i class="fas fa-trophy trophy-gold"></i></span></div>
+            <div class="points-item"><span>HT2</span><span>30 pts <i class="fas fa-medal trophy-silver"></i></span></div>
+            <div class="points-item"><span>LT2</span><span>20 pts <i class="fas fa-medal trophy-silver"></i></span></div>
+            <div class="points-item"><span>HT3</span><span>10 pts <i class="fas fa-award trophy-bronze"></i></span></div>
+            <div class="points-item"><span>LT3</span><span>6 pts <i class="fas fa-award trophy-bronze"></i></span></div>
+            <div class="points-item"><span>HT4</span><span>4 pts</span></div>
+            <div class="points-item"><span>LT4</span><span>3 pts</span></div>
+            <div class="points-item"><span>HT5</span><span>2 pts</span></div>
+            <div class="points-item"><span>LT5</span><span>1 pt</span></div>
+          </div>
+          <div class="text-sm text-gray-400 mt-3 italic">🏆 Tier1 = Gold Trophy &nbsp;&nbsp; 🥈 Tier2 = Silver &nbsp;&nbsp; 🥉 Tier3 = Bronze</div>
+        </div>
+        
+        <!-- Credits + Report -->
+        <div class="border-t border-red-800/40 pt-6 mt-2 text-center">
+          <p class="text-lg"><i class="fas fa-bow-arrow"></i> 🏹 Credits to Alazerr / SmoTimmy / !Sam.</p>
+          <p class="text-gray-400 mt-3">📢 report problems to the <a href="https://discord.gg/vSh3PfMyeG" target="_blank" class="text-red-400 underline hover:text-red-300">discord server</a></p>
+        </div>
       </div>
     </div>
   </div>
@@ -958,11 +943,42 @@ searchInput.addEventListener("input", () => { updateSuggestions(); applySearchFi
 suggestionsDiv.addEventListener("click", (e) => { const target = e.target.closest('.suggestion-item'); if (target) { searchInput.value = target.getAttribute('data-name'); hideSuggestions(); const matchedPlayer = allRows.find(p => p[nameCol] === searchInput.value); if (matchedPlayer) showPlayerProfile(matchedPlayer); applySearchFilter(); } });
 document.addEventListener("click", function(e) { if (!document.getElementById("searchWrapper").contains(e.target)) hideSuggestions(); });
 async function loadCSV() { const res = await fetch(CSV_URL); const text = await res.text(); const { headers, data } = parseCSV(text); allRows = data; nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0]; pointsCol = headers.find(h=>/points/i.test(h)) || headers[1]; const allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"]; const tabsDiv = document.getElementById("tabs"); tabsDiv.innerHTML = ""; allModes.forEach((mode, idx) => { const wrapper = document.createElement("div"); wrapper.className = "tab-item"; let iconUrl = mode === "Overall" ? OVERALL_ICON : modeIcons[mode] || ""; const img = document.createElement("img"); img.src = iconUrl; img.className = "tab-icon"; img.style.width = "36px"; img.style.height = "36px"; const btn = document.createElement("button"); btn.textContent = mode; btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl font-medium"; if(idx === 0) btn.classList.add("tab-active"); btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); }; wrapper.appendChild(img); wrapper.appendChild(btn); wrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); }); tabsDiv.appendChild(wrapper); }); loadMode("Overall", document.querySelector("#tabs .tab-active")); }
-const leaderboardView = document.getElementById("leaderboardView"), discordView = document.getElementById("discordView");
+const leaderboardView = document.getElementById("leaderboardView"), discordView = document.getElementById("discordView"), homeView = document.getElementById("homeView");
 const leaderboardBtn = document.getElementById("leaderboardModeBtn"), discordBtn = document.getElementById("discordModeBtn"), homeBtn = document.getElementById("homeModeBtn");
-function setView(view) { if(view === 'leaderboard') { leaderboardView.style.display = "block"; discordView.style.display = "none"; document.getElementById("searchWrapper").style.display = "flex"; leaderboardBtn.classList.add("active"); discordBtn.classList.remove("active"); homeBtn.classList.remove("active"); if (currentActiveMode) loadMode(currentActiveMode, document.querySelector(`#tabs .tab-active`)); else loadCSV().then(() => {}); applySearchFilter(); } else { leaderboardView.style.display = "none"; discordView.style.display = "block"; document.getElementById("searchWrapper").style.display = "none"; leaderboardBtn.classList.remove("active"); discordBtn.classList.add("active"); homeBtn.classList.remove("active"); } }
-function goHome() { setView('leaderboard'); const overallTab = document.querySelector("#tabs .tab-item:first-child button"); if (overallTab) overallTab.click(); }
-leaderboardBtn.onclick = () => setView('leaderboard'); discordBtn.onclick = () => setView('discord'); homeBtn.onclick = goHome;
+function setView(view) {
+  if(view === 'leaderboard') {
+    leaderboardView.style.display = "block";
+    discordView.style.display = "none";
+    homeView.style.display = "none";
+    document.getElementById("searchWrapper").style.display = "flex";
+    leaderboardBtn.classList.add("active");
+    discordBtn.classList.remove("active");
+    homeBtn.classList.remove("active");
+    if (currentActiveMode) loadMode(currentActiveMode, document.querySelector(`#tabs .tab-active`));
+    else loadCSV().then(() => {});
+    applySearchFilter();
+  } else if(view === 'discord') {
+    leaderboardView.style.display = "none";
+    discordView.style.display = "block";
+    homeView.style.display = "none";
+    document.getElementById("searchWrapper").style.display = "none";
+    leaderboardBtn.classList.remove("active");
+    discordBtn.classList.add("active");
+    homeBtn.classList.remove("active");
+  } else if(view === 'home') {
+    leaderboardView.style.display = "none";
+    discordView.style.display = "none";
+    homeView.style.display = "block";
+    document.getElementById("searchWrapper").style.display = "none";
+    leaderboardBtn.classList.remove("active");
+    discordBtn.classList.remove("active");
+    homeBtn.classList.add("active");
+  }
+}
+function goHome() { setView('home'); }
+leaderboardBtn.onclick = () => setView('leaderboard');
+discordBtn.onclick = () => setView('discord');
+homeBtn.onclick = goHome;
 document.getElementById("instantJoinBtn")?.addEventListener("click", () => window.open("https://discord.gg/vSh3PfMyeG", "_blank"));
 document.getElementById("searchButton").addEventListener("click", () => { const matched = allRows.find(p => p[nameCol] === searchInput.value.trim()); if (matched) showPlayerProfile(matched); else if(searchInput.value) alert("Player not found"); });
 document.getElementById("modal-close").onclick = () => { document.getElementById("player-modal").classList.add("hidden"); searchInput.value = ""; applySearchFilter(); hideSuggestions(); };
