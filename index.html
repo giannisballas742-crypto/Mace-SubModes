@@ -54,26 +54,26 @@
   .tab {
     transition: 0.2s;
     cursor: pointer;
-    padding: 8px 20px !important;
-    font-size: 1rem !important;
+    padding: 6px 16px !important;
+    font-size: 0.9rem !important;
     font-weight: 600;
     border-radius: 40px;
     width: 100%;
     text-align: center;
   }
   .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-  .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; }
+  .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; position: relative; }
   .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
   .player-card.player-ht { background: #4b5563; }
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
   
-  /* ----- MEDAL PLATE (from left edge to icon) for top 3 + shine overlay ----- */
+  /* ----- MEDAL PLATE (diagonal cut from left edge to end of name area) ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
     position: relative;
     overflow: hidden;
   }
-  /* plate background */
+  /* plate background with diagonal cut */
   .player-card.gold::before,
   .player-card.silver::before,
   .player-card.bronze::before {
@@ -81,11 +81,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(10px + 48px);  /* padding-left (10px) + avatar width (48px) */
+    width: 100%;
     height: 100%;
-    border-radius: 12px 0 0 12px;
     z-index: 0;
     pointer-events: none;
+    clip-path: polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%);
   }
   .player-card.gold::before {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.45), rgba(255, 200, 0, 0.7));
@@ -99,7 +99,7 @@
     background: linear-gradient(135deg, rgba(205, 127, 50, 0.45), rgba(180, 100, 30, 0.7));
     box-shadow: inset 0 0 8px rgba(205, 127, 50, 0.5);
   }
-  /* shine overlay that moves across the plate */
+  /* shine overlay that moves diagonally across the plate, disappears after sweep and reappears after 4s */
   .player-card.gold::after,
   .player-card.silver::after,
   .player-card.bronze::after {
@@ -107,19 +107,19 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(10px + 48px);
+    width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
     transform: translateX(-100%);
-    animation: shineSlide 3s infinite ease-in-out;
+    animation: shineSlideDiagonal 6s infinite ease-in-out;
     z-index: 0;
     pointer-events: none;
-    border-radius: 12px 0 0 12px;
+    clip-path: polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%);
   }
-  @keyframes shineSlide {
-    0% { transform: translateX(-100%); }
-    20% { transform: translateX(100%); }
-    100% { transform: translateX(100%); }
+  @keyframes shineSlideDiagonal {
+    0% { transform: translateX(-100%) translateY(0%); }
+    8% { transform: translateX(100%) translateY(10%); }
+    100% { transform: translateX(100%) translateY(10%); }
   }
   
   /* ensure avatar and content stay above the plate */
@@ -136,8 +136,7 @@
     z-index: 2;
   }
   
-  /* Keep existing medal pulse effect on avatar only (optional, but user wanted plate and shine) 
-     we keep it but it's fine - the plate is separate */
+  /* Keep existing medal pulse effect on avatar (optional) */
   .player-card.gold .player-img,
   .player-card.silver .player-img,
   .player-card.bronze .player-img {
@@ -487,13 +486,14 @@
     margin-left: 2px;
   }
   
-  /* ----- HOLO BUTTON EFFECT ----- */
+  /* ----- HOLO BUTTON EFFECT (smaller) ----- */
   .holo-btn {
     background: linear-gradient(135deg, #2a2a35 0%, #1a1a24 100%);
     border: 1px solid rgba(219,62,62,0.3);
-    padding: 8px 26px;
+    padding: 6px 20px;
     border-radius: 40px;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
     color: #f0f0f0;
     transition: all 0.2s;
@@ -524,7 +524,7 @@
     box-shadow: 0 0 14px #db3e3e;
   }
   .separator-line {
-    margin: 1.2rem 0 1.5rem 0;
+    margin: 1rem 0 1.2rem 0;
     border: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, #6b7280, #9ca3af, #6b7280, transparent);
@@ -535,7 +535,7 @@
     height: 56px;
   }
   .bigger-title {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
   }
   
   /* ---------- RETIRED TOGGLE SWITCH (bigger) ---------- */
@@ -708,14 +708,10 @@
     .overall-rankings .font-mono.text-xl {
       font-size: 1rem;
     }
-    /* adjust plate width on mobile for larger avatar */
-    .player-card.gold::before,
-    .player-card.silver::before,
-    .player-card.bronze::before,
-    .player-card.gold::after,
-    .player-card.silver::after,
-    .player-card.bronze::after {
-      width: calc(10px + 44px); /* padding-left + avatar width on mobile */
+    /* adjust plate diagonal for mobile */
+    .player-card.gold::before, .player-card.silver::before, .player-card.bronze::before,
+    .player-card.gold::after, .player-card.silver::after, .player-card.bronze::after {
+      clip-path: polygon(0% 0%, 75% 0%, 90% 100%, 0% 100%);
     }
   }
   
@@ -745,37 +741,31 @@
       overflow-x: auto;
     }
     .discord-card { padding: 1.2rem; max-width: 95%; }
-    .max-w-6xl { padding-left: 1rem; padding-right: 1rem; }
     .bigger-title { font-size: 1.5rem; }
     .bigger-icon { width: 40px; height: 40px; }
     .tabs-outline { padding: 6px 8px; }
-    .tab { padding: 6px 12px !important; font-size: 0.75rem !important; }
-    .tab-icon { width: 30px; height: 30px; margin-bottom: 4px; }
+    .tab { padding: 4px 10px !important; font-size: 0.7rem !important; }
+    .tab-icon { width: 28px; height: 28px; margin-bottom: 4px; }
     .retired-toggle { width: 42px; padding: 4px 8px; font-size: 1rem; }
     #search-input { max-width: 160px; font-size: 0.8rem; }
-    /* adjust plate width for smaller screens again */
-    .player-card.gold::before,
-    .player-card.silver::before,
-    .player-card.bronze::before,
-    .player-card.gold::after,
-    .player-card.silver::after,
-    .player-card.bronze::after {
-      width: calc(8px + 44px);
+    .player-card.gold::before, .player-card.silver::before, .player-card.bronze::before,
+    .player-card.gold::after, .player-card.silver::after, .player-card.bronze::after {
+      clip-path: polygon(0% 0%, 80% 0%, 95% 100%, 0% 100%);
     }
   }
 </style>
 </head>
 <body>
 <div id="particles"></div>
-<div class="max-w-6xl mx-auto p-6 relative z-10">
+<div class="max-w-7xl mx-auto p-5 relative z-10">
 
-  <div class="flex justify-center gap-6 mb-4">
+  <div class="flex justify-center gap-4 mb-3">
     <button id="leaderboardModeBtn" class="holo-btn active">🏆 LeaderBoard</button>
     <button id="discordModeBtn" class="holo-btn">💬 Discord</button>
   </div>
   <hr class="separator-line">
 
-  <div class="flex items-center justify-between flex-wrap gap-4 mb-5">
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
     <div class="flex items-center gap-3">
       <div class="bigger-icon rounded-xl overflow-hidden">
         <img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover">
