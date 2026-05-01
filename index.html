@@ -68,14 +68,17 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
   
-  /* ----- MEDAL EFFECT ONLY ON ICON + OVERLAY ANIMATION (gold/silver/bronze) ----- */
+  /* ----- MEDAL EFFECT ONLY ON ICON (gold/silver/bronze) - card background stays normal ----- */
+  .player-card.gold, .player-card.silver, .player-card.bronze {
+    background: #374151 !important;  /* same as gray-bg, no gradient backgrounds */
+  }
+  /* pulse ring around the icon + shine overlay */
   .player-card.gold .player-img,
   .player-card.silver .player-img,
   .player-card.bronze .player-img {
     position: relative;
     z-index: 2;
   }
-  /* pulse ring around the icon */
   .player-card.gold .player-img {
     animation: iconPulseGold 1.8s infinite ease-out;
     box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6);
@@ -106,7 +109,7 @@
     70% { box-shadow: 0 0 0 10px rgba(205, 127, 50, 0); }
     100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
   }
-  /* Overlay shine effect on the icon */
+  /* Shine overlay animation on the avatar */
   .player-card.gold .player-img::after,
   .player-card.silver .player-img::after,
   .player-card.bronze .player-img::after {
@@ -130,7 +133,7 @@
     100% { opacity: 0; transform: scale(0.9); }
   }
   
-  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; }
+  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; background: #1f2937; object-fit: cover; }
   [data-tooltip] {
     position: relative;
     cursor: help;
@@ -286,9 +289,10 @@
   .modal { background:#1f2937; padding:20px; border-radius:24px; max-width:500px; width:90%; max-height:85vh; overflow-y:auto; border: 1px solid #db3e3e; box-shadow:0 20px 35px rgba(0,0,0,0.5); }
   .modal-close { cursor:pointer; float:right; font-weight:bold; font-size:1.8rem; line-height:1; color:#aaa; transition:0.2s; }
   .modal-close:hover { color:#db3e3e; }
-  .gold { background: linear-gradient(135deg, #ffd700, #ffec70); color:#000 !important; }
-  .silver { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color:#000 !important; }
-  .bronze { background: linear-gradient(135deg, #cd7f32, #e6a374); color:#000 !important; }
+  /* Keep gold/silver/bronze classes for medal icon and effects but no background gradients */
+  .gold, .silver, .bronze {
+    /* only used for medal icon color and animation trigger, background handled by gray-bg */
+  }
   .medal-icon { margin-right:8px; }
   .rank {
     font-weight:700;
@@ -882,7 +886,7 @@ function loadMode(mode, activeBtn) {
   const rankingsDiv = document.getElementById("rankings");
   if (mode === "Overall") { rankingsDiv.classList.add("overall-rankings");
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-    let htmlOut = ""; sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
+    let htmlOut = ""; sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
     rankingsDiv.innerHTML = htmlOut;
   } else { rankingsDiv.classList.remove("overall-rankings"); rankingsDiv.innerHTML = renderModeGroupedByTier(mode); }
   attachCardEvents();
