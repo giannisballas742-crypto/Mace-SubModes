@@ -541,11 +541,11 @@
     100% { transform: translateY(-100%) scale(1); opacity: 0; }
   }
   
-  /* ----- OVERALL MOBILE GRID (fixes phone layout to match reference) ----- */
+  /* ----- OVERALL MOBILE GRID (fixed: single column vertical list) ----- */
   @media (max-width: 640px) {
     .overall-rankings {
       display: grid !important;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr !important;  /* single column, one below the other */
       gap: 0.75rem;
     }
     .overall-rankings .player-card {
@@ -605,7 +605,7 @@
     }
   }
   
-  /* ensure desktop overall layout stays 1 column full width */
+  /* ensure desktop overall layout stays 1 column full width (original list style) */
   @media (min-width: 641px) {
     .overall-rankings {
       display: block !important;
@@ -799,7 +799,8 @@ function updateModeHeader(mode) {
   container.innerHTML = ""; container.appendChild(wrapper);
 }
 
-function renderModeGroupedByTier(mode) { /* same as original but working */ const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
+function renderModeGroupedByTier(mode) {
+  const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => { const retiredInThisMode = isRetiredInMode(r, mode); if (!markRetired && retiredInThisMode) return; const rawTier = r[mode]; if (!rawTier) return; const parsed = parseTierString(rawTier); if (!parsed) return; const baseTier = parsed.baseTier; const match = baseTier.match(/^(HT|LT)([1-5])$/); if (!match) return; const tierNum = parseInt(match[2], 10); const type = match[1]; groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier, retired: retiredInThisMode }); });
   let gridHtml = '<div class="tier-grid">';
   for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${escapeHtml(name)}</span>${subTierBadge}${regionHTML}</div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
