@@ -67,6 +67,35 @@
   .player-card.player-ht { background: #4b5563; }
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
+  
+  /* ----- ANIMATION for GOLD/SILVER/BRONZE top 3 (Overall) ----- */
+  .player-card.gold, .player-card.silver, .player-card.bronze {
+    animation: medalPulse 2s infinite ease-in-out;
+    position: relative;
+    z-index: 2;
+  }
+  @keyframes medalPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(255, 215, 0, 0.2); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+  }
+  .player-card.silver {
+    animation-name: medalPulseSilver;
+  }
+  @keyframes medalPulseSilver {
+    0% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(192, 192, 192, 0.25); }
+    100% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0); }
+  }
+  .player-card.bronze {
+    animation-name: medalPulseBronze;
+  }
+  @keyframes medalPulseBronze {
+    0% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(205, 127, 50, 0.25); }
+    100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
+  }
+  
   .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; }
   [data-tooltip] {
     position: relative;
@@ -541,11 +570,11 @@
     100% { transform: translateY(-100%) scale(1); opacity: 0; }
   }
   
-  /* ----- OVERALL MOBILE GRID (fixed: single column vertical list) ----- */
+  /* ----- OVERALL MOBILE GRID (single column vertical list) ----- */
   @media (max-width: 640px) {
     .overall-rankings {
       display: grid !important;
-      grid-template-columns: 1fr !important;  /* single column, one below the other */
+      grid-template-columns: 1fr !important;
       gap: 0.75rem;
     }
     .overall-rankings .player-card {
@@ -605,7 +634,7 @@
     }
   }
   
-  /* ensure desktop overall layout stays 1 column full width (original list style) */
+  /* desktop overall layout stays 1 column full width */
   @media (min-width: 641px) {
     .overall-rankings {
       display: block !important;
