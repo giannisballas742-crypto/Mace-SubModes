@@ -68,18 +68,79 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
   
-  /* ----- MEDAL EFFECT ONLY ON ICON (gold/silver/bronze) - card background stays normal ----- */
+  /* ----- MEDAL PLATE (from left edge to icon) for top 3 + shine overlay ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
-    background: #374151 !important;  /* same as gray-bg, no gradient backgrounds */
+    position: relative;
+    overflow: hidden;
   }
-  /* pulse ring around the icon + shine overlay */
+  /* plate background */
+  .player-card.gold::before,
+  .player-card.silver::before,
+  .player-card.bronze::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(10px + 48px);  /* padding-left (10px) + avatar width (48px) */
+    height: 100%;
+    border-radius: 12px 0 0 12px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .player-card.gold::before {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.45), rgba(255, 200, 0, 0.7));
+    box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.5);
+  }
+  .player-card.silver::before {
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.45), rgba(160, 160, 160, 0.7));
+    box-shadow: inset 0 0 8px rgba(192, 192, 192, 0.5);
+  }
+  .player-card.bronze::before {
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.45), rgba(180, 100, 30, 0.7));
+    box-shadow: inset 0 0 8px rgba(205, 127, 50, 0.5);
+  }
+  /* shine overlay that moves across the plate */
+  .player-card.gold::after,
+  .player-card.silver::after,
+  .player-card.bronze::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(10px + 48px);
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transform: translateX(-100%);
+    animation: shineSlide 3s infinite ease-in-out;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 12px 0 0 12px;
+  }
+  @keyframes shineSlide {
+    0% { transform: translateX(-100%); }
+    20% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  /* ensure avatar and content stay above the plate */
   .player-card.gold .player-img,
   .player-card.silver .player-img,
-  .player-card.bronze .player-img {
+  .player-card.bronze .player-img,
+  .player-card.gold .flex-1,
+  .player-card.silver .flex-1,
+  .player-card.bronze .flex-1,
+  .player-card.gold .flex.items-center.gap-4,
+  .player-card.silver .flex.items-center.gap-4,
+  .player-card.bronze .flex.items-center.gap-4 {
     position: relative;
     z-index: 2;
   }
-  .player-card.gold .player-img {
+  
+  /* Keep existing medal pulse effect on avatar only (optional, but user wanted plate and shine) 
+     we keep it but it's fine - the plate is separate */
+  .player-card.gold .player-img,
+  .player-card.silver .player-img,
+  .player-card.bronze .player-img {
     animation: iconPulseGold 1.8s infinite ease-out;
     box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6);
     border-color: #ffd700;
@@ -109,31 +170,9 @@
     70% { box-shadow: 0 0 0 10px rgba(205, 127, 50, 0); }
     100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
   }
-  /* Shine overlay animation on the avatar */
-  .player-card.gold .player-img::after,
-  .player-card.silver .player-img::after,
-  .player-card.bronze .player-img::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.3) 100%);
-    opacity: 0;
-    animation: shineOverlay 2.5s infinite;
-    pointer-events: none;
-    z-index: 3;
-  }
-  @keyframes shineOverlay {
-    0% { opacity: 0; transform: scale(0.8); }
-    20% { opacity: 0.8; transform: scale(1.1); }
-    40% { opacity: 0; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.9); }
-  }
   
-  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; background: #1f2937; object-fit: cover; }
+  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; background: #1f2937; object-fit: cover; z-index: 2; }
+  
   [data-tooltip] {
     position: relative;
     cursor: help;
@@ -289,9 +328,8 @@
   .modal { background:#1f2937; padding:20px; border-radius:24px; max-width:500px; width:90%; max-height:85vh; overflow-y:auto; border: 1px solid #db3e3e; box-shadow:0 20px 35px rgba(0,0,0,0.5); }
   .modal-close { cursor:pointer; float:right; font-weight:bold; font-size:1.8rem; line-height:1; color:#aaa; transition:0.2s; }
   .modal-close:hover { color:#db3e3e; }
-  /* Keep gold/silver/bronze classes for medal icon and effects but no background gradients */
   .gold, .silver, .bronze {
-    /* only used for medal icon color and animation trigger, background handled by gray-bg */
+    /* background handled by gray-bg and plate */
   }
   .medal-icon { margin-right:8px; }
   .rank {
@@ -670,6 +708,15 @@
     .overall-rankings .font-mono.text-xl {
       font-size: 1rem;
     }
+    /* adjust plate width on mobile for larger avatar */
+    .player-card.gold::before,
+    .player-card.silver::before,
+    .player-card.bronze::before,
+    .player-card.gold::after,
+    .player-card.silver::after,
+    .player-card.bronze::after {
+      width: calc(10px + 44px); /* padding-left + avatar width on mobile */
+    }
   }
   
   /* desktop overall layout stays 1 column full width */
@@ -706,6 +753,15 @@
     .tab-icon { width: 30px; height: 30px; margin-bottom: 4px; }
     .retired-toggle { width: 42px; padding: 4px 8px; font-size: 1rem; }
     #search-input { max-width: 160px; font-size: 0.8rem; }
+    /* adjust plate width for smaller screens again */
+    .player-card.gold::before,
+    .player-card.silver::before,
+    .player-card.bronze::before,
+    .player-card.gold::after,
+    .player-card.silver::after,
+    .player-card.bronze::after {
+      width: calc(8px + 44px);
+    }
   }
 </style>
 </head>
