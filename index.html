@@ -159,11 +159,11 @@
     z-index: 3;
   }
 
-  /* Skin image: show head and upper body (no legs), no cropping of head */
+  /* Skin image: head and torso only (crop legs) with transparent background */
   .player-img {
     width: 48px;
-    height: 70px;
-    object-fit: contain;
+    height: 56px;
+    object-fit: cover;
     object-position: top center;
     background: transparent;
     border: none;
@@ -172,7 +172,6 @@
     position: relative;
     transition: all 0.2s;
     z-index: 2;
-    image-rendering: crisp-edges;
   }
 
   /* Tooltip fixes */
@@ -448,7 +447,7 @@
   }
   .tier-column .player-img {
     width: 36px;
-    height: 52px;
+    height: 42px;
   }
   .tier-column .mode-icons {
     gap: 6px;
@@ -631,7 +630,7 @@
     }
     .tier-column .player-img {
       width: 44px;
-      height: 64px;
+      height: 52px;
     }
     .tier-column .player-card .font-semibold {
       font-size: 0.95rem;
@@ -654,7 +653,7 @@
     .overall-rankings .player-card .player-img {
       grid-area: avatar;
       width: 56px;
-      height: 78px;
+      height: 66px;
     }
     .overall-rankings .player-card .flex-1 {
       display: contents;
@@ -823,7 +822,7 @@ function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, fun
 function getRegionClass(region) { if (!region) return ""; const reg = region.toUpperCase().trim(); if (reg === "EU") return "EU"; if (reg === "AS") return "AS"; if (reg === "NA") return "NA"; if (reg === "SA") return "SA"; if (reg === "AU") return "AU"; if (reg === "ME") return "ME"; return ""; }
 let currentActiveMode = "Overall";
 function getOverallRankForPlayer(p) { const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)); const pName = p[nameCol]; return sorted.findIndex(row => row[nameCol] === pName) !== -1 ? sorted.findIndex(row => row[nameCol] === pName)+1 : null; }
-function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:170px;border-radius:0;border:3px solid #db3e3e;object-fit:contain;object-position:top center;background:transparent;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
+function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:140px;border-radius:0;border:3px solid #db3e3e;object-fit:cover;object-position:top center;background:transparent;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
 
 function loadMode(mode, activeBtn) {
   currentActiveMode = mode;
