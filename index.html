@@ -450,10 +450,12 @@
     padding: 6px 8px;
     gap: 8px;
     margin-bottom: 6px;
+    overflow: hidden; /* prevent overflow on mobile */
   }
   .tier-column .player-img {
     width: 36px;
     height: 36px;
+    flex-shrink: 0;
   }
   .tier-column .mode-icons {
     gap: 6px;
@@ -475,11 +477,29 @@
     font-size: 0.6rem;
     padding: 1px 5px;
     margin-left: 4px;
+    white-space: nowrap;
   }
   .tier-column .retired-badge {
     font-size: 0.55rem;
     padding: 1px 4px;
     margin-left: 2px;
+  }
+  /* fix for overflowing player names on mobile */
+  .tier-column .player-card .flex-1,
+  .tier-column .player-card .flex.items-center.gap-2.flex-wrap.flex-1 {
+    min-width: 0; /* allow shrinking */
+    overflow: hidden;
+  }
+  .tier-column .player-card .font-semibold {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    display: inline-block;
+  }
+  /* ensure the whole name + badges line wraps properly */
+  .tier-column .player-card .flex.items-center.gap-2 {
+    flex-wrap: wrap;
+    row-gap: 4px;
   }
   
   .holo-btn {
@@ -620,7 +640,6 @@
 
   /* ----- OVERALL LEADERBOARD STYLE (DESKTOP - unchanged) ----- */
   .overall-rankings .player-card {
-    /* default flex row layout remains for desktop */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -644,11 +663,9 @@
       width: 52px;
       height: 52px;
     }
-    /* make flex-1 container disappear from flow so its children become direct grid children */
     .overall-rankings .player-card .flex-1 {
       display: contents;
     }
-    /* name row (medal, rank number, name, region) */
     .overall-rankings .player-card .flex-1 > div:first-child {
       grid-area: name;
       display: flex;
@@ -657,13 +674,11 @@
       gap: 6px;
       font-size: 1rem;
     }
-    /* tier icons row */
     .overall-rankings .player-card .mode-icons {
       grid-area: modeicons;
       margin-top: 0;
       justify-content: flex-start;
     }
-    /* rank badge + points container */
     .overall-rankings .player-card > .flex.items-center.gap-4 {
       grid-area: rankpoints;
       display: flex;
@@ -679,7 +694,6 @@
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
       font-size: 1.1rem;
     }
-    /* preserve medal plate shine but ensure it doesn't break layout */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
@@ -810,7 +824,7 @@ function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => { const retiredInThisMode = isRetiredInMode(r, mode); if (!markRetired && retiredInThisMode) return; const rawTier = r[mode]; if (!rawTier) return; const parsed = parseTierString(rawTier); if (!parsed) return; const baseTier = parsed.baseTier; const match = baseTier.match(/^(HT|LT)([1-5])$/); if (!match) return; const tierNum = parseInt(match[2], 10); const type = match[1]; groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier, retired: retiredInThisMode }); });
   let gridHtml = '<div class="tier-grid">';
-  for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold">${escapeHtml(name)}</span>${subTierBadge}${regionHTML}</div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
+  for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex items-center gap-2 flex-wrap flex-1"><span class="font-semibold" style="word-break:break-word; overflow-wrap:break-word;">${escapeHtml(name)}</span>${subTierBadge}${regionHTML}</div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
 
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
 function getRegionClass(region) { if (!region) return ""; const reg = region.toUpperCase().trim(); if (reg === "EU") return "EU"; if (reg === "AS") return "AS"; if (reg === "NA") return "NA"; if (reg === "SA") return "SA"; if (reg === "AU") return "AU"; if (reg === "ME") return "ME"; return ""; }
