@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - EXACTLY LIKE REFERENCE (gold, silver, bronze diagonal plates) ----- */
+  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE DIAGONAL PLATES ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -88,7 +88,7 @@
     border-radius: 12px;
   }
   
-  /* Plate background - diagonal cut covering rank + avatar + medal icon (ONLY the left section, not the whole player card) */
+  /* Plate background - diagonal cut covering rank + avatar (extends to end of skin on mobile, full width on desktop) */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
@@ -96,11 +96,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 165px;
+    width: 200px;
     height: 100%;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 90% 0%, 82% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   .overall-rankings .player-card.gold::before {
@@ -119,7 +119,7 @@
     border-right: 1px solid rgba(230,180,100,0.6);
   }
   
-  /* ----- SHINE ANIMATION — ONLY ON THE PLATE (gold/silver/bronze left section) ----- */
+  /* ----- NEW CONTINUOUS GLOW EFFECT ON PLATE (never disappears, subtle shimmer) ----- */
   .overall-rankings .player-card.gold::after,
   .overall-rankings .player-card.silver::after,
   .overall-rankings .player-card.bronze::after {
@@ -127,29 +127,30 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 165px;
+    width: 200px;
     height: 100%;
-    background: linear-gradient(100deg, 
-      transparent 25%, 
-      rgba(255, 255, 255, 0.7) 42%, 
-      rgba(255, 255, 255, 0.85) 48%, 
-      rgba(255, 255, 255, 0.7) 54%, 
-      transparent 70%);
-    transform: translateX(-100%);
-    animation: shineSweep 5s ease-in-out infinite;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,200,0.4) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    animation: softGlow 3s ease-in-out infinite alternate;
     z-index: 1;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 90% 0%, 82% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   
-  @keyframes shineSweep {
-    0% { transform: translateX(-100%); opacity: 0; }
-    6% { opacity: 1; }
-    16% { transform: translateX(0%); opacity: 1; }
-    28% { transform: translateX(100%); opacity: 1; }
-    38% { transform: translateX(100%); opacity: 0; }
-    100% { transform: translateX(100%); opacity: 0; }
+  @keyframes softGlow {
+    0% {
+      opacity: 0.15;
+      background: radial-gradient(circle at 20% 50%, rgba(255,255,220,0.3) 0%, rgba(255,255,255,0) 70%);
+    }
+    50% {
+      opacity: 0.45;
+      background: radial-gradient(circle at 40% 50%, rgba(255,255,200,0.5) 0%, rgba(255,255,255,0) 65%);
+    }
+    100% {
+      opacity: 0.25;
+      background: radial-gradient(circle at 25% 50%, rgba(255,255,220,0.35) 0%, rgba(255,255,255,0) 70%);
+    }
   }
 
   /* Ensure content above plate */
@@ -167,6 +168,42 @@
   .overall-rankings .player-card.bronze .flex.items-center.gap-4 {
     position: relative;
     z-index: 2;
+  }
+  
+  /* Mobile specific: plate extends to end of skin (covers rank + avatar fully) */
+  @media (max-width: 640px) {
+    .overall-rankings .player-card.gold::before,
+    .overall-rankings .player-card.silver::before,
+    .overall-rankings .player-card.bronze::before {
+      width: 140px;
+      clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%);
+    }
+    .overall-rankings .player-card.gold::after,
+    .overall-rankings .player-card.silver::after,
+    .overall-rankings .player-card.bronze::after {
+      width: 140px;
+      clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%);
+    }
+    /* Ensure plate covers up to end of skin on mobile */
+    .overall-rankings .player-card {
+      padding-left: 6px;
+    }
+  }
+
+  /* Desktop: plate width covering rank and avatar nicely */
+  @media (min-width: 641px) {
+    .overall-rankings .player-card.gold::before,
+    .overall-rankings .player-card.silver::before,
+    .overall-rankings .player-card.bronze::before {
+      width: 180px;
+      clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+    }
+    .overall-rankings .player-card.gold::after,
+    .overall-rankings .player-card.silver::after,
+    .overall-rankings .player-card.bronze::after {
+      width: 180px;
+      clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+    }
   }
   
   /* Medal icon styling */
@@ -687,17 +724,18 @@
       justify-content: space-between;
       width: 100%;
     }
+    /* On mobile, plate extends further to cover skin fully */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 148px;
-      clip-path: polygon(0% 0%, 86% 0%, 78% 100%, 0% 100%);
+      width: 150px;
+      clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 148px;
-      clip-path: polygon(0% 0%, 86% 0%, 78% 100%, 0% 100%);
+      width: 150px;
+      clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 100%);
     }
   }
 </style>
@@ -710,7 +748,6 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
       Home
     </button>
-    <!-- Leaderboard button with TROPHY SVG icon -->
     <button id="leaderboardModeBtn" class="holo-btn active">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg>
       LeaderBoard
@@ -732,8 +769,8 @@
 </div>
 
 <script>
-// Full JavaScript logic remains EXACTLY THE SAME as original, no changes.
-function createParticles() { /* unchanged logic */ const container = document.getElementById('particles'); for (let i = 0; i < 150; i++) { const p = document.createElement('div'); p.className = 'particle'; const s = Math.random() * 5 + 2; p.style.width = `${s}px`; p.style.height = `${s}px`; p.style.left = `${Math.random() * 100}vw`; p.style.animationDuration = `${Math.random() * 18 + 12}s`; p.style.animationDelay = `-${Math.random() * 25}s`; p.style.opacity = Math.random() * 0.45 + 0.2; p.style.background = `#db3e3e`; container.appendChild(p); } }
+// Full JavaScript logic remains EXACTLY THE SAME as original, no changes to functionality.
+function createParticles() { const container = document.getElementById('particles'); for (let i = 0; i < 150; i++) { const p = document.createElement('div'); p.className = 'particle'; const s = Math.random() * 5 + 2; p.style.width = `${s}px`; p.style.height = `${s}px`; p.style.left = `${Math.random() * 100}vw`; p.style.animationDuration = `${Math.random() * 18 + 12}s`; p.style.animationDelay = `-${Math.random() * 25}s`; p.style.opacity = Math.random() * 0.45 + 0.2; p.style.background = `#db3e3e`; container.appendChild(p); } }
 function createDiscordParticles() { const card = document.getElementById('discordCard'); if (!card) return; for (let i = 0; i < 40; i++) { const part = document.createElement('div'); part.className = 'discord-particle'; part.style.left = Math.random() * 100 + '%'; part.style.width = Math.random() * 6 + 2 + 'px'; part.style.height = part.style.width; part.style.animationDelay = Math.random() * 8 + 's'; part.style.animationDuration = Math.random() * 6 + 5 + 's'; part.style.opacity = Math.random() * 0.5 + 0.2; part.style.background = `rgba(255, 200, 150, ${Math.random() * 0.6 + 0.2})`; card.appendChild(part); } }
 const kitInfoMap = { "LT Mace": { title: "Low Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Wind Burst I, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Shield [Maxed]", "2x Totem of Undying", "2 Stacks of Golden Apples", "2 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "11x Splash Potions of Speed II [1:30]", "11x Splash Potions of Strength II [1:30]" ], image: "https://i.postimg.cc/cvQSmZZw/LT-Mace.png" }, "HT Mace": { title: "High Tier Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Mace 1 [Density V, Wind Burst I, Unbreaking III]", "Mace 2 [Breach IV, Unbreaking III]", "Shield [Maxed]", "Elytra", "1x Totem of Undying", "2 Stacks of Golden Apples", "3 Stacks of Wind Charges", "5 Stacks of Ender Pearls", "9x Splash Potions of Speed II [1:30]", "10x Splash Potions of Strength II [1:30]", "1x Shulker of Potions (13x Strength II, 14x Speed II)" ], image: "https://ik.imagekit.io/vlttoyezt/yo.png" }, "Rocket Mace": { title: "Rocket Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Netherite Axe [Sharpness V, Unbreaking III, Mending]", "Mace 1 [Density V, Windburst II, Unbreaking III, Mending]", "Mace 2 [Breach IV, Unbreaking III, Mending]", "Elytra [Unbreaking III]", "Shield [Maxed]", "32x Firework Rockets [Flight Duration 1]", "48x Ender Pearls", "128x Golden Apples", "10x Splash Potion of Strength II [1:30]", "9x Splash Potion of Speed II [1:30]", "128x Wind Charges", "64x Experience Bottles", "2x Totems Of Undying", "1x Shulker Box [14x Speed 2, 13x Strength 2]" ], image: "https://i.postimg.cc/jDzbXKKz/rocket-mace.png" }, "OG Mace": { title: "OG Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III, Mending]", "Netherite Chestplate [Protection IV, Unbreaking III, Mending]", "Netherite Leggings [Protection IV, Unbreaking III, Mending]", "Netherite Boots [Protection IV, Unbreaking III, Mending, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III, Mending]", "Mace [Density V, Wind Burst I, Unbreaking III, Mending]", "1x Totem of Undying", "1 Stack of Golden Apples", "5 Stacks of Wind Charges", "4 Stacks of Ender Pearls", "1 Stack of XP Bottles", "10x Splash Potions of Strength II [1:30]", "10x Splash Potions of Leaping II [1:30]", "3x Splash Potions of Speed I [8:00]" ], image: "https://i.postimg.cc/G4kCQrrs/OG-mace.png" }, "Rod Mace": { title: "Rod Mace Kit", items: [ "Diamond Helmet [Protection IV, Unbreaking III]", "Diamond Chestplate [Protection IV, Unbreaking III]", "Diamond Leggings [Protection IV, Unbreaking III]", "Diamond Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Diamond Axe [Efficiency V, Unbreaking III, Mending]", "Mace [Density V, Wind Burst II, Unbreaking III, Mending]", "Shield [Unbreaking III, Mending]", "Fishing Rod [Unbreaking III, Mending]", "Crossbow [Quick Charge III, Unbreaking III]", "16x Arrows", "3x Boats", "4x Totem of Undying", "1 Stack of Golden Apples", "16x Doors", "16x Slime Blocks", "32x XP Bottles", "20x Splash Potions of Leaping II [1:30]" ], image: "https://i.postimg.cc/hX9BrggJ/rod-mace.png" }, "Spear Mace": { title: "Spear Mace Kit", items: [ "Netherite Helmet [Protection IV, Unbreaking III]", "Netherite Chestplate [Protection IV, Unbreaking III]", "Netherite Leggings [Protection IV, Unbreaking III]", "Netherite Boots [Protection IV, Unbreaking III, Feather Falling IV]", "Netherite Sword [Sharpness V, Unbreaking III]", "Netherite Axe [Sharpness V, Unbreaking III]", "Netherite Spear [Lunge III, Sharpness V, Unbreaking III]", "Mace [Density V, Wind Burst I, Unbreaking III]", "Shield [Unbreaking III]", "2x Totem of Undying", "1 Stack of Golden Apples", "1 Stack of Steak", "3 Stacks of Wind Charges", "3 Stacks of Ender Pearls", "11x Splash Potions of Speed II [1:30]", "11x Splash Potions of Strength II [1:30]" ], image: "https://ik.imagekit.io/vlttoyezt/image.png?updatedAt=1776775108774" } };
 function showKitInfo(mode) { const info = kitInfoMap[mode]; if (!info) return; const iconUrl = modeIcons[mode] || ""; const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:40px;height:40px;border-radius:8px;margin-right:10px;">` : ""; let itemsHtml = '<ul class="list-disc pl-5 space-y-1 max-h-80 overflow-y-auto text-left">'; info.items.forEach(i => itemsHtml += `<li class="text-sm">${i}</li>`); itemsHtml += '</ul>'; const kitImageHtml = `<div class="mt-4"><img src="${info.image}" class="max-w-full h-auto rounded-lg border border-gray-600 mx-auto" style="max-height:200px;object-fit:contain;" onerror="this.onerror=null;this.src='https://placehold.co/400x200?text=Kit+Preview';"><p class="text-gray-400 text-xs text-center mt-1">Kit preview</p></div>`; document.getElementById("modal-content").innerHTML = `<div class="text-center"><div class="flex items-center justify-center gap-2 mb-3">${iconHtml}<h3 class="text-xl font-bold">${info.title}</h3></div><div class="bg-black/30 p-3 rounded-lg mt-2">${itemsHtml}</div>${kitImageHtml}<p class="text-gray-400 text-xs mt-3">Kit details for ${mode}</p></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
