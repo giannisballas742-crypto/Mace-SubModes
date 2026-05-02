@@ -79,13 +79,13 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE (only behind player skin, diagonal cut, 3D) ----- */
+  /* ----- MEDAL PLATE (covers rank number + skin, diagonal cut, 3D) ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
     position: relative;
     overflow: visible;
     border-radius: 12px;
   }
-  /* plate background covers only the avatar area with diagonal edge */
+  /* plate background covers rank number + avatar */
   .player-card.gold::before,
   .player-card.silver::before,
   .player-card.bronze::before {
@@ -93,11 +93,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 70px;
+    width: 120px;
     height: 100%;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
     /* 3D effect */
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.2), 2px 0 8px rgba(255,255,255,0.15);
@@ -134,7 +134,7 @@
     animation: silverLineSweep 5s infinite ease-in-out;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   @keyframes silverLineSweep {
@@ -145,12 +145,12 @@
   }
 
   /* ensure content above plate */
-  .player-card.gold .player-img,
-  .player-card.silver .player-img,
-  .player-card.bronze .player-img,
   .player-card.gold .rank-number,
   .player-card.silver .rank-number,
   .player-card.bronze .rank-number,
+  .player-card.gold .player-img,
+  .player-card.silver .player-img,
+  .player-card.bronze .player-img,
   .player-card.gold .flex-1,
   .player-card.silver .flex-1,
   .player-card.bronze .flex-1 {
@@ -164,7 +164,7 @@
     z-index: 3;
   }
 
-  /* Skin image: show head and upper body (no legs) */
+  /* Skin image: head and upper body (no legs) */
   .player-img {
     width: 48px;
     height: 56px;
@@ -664,7 +664,7 @@
       font-size: 0.9rem;
       padding: 4px 14px;
     }
-    /* Mobile specific: rank number before avatar, bigger */
+    /* Mobile specific grid: rank, avatar, then name */
     .overall-rankings .player-card {
       display: grid !important;
       grid-template-columns: auto auto 1fr;
@@ -711,18 +711,18 @@
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
       font-size: 1.2rem;
     }
-    /* Adjust plate width on mobile to fit avatar */
+    /* Adjust plate width on mobile to cover rank + avatar */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
       width: 130px;
-      clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
+      clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
       width: 260%; /* double for animation */
-      clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
+      clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%);
     }
   }
 </style>
