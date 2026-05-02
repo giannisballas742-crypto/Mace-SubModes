@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE (only behind player skin, diagonal cut) ----- */
+  /* ----- MEDAL PLATE (only behind player skin, diagonal cut, 3D) ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
     position: relative;
     overflow: visible;
@@ -104,18 +104,18 @@
     transform: translateX(0);
   }
   .player-card.gold::before {
-    background: linear-gradient(145deg, rgba(255, 215, 0, 0.65), rgba(255, 200, 0, 0.85));
+    background: linear-gradient(145deg, rgba(255, 215, 0, 0.7), rgba(255, 200, 0, 0.9));
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.3), 2px 0 8px rgba(255,245,150,0.5);
   }
   .player-card.silver::before {
-    background: linear-gradient(145deg, rgba(192, 192, 192, 0.65), rgba(160, 160, 160, 0.85));
+    background: linear-gradient(145deg, rgba(192, 192, 192, 0.7), rgba(160, 160, 160, 0.9));
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.3), 2px 0 8px rgba(220,220,220,0.5);
   }
   .player-card.bronze::before {
-    background: linear-gradient(145deg, rgba(205, 127, 50, 0.65), rgba(180, 100, 30, 0.85));
+    background: linear-gradient(145deg, rgba(205, 127, 50, 0.7), rgba(180, 100, 30, 0.9));
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.3), 2px 0 8px rgba(255,180,80,0.5);
   }
-  /* shine overlay on plate only */
+  /* Diagonal silver line that sweeps across the plate */
   .player-card.gold::after,
   .player-card.silver::after,
   .player-card.bronze::after {
@@ -123,20 +123,25 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 70px;
+    width: 200%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background: linear-gradient(120deg, 
+      transparent 40%, 
+      rgba(255, 255, 255, 0.9) 48%, 
+      rgba(255, 255, 255, 0.9) 52%, 
+      transparent 60%);
     transform: translateX(-100%);
-    animation: shineSlideDiagonal 5s infinite ease-in-out;
+    animation: silverLineSweep 5s infinite ease-in-out;
     z-index: 0;
     pointer-events: none;
     clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
-  @keyframes shineSlideDiagonal {
-    0% { transform: translateX(-100%) translateY(0%); }
-    10% { transform: translateX(100%) translateY(8%); opacity: 1; }
-    100% { transform: translateX(100%) translateY(8%); opacity: 0; }
+  @keyframes silverLineSweep {
+    0% { transform: translateX(-100%); }
+    10% { transform: translateX(0%); }
+    25% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
   }
 
   /* ensure content above plate */
@@ -159,7 +164,7 @@
     z-index: 3;
   }
 
-  /* Skin image: show head and upper body (crop legs) */
+  /* Skin image: show head and upper body (no legs) */
   .player-img {
     width: 48px;
     height: 56px;
@@ -182,6 +187,8 @@
     min-width: 45px;
     text-align: right;
     letter-spacing: -0.5px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
   .rank-number small {
     font-size: 0.9rem;
@@ -704,16 +711,17 @@
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
       font-size: 1.2rem;
     }
+    /* Adjust plate width on mobile to fit avatar */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 120px;
+      width: 130px;
       clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 120px;
+      width: 260%; /* double for animation */
       clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
     }
   }
@@ -857,7 +865,6 @@ function loadMode(mode, activeBtn) {
   if (mode === "Overall") { rankingsDiv.classList.add("overall-rankings");
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
     let htmlOut = ""; sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300";
-      // Build card with rank number first, then avatar, then content
       htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}">
         <div class="rank-number">${idx+1}<small>.</small></div>
         <img src="${avatar}" class="player-img">
