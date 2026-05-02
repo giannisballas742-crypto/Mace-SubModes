@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - diagonal metallic plate for top 3 (covers rank number + avatar + medal icon) ----- */
+  /* ----- MEDAL PLATE - EXACTLY LIKE REFERENCE (gold, silver, bronze diagonal plates) ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -88,7 +88,7 @@
     border-radius: 12px;
   }
   
-  /* Plate background - diagonal cut */
+  /* Plate background - diagonal cut covering rank + avatar + medal icon */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
@@ -96,27 +96,30 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 155px;
+    width: 165px;
     height: 100%;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 90% 0%, 82% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   .overall-rankings .player-card.gold::before {
-    background: linear-gradient(145deg, #ffd966, #ffb347);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(255,215,0,0.4);
+    background: linear-gradient(135deg, #f9e07a, #e6b422);
+    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(255,215,0,0.5);
+    border-right: 1px solid rgba(255,235,120,0.6);
   }
   .overall-rankings .player-card.silver::before {
-    background: linear-gradient(145deg, #d4d4d4, #a0a0a0);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(192,192,192,0.4);
+    background: linear-gradient(135deg, #e0e0e0, #a8a8a8);
+    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(192,192,192,0.5);
+    border-right: 1px solid rgba(220,220,240,0.6);
   }
   .overall-rankings .player-card.bronze::before {
-    background: linear-gradient(145deg, #e8a87c, #b86b2c);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(205,127,50,0.4);
+    background: linear-gradient(135deg, #e8a87c, #c47a3a);
+    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(205,127,50,0.5);
+    border-right: 1px solid rgba(230,180,100,0.6);
   }
   
-  /* Shine animation - only on the plate */
+  /* Shine animation - only on the plate (gold/silver/bronze) */
   .overall-rankings .player-card.gold::after,
   .overall-rankings .player-card.silver::after,
   .overall-rankings .player-card.bronze::after {
@@ -124,28 +127,28 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 155px;
+    width: 165px;
     height: 100%;
     background: linear-gradient(100deg, 
-      transparent 30%, 
-      rgba(255, 255, 255, 0.7) 45%, 
-      rgba(255, 255, 255, 0.8) 50%, 
-      rgba(255, 255, 255, 0.7) 55%, 
+      transparent 25%, 
+      rgba(255, 255, 255, 0.7) 42%, 
+      rgba(255, 255, 255, 0.85) 48%, 
+      rgba(255, 255, 255, 0.7) 54%, 
       transparent 70%);
     transform: translateX(-100%);
     animation: shineSweep 5s ease-in-out infinite;
     z-index: 1;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 90% 0%, 82% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   
   @keyframes shineSweep {
     0% { transform: translateX(-100%); opacity: 0; }
-    8% { opacity: 1; }
-    18% { transform: translateX(0%); opacity: 1; }
-    30% { transform: translateX(100%); opacity: 1; }
-    40% { transform: translateX(100%); opacity: 0; }
+    6% { opacity: 1; }
+    16% { transform: translateX(0%); opacity: 1; }
+    28% { transform: translateX(100%); opacity: 1; }
+    38% { transform: translateX(100%); opacity: 0; }
     100% { transform: translateX(100%); opacity: 0; }
   }
 
@@ -171,13 +174,13 @@
   
   /* Medal icon styling */
   .medal-icon {
-    margin-right: 4px;
+    margin-right: 6px;
     font-size: 1rem;
     position: relative;
     z-index: 2;
   }
   
-  /* Skin image - full body render from mc-heads */
+  /* Skin image - full body render */
   .player-img {
     width: 48px;
     height: 56px;
@@ -681,14 +684,14 @@
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 140px;
-      clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+      width: 148px;
+      clip-path: polygon(0% 0%, 86% 0%, 78% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 140px;
-      clip-path: polygon(0% 0%, 88% 0%, 80% 100%, 0% 100%);
+      width: 148px;
+      clip-path: polygon(0% 0%, 86% 0%, 78% 100%, 0% 100%);
     }
   }
 </style>
