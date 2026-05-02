@@ -172,7 +172,19 @@
     100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
   }
   
-  .player-img { width:48px; height:48px; border-radius:50%; border:2px solid #db3e3e; flex-shrink:0; position: relative; transition: all 0.2s; background: #1f2937; object-fit: cover; z-index: 2; }
+  /* REMOVE CIRCLE - square avatar */
+  .player-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 0;
+    border: 2px solid #db3e3e;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s;
+    background: #1f2937;
+    object-fit: cover;
+    z-index: 2;
+  }
   
   [data-tooltip] {
     position: relative;
@@ -840,7 +852,7 @@ function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, fun
 function getRegionClass(region) { if (!region) return ""; const reg = region.toUpperCase().trim(); if (reg === "EU") return "EU"; if (reg === "AS") return "AS"; if (reg === "NA") return "NA"; if (reg === "SA") return "SA"; if (reg === "AU") return "AU"; if (reg === "ME") return "ME"; return ""; }
 let currentActiveMode = "Overall";
 function getOverallRankForPlayer(p) { const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)); const pName = p[nameCol]; return sorted.findIndex(row => row[nameCol] === pName) !== -1 ? sorted.findIndex(row => row[nameCol] === pName)+1 : null; }
-function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:50%;border:3px solid #db3e3e;object-fit:cover;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
+function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:0;border:3px solid #db3e3e;object-fit:cover;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
 
 function loadMode(mode, activeBtn) {
   currentActiveMode = mode;
