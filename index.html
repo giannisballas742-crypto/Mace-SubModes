@@ -482,18 +482,6 @@
     padding: 1px 4px;
     margin-left: 2px;
   }
-  /* normal flex wrap for names */
-  .tier-column .player-card .flex-1 {
-    min-width: 0;
-  }
-  .tier-column .player-card .flex.items-center.gap-2 {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .tier-column .player-card .font-semibold {
-    word-break: break-word;
-    white-space: normal;
-  }
   
   .holo-btn {
     background: linear-gradient(135deg, #2a2a35 0%, #1a1a24 100%);
@@ -637,34 +625,57 @@
     align-items: center;
   }
   
-  /* ----- MOBILE EXCLUSIVE: bigger boxes for tier lists so names don't cut ----- */
+  /* ----- MOBILE EXCLUSIVE: BIGGER LISTS FOR PHONE ONLY ----- */
   @media (max-width: 640px) {
-    /* make each tier column wider */
+    /* Make tier columns wider so names have more room */
     .tier-grid {
-      grid-template-columns: repeat(5, minmax(200px, 1fr));
-      gap: 0.8rem;
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
+      gap: 1rem;
     }
-    /* increase column padding to give more breathing room */
+    /* Increase padding inside columns */
     .tier-column {
-      padding: 0.8rem 0.6rem;
+      padding: 0.8rem 0.7rem;
     }
-    /* make player cards have more horizontal space */
+    /* Make player cards larger and more spacious */
     .tier-column .player-card {
-      padding: 10px 12px;
-      gap: 12px;
-    }
-    /* allow names to wrap normally but with larger column width they won't cut as much */
-    .tier-column .player-card .font-semibold {
-      word-break: break-word;
-      white-space: normal;
-      max-width: 100%;
-    }
-    /* overall rankings adjustments: keep original layout but slightly larger padding */
-    .overall-rankings .player-card {
-      padding: 12px;
+      padding: 12px 14px;
       gap: 14px;
+      margin-bottom: 10px;
     }
-    /* rearrange overall card on mobile (same as before) */
+    /* Slightly bigger avatar on mobile tier view */
+    .tier-column .player-img {
+      width: 42px;
+      height: 42px;
+    }
+    /* Increase font size for player names */
+    .tier-column .player-card .font-semibold {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    /* Ensure badges are legible */
+    .tier-column .sub-tier-badge,
+    .tier-column .retired-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+    }
+    /* Keep flex wrap but with larger container */
+    .tier-column .player-card .flex-1 {
+      min-width: 0;
+    }
+    .tier-column .player-card .flex.items-center.gap-2 {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    /* Overall rankings adjustments: keep original layout but only increase padding slightly */
+    .overall-rankings .player-card {
+      padding: 14px;
+      gap: 16px;
+    }
+    .overall-rankings .player-card .rank-large {
+      font-size: 0.9rem;
+    }
+    /* Rearrange overall card on mobile as before */
     .overall-rankings .player-card {
       display: grid !important;
       grid-template-columns: auto 1fr;
@@ -672,13 +683,13 @@
         "avatar name"
         "modeicons modeicons"
         "rankpoints rankpoints";
-      gap: 0.75rem;
+      gap: 0.85rem;
       align-items: center;
     }
     .overall-rankings .player-card .player-img {
       grid-area: avatar;
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
     }
     .overall-rankings .player-card .flex-1 {
       display: contents;
@@ -688,7 +699,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-size: 1rem;
     }
     .overall-rankings .player-card .mode-icons {
@@ -705,11 +716,11 @@
       margin-top: 0;
     }
     .overall-rankings .player-card .rank-large {
-      font-size: 0.85rem;
-      padding: 4px 12px;
+      font-size: 0.9rem;
+      padding: 4px 14px;
     }
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
     }
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
