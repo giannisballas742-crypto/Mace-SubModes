@@ -7,11 +7,11 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  /* ----- BASE & PARTICLES (enhanced) ----- */
+  /* ----- BASE & PARTICLES ----- */
   body {
     background: #0a0a0a;
-    color:#e5e5e5;
-    font-family:system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #e5e5e5;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
     position: relative;
   }
@@ -61,19 +61,31 @@
     width: 100%;
     text-align: center;
   }
-  .tab-active { background:#db3e3e; color:black; font-weight:700; box-shadow:0 0 20px rgba(219,62,62,0.6); }
-  .player-card { padding:10px; border-radius:12px; display:flex; align-items:center; gap:12px; margin-bottom:8px; transition:0.2s; cursor:pointer; overflow: visible; position: relative; }
-  .player-card:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(219,62,62,0.4); }
+  .tab-active { background: #db3e3e; color: black; font-weight: 700; box-shadow: 0 0 20px rgba(219,62,62,0.6); }
+  .player-card {
+    padding: 10px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    transition: 0.2s;
+    cursor: pointer;
+    overflow: visible;
+    position: relative;
+  }
+  .player-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(219,62,62,0.4); }
   .player-card.player-ht { background: #4b5563; }
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
-  
-  /* ----- MEDAL PLATE (covers avatar + tier icons area, not rank/points) ----- */
+
+  /* ----- MEDAL PLATE (only gold/silver/bronze cards) ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
     position: relative;
     overflow: visible;
+    border-radius: 12px;
   }
-  /* plate background - covers avatar and tier icons, but stops before rank/points */
+  /* plate background covers left part */
   .player-card.gold::before,
   .player-card.silver::before,
   .player-card.bronze::before {
@@ -86,6 +98,7 @@
     z-index: 0;
     pointer-events: none;
     clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
+    border-radius: 12px 0 0 12px;
   }
   .player-card.gold::before {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.45), rgba(255, 200, 0, 0.7));
@@ -115,14 +128,15 @@
     z-index: 0;
     pointer-events: none;
     clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 0% 100%);
+    border-radius: 12px 0 0 12px;
   }
   @keyframes shineSlideDiagonal {
     0% { transform: translateX(-100%) translateY(0%); }
     10% { transform: translateX(100%) translateY(8%); opacity: 1; }
     100% { transform: translateX(100%) translateY(8%); opacity: 0; }
   }
-  
-  /* ensure avatar, name, and tier icons stay above plate */
+
+  /* ensure content above plate */
   .player-card.gold .player-img,
   .player-card.silver .player-img,
   .player-card.bronze .player-img,
@@ -135,29 +149,28 @@
     position: relative;
     z-index: 2;
   }
-  /* rank badge and points remain fully above */
   .player-card.gold .flex.items-center.gap-4,
   .player-card.silver .flex.items-center.gap-4,
   .player-card.bronze .flex.items-center.gap-4 {
     position: relative;
     z-index: 3;
   }
-  
-  /* REMOVE pulse animation from avatar - only plate has animation */
+
+  /* Full body skin image: square container but show entire body with contain */
   .player-img {
     width: 48px;
-    height: 48px;
-    border-radius: 0;
+    height: 64px;
+    object-fit: contain;
+    background: #1f2937;
     border: none;
+    border-radius: 0;
     flex-shrink: 0;
     position: relative;
     transition: all 0.2s;
-    background: #1f2937;
-    object-fit: cover;
     z-index: 2;
   }
-  
-  /* Tooltip fixes: ensure it never gets cut off */
+
+  /* Tooltip fixes */
   [data-tooltip] {
     position: relative;
     cursor: help;
@@ -195,13 +208,6 @@
   [data-tooltip]:hover::after {
     opacity: 1;
     visibility: visible;
-  }
-  .mode-icon-container[data-tooltip]::after {
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0;
-    z-index: 99999;
   }
   .mode-icons {
     display: flex;
@@ -246,10 +252,6 @@
     background: #0f2b6d !important;
     color: #e0e7ff;
     box-shadow: 0 0 4px #2563eb;
-  }
-  .modal .mode-icons {
-    margin-top: 12px;
-    justify-content: center;
   }
   #searchWrapper {
     position: relative;
@@ -352,7 +354,6 @@
     background: rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(2px);
     margin-bottom: 1.5rem;
-    transition: all 0.2s;
   }
   #tabs {
     display: flex;
@@ -442,8 +443,7 @@
   }
   .tier-column .player-img {
     width: 36px;
-    height: 36px;
-    flex-shrink: 0;
+    height: 48px;
   }
   .tier-column .mode-icons {
     gap: 6px;
@@ -471,7 +471,6 @@
     padding: 1px 4px;
     margin-left: 2px;
   }
-  
   .holo-btn {
     background: linear-gradient(135deg, #2a2a35 0%, #1a1a24 100%);
     border: 1px solid rgba(219,62,62,0.3);
@@ -538,7 +537,6 @@
   }
   .retired-toggle i { font-size: 1.6rem; }
   .retired-toggle.active { background: #db3e3e; color: black; border-color: #ffd966; box-shadow: 0 0 10px rgba(219,62,62,0.6); }
-  
   .discord-card {
     position: relative;
     background: linear-gradient(145deg, #3a1010 0%, #1e0505 100%);
@@ -606,15 +604,11 @@
     .tier-pair-row { grid-template-columns: 1fr; gap: 0.6rem; }
     .bigger-title { font-size: 1.5rem; }
   }
-
-  /* ----- OVERALL LEADERBOARD STYLE (DESKTOP - unchanged) ----- */
   .overall-rankings .player-card {
     display: flex;
     flex-direction: row;
     align-items: center;
   }
-  
-  /* ----- MOBILE EXCLUSIVE: bigger boxes and adjusted medal plate ----- */
   @media (max-width: 640px) {
     .tier-grid {
       grid-template-columns: repeat(5, minmax(240px, 1fr));
@@ -632,12 +626,11 @@
     }
     .tier-column .player-img {
       width: 44px;
-      height: 44px;
+      height: 58px;
     }
     .tier-column .player-card .font-semibold {
       font-size: 0.95rem;
     }
-    
     .overall-rankings .player-card {
       padding: 14px;
       gap: 16px;
@@ -649,17 +642,14 @@
     .overall-rankings .player-card {
       display: grid !important;
       grid-template-columns: auto 1fr;
-      grid-template-areas: 
-        "avatar name"
-        "modeicons modeicons"
-        "rankpoints rankpoints";
+      grid-template-areas: "avatar name" "modeicons modeicons" "rankpoints rankpoints";
       gap: 0.85rem;
       align-items: center;
     }
     .overall-rankings .player-card .player-img {
       grid-area: avatar;
       width: 56px;
-      height: 56px;
+      height: 74px;
     }
     .overall-rankings .player-card .flex-1 {
       display: contents;
@@ -688,8 +678,6 @@
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
       font-size: 1.2rem;
     }
-    
-    /* Adjust medal plate for top 3 on mobile: ensure it doesn't cover rank/points */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
@@ -826,13 +814,13 @@ function renderModeGroupedByTier(mode) {
   const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } };
   allRows.forEach(r => { const retiredInThisMode = isRetiredInMode(r, mode); if (!markRetired && retiredInThisMode) return; const rawTier = r[mode]; if (!rawTier) return; const parsed = parseTierString(rawTier); if (!parsed) return; const baseTier = parsed.baseTier; const match = baseTier.match(/^(HT|LT)([1-5])$/); if (!match) return; const tierNum = parseInt(match[2], 10); const type = match[1]; groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier, retired: retiredInThisMode }); });
   let gridHtml = '<div class="tier-grid">';
-  for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex-1"><div class="flex items-center gap-2 flex-wrap">${escapeHtml(name)}${subTierBadge}${regionHTML}</div></div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
+  for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex-1"><div class="flex items-center gap-2 flex-wrap">${escapeHtml(name)}${subTierBadge}${regionHTML}</div></div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
 
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
 function getRegionClass(region) { if (!region) return ""; const reg = region.toUpperCase().trim(); if (reg === "EU") return "EU"; if (reg === "AS") return "AS"; if (reg === "NA") return "NA"; if (reg === "SA") return "SA"; if (reg === "AU") return "AU"; if (reg === "ME") return "ME"; return ""; }
 let currentActiveMode = "Overall";
 function getOverallRankForPlayer(p) { const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0)); const pName = p[nameCol]; return sorted.findIndex(row => row[nameCol] === pName) !== -1 ? sorted.findIndex(row => row[nameCol] === pName)+1 : null; }
-function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:128px;border-radius:0;border:3px solid #db3e3e;object-fit:cover;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
+function showPlayerProfile(playerObj) { const name = playerObj[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/128`; const region = playerObj[regionCol]; const pointsVal = parseFloat(playerObj[pointsCol]||0); const overallRank = getOverallRankForPlayer(playerObj); const role = getRoleByPoints(pointsVal); let roleHtml = ''; if(role) roleHtml = `<div class="flex justify-center mt-3"><div class="rank ${role.className} text-xl px-5 py-2 rounded-full inline-flex items-center gap-2">${role.icon} ${role.name} ${role.symbol}</div></div>`; let regionInline = ''; const regionClass = getRegionClass(region); if (region && regionClass) regionInline = `<span class="region-badge ${regionClass} ml-2 align-middle">${region}</span>`; document.getElementById("modal-content").innerHTML = `<div class="flex justify-center mb-4"><img src="${avatar}" style="width:128px;height:170px;border-radius:0;border:3px solid #db3e3e;object-fit:contain;background:#1f2937;"></div><h2 class="text-2xl font-bold text-center">${escapeHtml(name)} ${regionInline}</h2>${roleHtml}<div class="mt-6">${getModeIconsHTML(playerObj)}</div><div class="text-center mt-4 pt-2"><span class="text-gray-400">Overall Position:</span><span class="text-lg font-bold text-yellow-400 ml-2">#${overallRank}</span></div><div class="text-center mt-2 pt-2 border-t border-gray-600"><span class="text-gray-400">Overall Points:</span><span class="text-xl font-bold text-red-400 ml-2">${playerObj[pointsCol]}</span></div>`; document.getElementById("player-modal").classList.remove("hidden"); }
 
 function loadMode(mode, activeBtn) {
   currentActiveMode = mode;
@@ -842,7 +830,7 @@ function loadMode(mode, activeBtn) {
   const rankingsDiv = document.getElementById("rankings");
   if (mode === "Overall") { rankingsDiv.classList.add("overall-rankings");
     const sorted = [...allRows].sort((a,b)=>parseFloat(b[pointsCol]||0)-parseFloat(a[pointsCol]||0));
-    let htmlOut = ""; sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
+    let htmlOut = ""; sorted.forEach((r, idx) => { const name = r[nameCol]; if(!name) return; const pointsVal = parseFloat(r[pointsCol]||0); const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/64`; const region = r[regionCol]; let medalClass="", medalIcon="", bgClass=""; if(idx===0){ medalClass="gold"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===1){ medalClass="silver"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else if(idx===2){ medalClass="bronze"; medalIcon="<i class='fas fa-medal medal-icon'></i>"; bgClass = "gray-bg"; } else { bgClass = "gray-bg"; } const rankBadge = getLargeRankBadge(pointsVal); let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; const pointsColorClass = idx < 3 ? "text-black" : "text-red-400"; const ptsSpanColorClass = idx < 3 ? "text-black" : "text-gray-300"; htmlOut += `<div class="player-card relative overflow-visible ${medalClass} ${bgClass}" data-player='${JSON.stringify(r).replace(/'/g, "&apos;")}' data-points="${pointsVal}"><img src="${avatar}" class="player-img"><div class="flex-1 flex flex-col justify-center min-w-0"><div class="flex items-center flex-wrap gap-x-2 gap-y-1">${medalIcon}<span class="font-bold">${idx+1}.</span> ${escapeHtml(name)}${regionHTML}</div>${getModeIconsHTML(r)}</div><div class="flex items-center gap-4 relative z-10 flex-shrink-0 flex-wrap justify-end">${rankBadge}<div class="font-mono text-xl font-bold ${pointsColorClass} flex items-center gap-1">${r[pointsCol]} <span class="text-sm font-medium ${ptsSpanColorClass}">pts</span></div></div></div>`; });
     rankingsDiv.innerHTML = htmlOut;
   } else { rankingsDiv.classList.remove("overall-rankings"); rankingsDiv.innerHTML = renderModeGroupedByTier(mode); }
   attachCardEvents();
