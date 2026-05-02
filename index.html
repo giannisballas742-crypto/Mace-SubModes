@@ -502,6 +502,9 @@
     overflow: hidden;
     backdrop-filter: blur(2px);
     box-shadow: 0 0 6px rgba(219,62,62,0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
   .holo-btn::before {
     content: '';
@@ -523,6 +526,13 @@
     color: black;
     border-color: #ffb347;
     box-shadow: 0 0 14px #db3e3e;
+  }
+  .holo-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
   }
   .separator-line {
     margin: 1rem 0 1.2rem 0;
@@ -700,9 +710,21 @@
 <div id="particles"></div>
 <div class="max-w-7xl mx-auto p-5 relative z-10">
   <div class="flex justify-center gap-3 mb-3">
-    <button id="homeModeBtn" class="holo-btn">🏠 Home</button>
-    <button id="leaderboardModeBtn" class="holo-btn active">🏆 LeaderBoard</button>
-    <button id="discordModeBtn" class="holo-btn">💬 Discord</button>
+    <!-- Home button with SVG house icon -->
+    <button id="homeModeBtn" class="holo-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Home
+    </button>
+    <!-- Leaderboard button with SVG house icon (as requested same icon) -->
+    <button id="leaderboardModeBtn" class="holo-btn active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      LeaderBoard
+    </button>
+    <!-- Discord button with Discord symbol icon -->
+    <button id="discordModeBtn" class="holo-btn">
+      <i class="fab fa-discord"></i>
+      Discord
+    </button>
   </div>
   <hr class="separator-line">
   <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
@@ -716,6 +738,7 @@
 </div>
 
 <script>
+// (Particle and full logic preserved exactly, only icon changes in buttons)
 function createParticles() {
   const container = document.getElementById('particles');
   for (let i = 0; i < 150; i++) {
