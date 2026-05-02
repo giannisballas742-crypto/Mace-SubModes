@@ -71,7 +71,7 @@
   /* ----- MEDAL PLATE (covers avatar + tier icons area, not rank/points) ----- */
   .player-card.gold, .player-card.silver, .player-card.bronze {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
   /* plate background - covers avatar and tier icons, but stops before rank/points */
   .player-card.gold::before,
@@ -176,7 +176,7 @@
     100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
   }
   
-  /* Square avatar without border or circle */
+  /* Square avatar without border or circle - full body skin */
   .player-img {
     width: 48px;
     height: 48px;
@@ -190,6 +190,7 @@
     z-index: 2;
   }
   
+  /* Tooltip fixes: ensure it never gets cut off */
   [data-tooltip] {
     position: relative;
     cursor: help;
@@ -217,7 +218,7 @@
     border: 1px solid #db3e3e;
     box-shadow: 0 12px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(219,62,62,0.3);
     backdrop-filter: blur(2px);
-    z-index: 9999;
+    z-index: 99999;
     pointer-events: none;
     transition: opacity 0.18s ease;
     opacity: 0;
@@ -233,6 +234,7 @@
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 0;
+    z-index: 99999;
   }
   .mode-icons {
     display: flex;
@@ -249,6 +251,7 @@
     width: 48px;
     position: relative;
     cursor: help;
+    overflow: visible;
   }
   .mode-icon {
     width: 36px;
@@ -440,6 +443,7 @@
     gap: 0.8rem;
     align-items: start;
     overflow-x: auto;
+    overflow-y: visible;
   }
   .tier-column {
     background: rgba(0,0,0,0.25);
@@ -447,6 +451,7 @@
     padding: 0.6rem 0.5rem;
     backdrop-filter: blur(2px);
     min-width: 0;
+    overflow-y: visible;
   }
   .tier-column .tier-group-header {
     display: block;
@@ -466,6 +471,7 @@
     padding: 8px 10px;
     gap: 10px;
     margin-bottom: 8px;
+    overflow: visible;
   }
   .tier-column .player-img {
     width: 36px;
@@ -646,9 +652,11 @@
     .tier-grid {
       grid-template-columns: repeat(5, minmax(240px, 1fr));
       gap: 0.9rem;
+      overflow-y: visible;
     }
     .tier-column {
       padding: 0.8rem 0.7rem;
+      overflow-y: visible;
     }
     .tier-column .player-card {
       padding: 12px 14px;
