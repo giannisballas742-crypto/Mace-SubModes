@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - covers rank number + avatar + medal icon (stops exactly after the medal) ----- */
+  /* ----- MEDAL PLATE - covers rank number + avatar + medal icon (stops exactly at the start of the medal icon) ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -87,7 +87,7 @@
     overflow: visible;
     border-radius: 12px;
   }
-  /* plate background covers rank number, avatar, AND the medal icon - stops right after medal */
+  /* plate background covers rank, avatar, and the medal icon - diagonal cut */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
@@ -95,11 +95,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 160px;
+    width: 148px;
     height: 100%;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 92% 0%, 86% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 88% 0%, 84% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.2), 2px 0 8px rgba(255,255,255,0.15);
   }
@@ -115,7 +115,7 @@
     background: linear-gradient(145deg, rgba(205, 127, 50, 0.85), rgba(180, 100, 30, 0.95));
     box-shadow: inset -2px 0 5px rgba(0,0,0,0.3), 2px 0 8px rgba(255,180,80,0.5);
   }
-  /* SHINE ANIMATION - ONLY on the metallic plate, NOT the whole profile */
+  /* SHINE ANIMATION - ONLY on the metallic plate, from start to end of plate, disappears and reappears every 5 seconds */
   .overall-rankings .player-card.gold::after,
   .overall-rankings .player-card.silver::after,
   .overall-rankings .player-card.bronze::after {
@@ -123,25 +123,27 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 320px;
+    width: 148px;
     height: 100%;
     background: linear-gradient(120deg, 
-      transparent 35%, 
-      rgba(255, 255, 255, 0.95) 48%, 
-      rgba(255, 255, 255, 0.95) 52%, 
-      transparent 65%);
+      transparent 40%, 
+      rgba(255, 255, 255, 0.9) 48%, 
+      rgba(255, 255, 255, 0.9) 52%, 
+      transparent 60%);
     transform: translateX(-100%);
-    animation: silverLineSweep 5s infinite ease-in-out;
+    animation: silverLineSweep 5s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 92% 0%, 86% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 88% 0%, 84% 100%, 0% 100%);
     border-radius: 12px 0 0 12px;
   }
   @keyframes silverLineSweep {
-    0% { transform: translateX(-100%); }
-    10% { transform: translateX(0%); }
-    25% { transform: translateX(100%); }
-    100% { transform: translateX(100%); }
+    0% { transform: translateX(-100%); opacity: 0; }
+    5% { opacity: 1; }
+    15% { transform: translateX(0%); opacity: 1; }
+    25% { transform: translateX(100%); opacity: 1; }
+    35% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(100%); opacity: 0; }
   }
 
   /* ensure content above plate */
@@ -671,14 +673,14 @@
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 155px;
-      clip-path: polygon(0% 0%, 90% 0%, 84% 100%, 0% 100%);
+      width: 138px;
+      clip-path: polygon(0% 0%, 86% 0%, 82% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 310px;
-      clip-path: polygon(0% 0%, 90% 0%, 84% 100%, 0% 100%);
+      width: 138px;
+      clip-path: polygon(0% 0%, 86% 0%, 82% 100%, 0% 100%);
     }
   }
 </style>
