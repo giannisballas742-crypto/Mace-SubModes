@@ -625,57 +625,43 @@
     align-items: center;
   }
   
-  /* ----- MOBILE EXCLUSIVE: BIGGER LISTS FOR PHONE ONLY ----- */
+  /* ----- MOBILE EXCLUSIVE: bigger boxes and adjusted medal plate ----- */
   @media (max-width: 640px) {
-    /* Make tier columns wider so names have more room */
+    /* make each tier column slightly wider */
     .tier-grid {
-      grid-template-columns: repeat(5, minmax(220px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap: 0.9rem;
     }
-    /* Increase padding inside columns */
+    /* increase column padding */
     .tier-column {
       padding: 0.8rem 0.7rem;
     }
-    /* Make player cards larger and more spacious */
+    /* make player cards bigger */
     .tier-column .player-card {
       padding: 12px 14px;
       gap: 14px;
       margin-bottom: 10px;
     }
-    /* Slightly bigger avatar on mobile tier view */
+    /* slightly bigger avatar in tier view */
     .tier-column .player-img {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
     }
-    /* Increase font size for player names */
+    /* adjust font size for player names */
     .tier-column .player-card .font-semibold {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    /* Ensure badges are legible */
-    .tier-column .sub-tier-badge,
-    .tier-column .retired-badge {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-    }
-    /* Keep flex wrap but with larger container */
-    .tier-column .player-card .flex-1 {
-      min-width: 0;
-    }
-    .tier-column .player-card .flex.items-center.gap-2 {
-      flex-wrap: wrap;
-      gap: 8px;
+      font-size: 0.95rem;
     }
     
-    /* Overall rankings adjustments: keep original layout but only increase padding slightly */
+    /* overall rankings adjustments: increase padding */
     .overall-rankings .player-card {
       padding: 14px;
       gap: 16px;
     }
     .overall-rankings .player-card .rank-large {
       font-size: 0.9rem;
+      padding: 4px 14px;
     }
-    /* Rearrange overall card on mobile as before */
+    /* keep existing overall grid layout */
     .overall-rankings .player-card {
       display: grid !important;
       grid-template-columns: auto 1fr;
@@ -715,18 +701,22 @@
       width: 100%;
       margin-top: 0;
     }
-    .overall-rankings .player-card .rank-large {
-      font-size: 0.9rem;
-      padding: 4px 14px;
-    }
     .overall-rankings .player-card .flex.items-center.gap-4 .font-mono {
       font-size: 1.2rem;
     }
+    
+    /* Adjust medal plate for top 3 on mobile: wider coverage over avatar + tier icons */
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%);
-      width: 80%;
+      width: 85%;
+      clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 0% 100%);
+    }
+    .overall-rankings .player-card.gold::after,
+    .overall-rankings .player-card.silver::after,
+    .overall-rankings .player-card.bronze::after {
+      width: 85%;
+      clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 0% 100%);
     }
   }
 </style>
