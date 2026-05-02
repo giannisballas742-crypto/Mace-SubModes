@@ -386,6 +386,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
   }
   .sub-tier-ht { background: #6b7280; color: white; box-shadow: 0 0 2px #9ca3af; }
   .sub-tier-lt { background: #374151; color: #f3f4f6; box-shadow: 0 0 2px #4b5563; }
@@ -401,6 +402,7 @@
     align-items: center;
     gap: 2px;
     box-shadow: 0 0 4px #ff4444;
+    white-space: nowrap;
   }
   .tier-group-header {
     font-weight: 800;
@@ -446,11 +448,12 @@
     font-style: italic;
     font-size: 0.75rem;
   }
+  /* FIX for mobile: names wrap and never get cut */
   .tier-column .player-card {
     padding: 8px 10px;
     gap: 10px;
     margin-bottom: 8px;
-    overflow: visible;  /* allow content to be fully visible, no clipping */
+    overflow: visible;
   }
   .tier-column .player-img {
     width: 36px;
@@ -477,16 +480,15 @@
     font-size: 0.6rem;
     padding: 1px 5px;
     margin-left: 4px;
-    white-space: nowrap;
   }
   .tier-column .retired-badge {
     font-size: 0.55rem;
     padding: 1px 4px;
     margin-left: 2px;
   }
-  /* Fix for long player names: allow wrapping naturally without cutting */
+  /* critical fix: allow name to wrap and never hide */
   .tier-column .player-card .flex-1 {
-    min-width: 0;        /* allow flex item to shrink below content min-width */
+    min-width: 0;
     overflow: visible;
   }
   .tier-column .player-card .flex.items-center.gap-2 {
@@ -498,8 +500,8 @@
     word-break: break-word;
     overflow-wrap: break-word;
     white-space: normal;
-    max-width: 100%;
     display: inline-block;
+    max-width: 100%;
     line-height: 1.3;
   }
   
