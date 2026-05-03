@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE DIAGONAL PLATES (more diagonal, doesn't reach tiers) ----- */
+  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE (inset start, diagonal cut before name, 3D shadow) ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -88,83 +88,81 @@
     border-radius: 12px;
   }
   
-  /* Plate background - steeper diagonal cut, covers rank + avatar but NOT the tier icons area */
+  /* Plate background - starts inset, diagonal cut, 3D shadow effect */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 155px;
-    height: 100%;
+    top: 4px;
+    left: 4px;
+    width: 148px;
+    height: calc(100% - 8px);
     z-index: 0;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 75% 0%, 65% 100%, 0% 100%);
-    border-radius: 12px 0 0 12px;
+    clip-path: polygon(0% 0%, 72% 0%, 62% 100%, 0% 100%);
+    border-radius: 10px 0 0 10px;
+    box-shadow: 3px 0 12px rgba(0,0,0,0.5), inset 1px 1px 0 rgba(255,255,255,0.3);
   }
   .overall-rankings .player-card.gold::before {
-    background: linear-gradient(135deg, #f9e07a, #e6b422);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(255,215,0,0.5);
-    border-right: 1px solid rgba(255,235,120,0.6);
+    background: linear-gradient(135deg, #f9e07a, #e6b422, #b8860b);
+    border-right: 1px solid rgba(255,235,120,0.8);
   }
   .overall-rankings .player-card.silver::before {
-    background: linear-gradient(135deg, #e0e0e0, #a8a8a8);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(192,192,192,0.5);
-    border-right: 1px solid rgba(220,220,240,0.6);
+    background: linear-gradient(135deg, #e0e0e0, #a8a8a8, #808080);
+    border-right: 1px solid rgba(220,220,240,0.8);
   }
   .overall-rankings .player-card.bronze::before {
-    background: linear-gradient(135deg, #e8a87c, #c47a3a);
-    box-shadow: inset -2px 0 8px rgba(0,0,0,0.3), 2px 0 12px rgba(205,127,50,0.5);
-    border-right: 1px solid rgba(230,180,100,0.6);
+    background: linear-gradient(135deg, #e8a87c, #c47a3a, #a0522d);
+    border-right: 1px solid rgba(230,180,100,0.8);
   }
   
-  /* ----- SILVER ANIMATED LINE that slides across plate diagonally, disappears after reaching end, reappears after 4s ----- */
+  /* ----- SINGLE ANIMATED SHINE LINE (one line sliding across diagonally, disappears, reappears after 4s) ----- */
   .overall-rankings .player-card.gold::after,
   .overall-rankings .player-card.silver::after,
   .overall-rankings .player-card.bronze::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 155px;
-    height: 100%;
-    background: repeating-linear-gradient(
-      115deg,
-      transparent,
-      transparent 35px,
-      rgba(255, 255, 255, 0.9) 35px,
-      rgba(255, 255, 255, 0.9) 48px,
-      transparent 48px,
-      transparent 80px
+    top: 4px;
+    left: 4px;
+    width: 148px;
+    height: calc(100% - 8px);
+    background: linear-gradient(
+      125deg,
+      transparent 0%,
+      transparent 30%,
+      rgba(255, 255, 255, 0.95) 45%,
+      rgba(255, 255, 255, 0.95) 52%,
+      transparent 65%,
+      transparent 100%
     );
-    background-size: 200% 100%;
-    background-position: 0% 0%;
+    background-size: 300% 100%;
+    background-position: -100% 0%;
     opacity: 0;
-    animation: silverLineSlide 4s ease-in-out infinite;
+    animation: singleShineLine 4s ease-in-out infinite;
     z-index: 1;
     pointer-events: none;
-    clip-path: polygon(0% 0%, 75% 0%, 65% 100%, 0% 100%);
-    border-radius: 12px 0 0 12px;
+    clip-path: polygon(0% 0%, 72% 0%, 62% 100%, 0% 100%);
+    border-radius: 10px 0 0 10px;
   }
   
-  @keyframes silverLineSlide {
+  @keyframes singleShineLine {
     0% {
-      background-position: -200% 0%;
+      background-position: -100% 0%;
       opacity: 0;
     }
-    5% {
-      opacity: 0.85;
-    }
-    40% {
-      background-position: 100% 0%;
+    6% {
       opacity: 0.9;
     }
-    50% {
+    35% {
+      background-position: 150% 0%;
+      opacity: 0.9;
+    }
+    45% {
       opacity: 0;
     }
     100% {
-      background-position: 100% 0%;
+      background-position: 150% 0%;
       opacity: 0;
     }
   }
@@ -183,24 +181,25 @@
     z-index: 2;
   }
   
-  /* Mobile specific: plate steeper diagonal but still covers skin fully */
+  /* Mobile specific adjustments */
   @media (max-width: 640px) {
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 130px;
-      clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
+      top: 3px;
+      left: 3px;
+      width: 118px;
+      height: calc(100% - 6px);
+      clip-path: polygon(0% 0%, 78% 0%, 68% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 130px;
-      clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
-    }
-    /* Ensure skin stays inside plate on mobile */
-    .overall-rankings .player-card .player-img {
-      position: relative;
-      z-index: 2;
+      top: 3px;
+      left: 3px;
+      width: 118px;
+      height: calc(100% - 6px);
+      clip-path: polygon(0% 0%, 78% 0%, 68% 100%, 0% 100%);
     }
   }
 
@@ -209,14 +208,18 @@
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      width: 165px;
-      clip-path: polygon(0% 0%, 72% 0%, 62% 100%, 0% 100%);
+      top: 4px;
+      left: 4px;
+      width: 155px;
+      clip-path: polygon(0% 0%, 70% 0%, 60% 100%, 0% 100%);
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      width: 165px;
-      clip-path: polygon(0% 0%, 72% 0%, 62% 100%, 0% 100%);
+      top: 4px;
+      left: 4px;
+      width: 155px;
+      clip-path: polygon(0% 0%, 70% 0%, 60% 100%, 0% 100%);
     }
   }
   
@@ -737,19 +740,6 @@
       flex-direction: row;
       justify-content: space-between;
       width: 100%;
-    }
-    /* Mobile plate adjustment - steeper diagonal, skin fully inside */
-    .overall-rankings .player-card.gold::before,
-    .overall-rankings .player-card.silver::before,
-    .overall-rankings .player-card.bronze::before {
-      width: 125px;
-      clip-path: polygon(0% 0%, 80% 0%, 70% 100%, 0% 100%);
-    }
-    .overall-rankings .player-card.gold::after,
-    .overall-rankings .player-card.silver::after,
-    .overall-rankings .player-card.bronze::after {
-      width: 125px;
-      clip-path: polygon(0% 0%, 80% 0%, 70% 100%, 0% 100%);
     }
   }
 </style>
