@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE (starts from left edge, diagonal cut shifted right, curved tips, 3D shadow) ----- */
+  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE (more inset horizontally and vertically, curved diagonal cut, 3D shadow) ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -88,16 +88,16 @@
     border-radius: 12px;
   }
   
-  /* Plate background - starts at left edge (covers skin fully), diagonal cut starts a bit further right, slight vertical inset, 3D shadow */
+  /* Plate background - increased left and top inset, diagonal cut with slightly curved tips, 3D shadow */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 0;
+    top: 5px;
+    left: 10px;
     width: 165px;
-    height: calc(100% - 6px);
+    height: calc(100% - 10px);
     z-index: 0;
     pointer-events: none;
     clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
@@ -123,10 +123,10 @@
   .overall-rankings .player-card.bronze::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 0;
+    top: 5px;
+    left: 10px;
     width: 165px;
-    height: calc(100% - 6px);
+    height: calc(100% - 10px);
     background: linear-gradient(
       125deg,
       transparent 0%,
@@ -181,25 +181,25 @@
     z-index: 2;
   }
   
-  /* Mobile specific adjustments - starts at left edge, diagonal shifted right */
+  /* Mobile specific adjustments - more inset as well */
   @media (max-width: 640px) {
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      top: 2px;
-      left: 0;
+      top: 3px;
+      left: 7px;
       width: 125px;
-      height: calc(100% - 4px);
+      height: calc(100% - 6px);
       clip-path: polygon(0% 0%, 88% 0%, 78% 100%, 0% 100%);
       border-radius: 6px 14px 14px 6px;
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      top: 2px;
-      left: 0;
+      top: 3px;
+      left: 7px;
       width: 125px;
-      height: calc(100% - 4px);
+      height: calc(100% - 6px);
       clip-path: polygon(0% 0%, 88% 0%, 78% 100%, 0% 100%);
       border-radius: 6px 14px 14px 6px;
     }
@@ -215,8 +215,8 @@
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      top: 3px;
-      left: 0;
+      top: 5px;
+      left: 10px;
       width: 165px;
       clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
       border-radius: 8px 20px 20px 8px;
@@ -224,8 +224,8 @@
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      top: 3px;
-      left: 0;
+      top: 5px;
+      left: 10px;
       width: 165px;
       clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
       border-radius: 8px 20px 20px 8px;
