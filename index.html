@@ -79,7 +79,7 @@
   .player-card.player-lt { background: #1f2937; }
   .player-card.gray-bg { background: #374151; }
 
-  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE (more inset horizontally and vertically, curved diagonal cut, 3D shadow) ----- */
+  /* ----- MEDAL PLATE - GOLD, SILVER, BRONZE (vertical from top, horizontally more inset, curved diagonal cut, 3D shadow) ----- */
   .overall-rankings .player-card.gold,
   .overall-rankings .player-card.silver,
   .overall-rankings .player-card.bronze {
@@ -88,16 +88,16 @@
     border-radius: 12px;
   }
   
-  /* Plate background - increased left and top inset, diagonal cut with slightly curved tips, 3D shadow */
+  /* Plate background - vertical start at 0, increased left inset, diagonal cut with curved tips, 3D shadow */
   .overall-rankings .player-card.gold::before,
   .overall-rankings .player-card.silver::before,
   .overall-rankings .player-card.bronze::before {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 10px;
+    top: 0;
+    left: 12px;
     width: 165px;
-    height: calc(100% - 10px);
+    height: 100%;
     z-index: 0;
     pointer-events: none;
     clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
@@ -123,10 +123,10 @@
   .overall-rankings .player-card.bronze::after {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 10px;
+    top: 0;
+    left: 12px;
     width: 165px;
-    height: calc(100% - 10px);
+    height: 100%;
     background: linear-gradient(
       125deg,
       transparent 0%,
@@ -181,25 +181,23 @@
     z-index: 2;
   }
   
-  /* Mobile specific adjustments - more inset as well */
+  /* Mobile specific adjustments */
   @media (max-width: 640px) {
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      top: 3px;
-      left: 7px;
+      top: 0;
+      left: 8px;
       width: 125px;
-      height: calc(100% - 6px);
       clip-path: polygon(0% 0%, 88% 0%, 78% 100%, 0% 100%);
       border-radius: 6px 14px 14px 6px;
     }
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      top: 3px;
-      left: 7px;
+      top: 0;
+      left: 8px;
       width: 125px;
-      height: calc(100% - 6px);
       clip-path: polygon(0% 0%, 88% 0%, 78% 100%, 0% 100%);
       border-radius: 6px 14px 14px 6px;
     }
@@ -215,8 +213,8 @@
     .overall-rankings .player-card.gold::before,
     .overall-rankings .player-card.silver::before,
     .overall-rankings .player-card.bronze::before {
-      top: 5px;
-      left: 10px;
+      top: 0;
+      left: 12px;
       width: 165px;
       clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
       border-radius: 8px 20px 20px 8px;
@@ -224,8 +222,8 @@
     .overall-rankings .player-card.gold::after,
     .overall-rankings .player-card.silver::after,
     .overall-rankings .player-card.bronze::after {
-      top: 5px;
-      left: 10px;
+      top: 0;
+      left: 12px;
       width: 165px;
       clip-path: polygon(0% 0%, 82% 0%, 72% 100%, 0% 100%);
       border-radius: 8px 20px 20px 8px;
@@ -681,6 +679,19 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+  }
+  /* Fix alignment for HT4, LT4, HT5, LT5 cells - consistent width */
+  .tier-cell {
+    justify-content: space-between;
+    min-width: 0;
+    flex: 1;
+  }
+  .tier-cell span:first-child {
+    font-weight: 700;
+  }
+  .tier-cell span:last-child,
+  .tier-cell i {
+    white-space: nowrap;
   }
   @media (max-width: 560px) {
     .tier-pair-row { grid-template-columns: 1fr; gap: 0.6rem; }
