@@ -490,7 +490,7 @@
     padding: 8px 16px;
     background: rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(2px);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   #tabs {
     display: flex;
@@ -499,6 +499,15 @@
     width: 100%;
     justify-content: space-between;
   }
+  /* ===== BELOW-TABS ACTION BAR ===== */
+  #mode-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+  /* ===== END BELOW-TABS ACTION BAR ===== */
   .kit-info-btn { background:var(--color-primary); transition: all 0.2s; border: none; font-weight: bold; letter-spacing: 0.3px; }
   .kit-info-btn:hover { background:var(--color-primary-dark); transform: scale(1.02); box-shadow:0 4px 12px var(--color-primary-glow); }
   .sub-tier-badge {
@@ -669,22 +678,24 @@
   .discord-card {
     position: relative;
     background: linear-gradient(145deg, #3a1010 0%, #1e0505 100%);
-    border-radius: 2rem;
-    padding: 2rem;
-    max-width: 560px;
+    border-radius: 1.5rem;
+    padding: 1.4rem 1.8rem;
+    max-width: 420px;
     width: 100%;
-    margin: 2rem auto;
+    margin: 2rem auto 0 auto;
     text-align: center;
     box-shadow: 0 20px 35px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(219,62,62,0.5);
     transition: transform 0.2s;
   }
   .discord-card:hover { transform: translateY(-5px); }
+  .discord-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .discord-card p { font-size: 0.82rem; color: #ccc; margin-bottom: 1rem; }
   .instant-join-btn {
     background: white;
     border: none;
-    padding: 12px 28px;
+    padding: 9px 22px;
     border-radius: 60px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     color: #8b2a2a;
     cursor: pointer;
@@ -1185,8 +1196,9 @@
   .affiliate-modal-close:hover { color: var(--color-primary); }
   .affiliate-banner {
     width: 100%;
-    max-height: 140px;
-    object-fit: cover;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
     border-radius: 18px;
     margin-bottom: 20px;
     display: block;
@@ -1347,7 +1359,7 @@
     <div class="affiliate-servers-grid">
       <!-- Server 1 -->
       <div class="affiliate-server-card" onclick="window.open('https://discord.gg/XdxQnYUyd2','_blank')">
-        <img src="https://cdn.discordapp.com/emojis/1463390685972660288.webp?size=96" alt="Server 1" class="affiliate-server-icon">
+        <img src="https://i.postimg.cc/R073JCYV/Screenshot-137.png" alt="Server 1" class="affiliate-server-icon">
         <div class="affiliate-server-name">⚔️ Mace SubModes Training Hub</div>
         <button class="affiliate-join-btn"><i class="fab fa-discord"></i> Join</button>
       </div>
@@ -1409,18 +1421,24 @@
     <div class="flex items-center gap-3"><div class="bigger-icon rounded-xl overflow-hidden"><img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" class="w-full h-full object-cover"></div><div><h1 class="bigger-title font-black tracking-tight">Mace SubModes Tiers</h1><p class="text-red-400 text-xs font-mono">Mace PvP Rankings</p></div></div>
     <div id="searchWrapper" class="flex items-center gap-2"><input type="text" id="search-input" placeholder="Search player..."><button id="searchButton" class="search-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg> Search</button><div id="suggestions" class="suggestions hidden"></div></div>
   </div>
-  <div id="leaderboardView"><div id="mode-title-container"></div><div class="tabs-outline"><div id="tabs" class="flex gap-6 flex-wrap justify-center sm:justify-start"></div></div><div id="rankings"></div></div>
+  <div id="leaderboardView">
+    <div id="mode-title-container"></div>
+    <div class="tabs-outline"><div id="tabs" class="flex gap-6 flex-wrap justify-center sm:justify-start"></div></div>
+    <!-- ACTION BAR: Kit Info & Retired toggle appear here for non-Overall tabs -->
+    <div id="mode-action-bar" style="display:none;"></div>
+    <div id="rankings"></div>
+  </div>
 
   <!-- DISCORD VIEW -->
   <div id="discordView" style="display: none;">
-    <div class="flex flex-col justify-center items-center min-h-[55vh] gap-5">
+    <div class="flex flex-col justify-center items-center gap-4" style="padding-top: 1rem;">
       <div class="discord-card">
-        <div class="discord-card-icon"><img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Mace Icon"></div>
+        <div class="discord-card-icon" style="margin-bottom:0.6rem;"><img src="https://image2url.com/r2/default/images/1774620885752-0a4cfd73-edc2-4172-bbad-7a6b4cfa2beb.png" alt="Mace Icon" style="width:48px;height:48px;margin:0 auto;display:block;"></div>
         <h3>Mace Submodes</h3>
         <p>Hop into the right hub for your game mode, find practice partners, and stay updated on tier changes.</p>
         <button id="instantJoinBtn" class="instant-join-btn"><i class="fab fa-discord"></i> Instant join</button>
       </div>
-      <!-- AFFILIATE SERVERS BUTTON -->
+      <!-- AFFILIATE SERVERS BUTTON moved up closer -->
       <button id="affiliateServersBtn" class="holo-btn" style="font-size:1rem; padding: 10px 28px; border-radius: 40px; gap: 10px;">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Affiliate Servers
@@ -1472,7 +1490,6 @@ function showKitInfo(mode) {
 function openPlayerModal() {
   const modalBg = document.getElementById("player-modal");
   modalBg.classList.remove("hidden");
-  // Trigger fade-in by adding class after a microtask
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       modalBg.classList.add("fade-in");
@@ -1549,6 +1566,26 @@ function getModeIconsHTMLSorted(player) {
   return html;
 }
 function getModeIconsHTMLOverall(player) { return getModeIconsHTMLSorted(player); }
+
+// Renders the action bar (Kit Info + Retired toggle) below tabs for non-Overall modes
+function updateModeActionBar(mode) {
+  const bar = document.getElementById("mode-action-bar");
+  if (!bar) return;
+  if (mode === "Overall") {
+    bar.style.display = "none";
+    bar.innerHTML = "";
+    return;
+  }
+  bar.style.display = "flex";
+  // Kit Info button
+  let kitBtnHtml = `<button class="kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition shadow-md flex items-center gap-2" id="actionBarKitBtn">📦 Kit Info</button>`;
+  // Retired toggle
+  let retiredBtnHtml = `<button id="retiredToggleBtn" class="retired-toggle ${markRetired ? 'active' : ''}">${markRetired ? '<i class="fas fa-toggle-on"></i> Show Retired' : '<i class="fas fa-toggle-off"></i> Show Retired'}</button>`;
+  bar.innerHTML = kitBtnHtml + retiredBtnHtml;
+  document.getElementById("actionBarKitBtn").onclick = (e) => { e.stopPropagation(); showKitInfo(mode); };
+  document.getElementById("retiredToggleBtn").onclick = (e) => { e.stopPropagation(); toggleRetiredMarker(); };
+}
+
 function updateModeHeader(mode) { 
   const container = document.getElementById("mode-title-container"); 
   if (!container) return; 
@@ -1560,25 +1597,9 @@ function updateModeHeader(mode) {
   const titleSpan = document.createElement("div"); 
   titleSpan.innerHTML = mode !== "Overall" ? `<h2 class="text-2xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">${mode} Rankings</h2>` : `<h2 class="text-2xl font-bold border-l-4 border-red-500 pl-3">🏆 Overall Rankings</h2>`; 
   wrapper.appendChild(titleSpan); 
-  const actionGroup = document.createElement("div"); 
-  actionGroup.className = "flex items-center gap-4 ml-auto";
-  if (mode !== "Overall") { 
-    const kitBtn = document.createElement("button"); 
-    kitBtn.textContent = "📦 Kit Info"; 
-    kitBtn.className = "kit-info-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition shadow-md flex items-center gap-2"; 
-    kitBtn.onclick = (e) => { e.stopPropagation(); showKitInfo(mode); }; 
-    actionGroup.appendChild(kitBtn); 
-    const retiredBtn = document.createElement("button"); 
-    retiredBtn.id = "retiredToggleBtn"; 
-    retiredBtn.className = `retired-toggle ${markRetired ? "active" : ""}`; 
-    retiredBtn.innerHTML = markRetired ? '<i class="fas fa-toggle-on"></i> Show Retired' : '<i class="fas fa-toggle-off"></i> Show Retired'; 
-    retiredBtn.setAttribute("data-tooltip", markRetired ? "Hide retired players" : "Show retired players (with R badge)"); 
-    retiredBtn.onclick = (e) => { e.stopPropagation(); toggleRetiredMarker(); }; 
-    actionGroup.appendChild(retiredBtn); 
-  } 
-  wrapper.appendChild(actionGroup); 
   container.innerHTML = ""; 
-  container.appendChild(wrapper); 
+  container.appendChild(wrapper);
+  updateModeActionBar(mode);
 }
 function shouldIncludePlayerByRegion(player) { if(selectedRegions.length === 0) return true; const reg = player[regionCol]?.toUpperCase(); return reg && selectedRegions.includes(reg); }
 function renderModeGroupedByTier(mode) { const groups = { 1: { ht: [], lt: [] }, 2: { ht: [], lt: [] }, 3: { ht: [], lt: [] }, 4: { ht: [], lt: [] }, 5: { ht: [], lt: [] } }; allRows.forEach(r => { if(!shouldIncludePlayerByRegion(r)) return; const retiredInThisMode = isRetiredInMode(r, mode); if (!markRetired && retiredInThisMode) return; const rawTier = r[mode]; if (!rawTier) return; const parsed = parseTierString(rawTier); if (!parsed) return; const baseTier = parsed.baseTier; const match = baseTier.match(/^(HT|LT)([1-5])$/); if (!match) return; const tierNum = parseInt(match[2], 10); const type = match[1]; groups[tierNum][type === 'HT' ? 'ht' : 'lt'].push({ player: r, points: parseFloat(r[pointsCol]||0), subTier: baseTier, retired: retiredInThisMode }); }); let gridHtml = '<div class="tier-grid">'; for (let t = 1; t <= 5; t++) { const htPlayers = groups[t].ht; const ltPlayers = groups[t].lt; let headerClass = 'tier-group-header '; if (t === 1) headerClass += 'gold'; else if (t === 2) headerClass += 'silver'; else if (t === 3) headerClass += 'bronze'; else if (t === 4) headerClass += 'iron'; else headerClass += 'purple'; let columnHtml = `<div class="tier-column"><div class="${headerClass}">TIER ${t}</div>`; const allPlayers = [...htPlayers.sort((a,b)=>b.points - a.points), ...ltPlayers.sort((a,b)=>b.points - a.points)]; if (allPlayers.length === 0) columnHtml += `<div class="empty-tier-message">— No players —</div>`; else allPlayers.forEach(item => { const p = item.player; const name = p[nameCol]; const avatar = `https://mc-heads.net/body/${encodeURIComponent(name)}/64`; const region = p[regionCol]; let regionHTML = ""; const regionClass = getRegionClass(region); if (region && regionClass) regionHTML = `<span class="region-badge ${regionClass}">${region}</span>`; let subTierBadge = `<span class="sub-tier-badge ${item.subTier.startsWith('HT') ? 'sub-tier-ht' : 'sub-tier-lt'}">${item.subTier}</span>`; if (markRetired && item.retired) subTierBadge += `<span class="retired-badge">R</span>`; const playerTypeClass = item.subTier.startsWith('HT') ? 'player-ht' : 'player-lt'; columnHtml += `<div class="player-card ${playerTypeClass} region-slide-card" data-player='${JSON.stringify(p).replace(/'/g, "&apos;")}' data-points="${item.points}"><img src="${avatar}" class="player-img"><div class="flex-1"><div class="flex items-center gap-2 flex-wrap">${escapeHtml(name)}${subTierBadge}${regionHTML}</div></div></div>`; }); columnHtml += `</div>`; gridHtml += columnHtml; } gridHtml += '</div>'; return gridHtml; }
@@ -1671,7 +1692,7 @@ suggestionsDiv.addEventListener("click", (e) => { const target = e.target.closes
 document.addEventListener("click", function(e) { if (!document.getElementById("searchWrapper").contains(e.target)) hideSuggestions(); });
 async function loadCSV() { const res = await fetch(CSV_URL + '&cachebust=' + Date.now()); const text = await res.text(); const { headers, data } = parseCSV(text); allRows = data; nameCol = headers.find(h=>/name|player/i.test(h)) || headers[0]; pointsCol = headers.find(h=>/points/i.test(h)) || headers[1]; const allModes = ["Overall","LT Mace","HT Mace","Rocket Mace","OG Mace","Rod Mace","Spear Mace"]; const tabsDiv = document.getElementById("tabs"); tabsDiv.innerHTML = ""; allModes.forEach((mode, idx) => { const wrapper = document.createElement("div"); wrapper.className = "tab-item"; let iconUrl = mode === "Overall" ? OVERALL_ICON : modeIcons[mode] || ""; const img = document.createElement("img"); img.src = iconUrl; img.className = "tab-icon"; img.style.width = "36px"; img.style.height = "36px"; const btn = document.createElement("button"); btn.textContent = mode; btn.className = "tab px-4 py-2 bg-gray-800 rounded-xl font-medium"; if(idx === 0) btn.classList.add("tab-active"); btn.onclick = (e) => { e.stopPropagation(); loadMode(mode, btn); }; wrapper.appendChild(img); wrapper.appendChild(btn); wrapper.addEventListener("click", (e) => { if(e.target !== btn) btn.click(); }); tabsDiv.appendChild(wrapper); }); loadMode("Overall", document.querySelector("#tabs .tab-active")); }
 
-// ---- AUTO-REFRESH: re-fetches CSV every 60s without rebuilding the tab UI ----
+// ---- AUTO-REFRESH ----
 async function refreshData() {
   try {
     const res = await fetch(CSV_URL + '&cachebust=' + Date.now());
